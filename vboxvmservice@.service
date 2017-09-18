@@ -1,0 +1,19 @@
+# vboxmanage list vms
+# sudo systemctl enable vboxvmservice@7fd67e93-5ea3-4b2c-bed9-b7d69e71165e
+# sudo systemctl start vboxvmservice@7fd67e93-5ea3-4b2c-bed9-b7d69e71165e
+
+[Unit]
+Description=VBox Virtual Machine %i Service
+Requires=systemd-modules-load.service
+After=systemd-modules-load.service
+
+[Service]
+User=vbox
+Group=vboxusers
+ExecStart=/usr/bin/VBoxHeadless -s "%i"
+ExecStop=/usr/bin/VBoxManage controlvm "%i" savestate
+# ExecStop=/usr/bin/VBoxManage controlvm "%i" acpipowerbutton
+# ExecStop=/usr/bin/VBoxManage snapshot "%i" restorecurrent
+
+[Install]
+WantedBy=multi-user.target

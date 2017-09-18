@@ -1,0 +1,9 @@
+# mysql -u root -p < mysql.txt
+#CREATE DATABASE cuckoo;
+CREATE DATABASE cuckoo default CHARACTER set utf8 default COLLATE utf8_general_ci;
+GRANT ALL ON cuckoo.* TO 'cuckoo'@'localhost' IDENTIFIED BY 'newpassword';
+#CREATE DATABASE peekaboo;
+CREATE DATABASE peekaboo default CHARACTER set utf8 default COLLATE utf8_general_ci;
+GRANT ALL ON peekaboo.* TO 'peekaboo'@'localhost' IDENTIFIED BY 'differentnewpassword';
+FLUSH PRIVILEGES;
+exit

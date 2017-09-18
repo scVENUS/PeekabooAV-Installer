@@ -1,0 +1,42 @@
+#
+# Peekaboo Extended Email Attachment Behavior Observation Owl
+# Copyright (c) 2016-2017 science + computing ag.
+#
+# Install as /etc/systemd/system/peekaboo.service
+#
+
+
+[Unit]
+Description=Peekaboo Extended Email Attachment Behavior Observation Owl
+After=network.target
+
+[Service]
+User=peekaboo
+Group=amavis
+WorkingDirectory=/opt/peekaboo/
+ExecStart=/usr/local/bin/peekaboo -c /opt/peekaboo/peekaboo.conf
+PIDFile=/var/run/peekaboo/peekaboo.pid
+KillMode=control-group
+Restart=always
+Type=notify
+StandardOutput=journal
+StandardError=journal
+RuntimeDirectory=peekaboo
+RuntimeDirectoryMode=750
+
+DeviceAllow=/dev/null rw
+CapabilityBoundingSet=~CAP_SYS_PTRACE
+
+
+ProtectSystem=full
+# strict
+# Not supported by "stable" systemd
+# ReadWritePaths=/opt/peekaboo/tmp
+# ProtectControlGroups=true
+# ProtectKernelTunables=true
+# ProtectKernelModules=true
+# RestrictRealtime=true
+
+[Install]
+WantedBy=multi-user.target
+Alias=peekabood.service

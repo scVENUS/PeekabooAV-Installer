@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+source ~/vboxmanage.conf
+#username=security
+#host=172.17.0.1
+
+# place somewhere and link somewhere
+# cd /usr/local/bin
+# ln -s this.sh vboxmanage
+
+echo ssh ${username}@${host} $(basename $0) $@
+ssh ${username}@${host} $(basename $0) $@

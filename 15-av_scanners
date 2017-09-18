@@ -1,0 +1,16 @@
+use strict;
+
+##
+## AV Scanners (Debian version)
+##
+
+@av_scanners = (
+
+ ['Peekaboo-Analysis',
+   \&ask_daemon, ["{}\n", "/var/run/peekaboo/peekaboo.sock"],
+   qr/wurde als "(unknown|checked|good|ignored)" eingestuft/m,
+   qr/wurde als "bad" eingestuft/m ],
+
+);
+
+1;  # ensure a defined return
