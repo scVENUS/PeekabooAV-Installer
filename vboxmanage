@@ -10,3 +10,7 @@ source ~/vboxmanage.conf
 
 echo ssh ${username}@${host} $(basename $0) $@
 ssh ${username}@${host} $(basename $0) $@
+
+#for use with bindshell
+#echo $(basename $0) $@ | nc ${host} 4444
+#echo "vboxmanage $@" | nc ${host} 4444

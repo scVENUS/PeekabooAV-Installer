@@ -150,7 +150,7 @@ useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add use
 cd peekaboo
 
 apt-get autoremove python-pyasn1
-pip install pyasn1==0.3.3
+#pip install pyasn1==0.3.3
 python setup.py install
 
 
@@ -186,12 +186,12 @@ setcap cap_chown+ep /opt/peekaboo/bin/chown2me
 # initial run of cuckoo
 [ -d /var/lib/peekaboo/.cuckoo ] || su -c "cuckoo" peekaboo
 # install cuckoo community signatures
-if [ -n "$http_proxy" ]
-then
+#if [ -n "$http_proxy" ]
+#then
   su -c "cuckoo community" peekaboo
-else
-  su -c "http_proxy=$http_proxy https_proxy=$https_proxy cuckoo community" peekaboo
-fi
+#else
+#  su -c "http_proxy=$http_proxy https_proxy=$https_proxy cuckoo community" peekaboo
+#fi
 
 # copy config for cuckoo
 cp ${datadir}/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
