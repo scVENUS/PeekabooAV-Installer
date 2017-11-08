@@ -8,6 +8,8 @@ them with Peekaboo and Cuckoo Sandbox, and hands mail back to Postfix.
 
 Necessary packages and source code is pulled and installed automatically.
 
+Have a read of ``PeekabooAV-install.sh`` it contains lots of information and explanations.
+
 
 ## Prerequisites ##
 
