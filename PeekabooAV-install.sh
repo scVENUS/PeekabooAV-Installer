@@ -17,7 +17,7 @@ http_proxy=${http_proxy:-}
 
 if [ -z "$http_proxy" ]
 then
-  IP=10.0.5.156
+  IP=10.0.2.4
   PORT=3128
   if nc -w 1 -z ${IP} ${PORT}
   then
@@ -150,7 +150,7 @@ useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add use
 cd peekaboo
 
 apt-get autoremove python-pyasn1
-#pip install pyasn1==0.3.3
+pip install -r /opt/peekaboo/requirements.txt
 python setup.py install
 
 
