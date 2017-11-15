@@ -1,7 +1,12 @@
 #!/bin/bash -fue
 #
 #
-#   PeekabooAV installer
+#   PeekabooAV Installer
+#
+#   this installer is work in progress
+#   it has two purposes
+#   - an easy way to have a fast installation
+#   - documentation on how to set things up
 #
 #   by felix bauer
 #  felix.bauer@atos.net
@@ -12,13 +17,26 @@
 #
 #
 
+#
+# This install script describes and performs a basic installation 
+# of PeekabooAV
+#
+
+# `datadir` contains the location of the PeekabooAV-Installer
+# repository clone
+# TODO: change to dirname $0
 datadir=$(pwd)
+
+# Use the environment proxy settings.
 http_proxy=${http_proxy:-}
 
+# If no proxy is set yet try default.
 if [ -z "$http_proxy" ]
 then
   IP=10.0.2.4
   PORT=3128
+  # Check if default proxy is reachable.
+  # Like I said, this is just for me.
   if nc -w 1 -z ${IP} ${PORT}
   then
     export http_proxy=http://${IP}:${PORT}
@@ -29,9 +47,13 @@ else
   echo $http_proxy
 fi
 
-
+# In combination with the bash -fue in line 1 this will give information
+# and crash this script on any error.
+# That's also why some commands that are expected to return an error code
+# are appended with `|| true`
 trap '[ $? -gt 0 ] && echo "ERROR in $PWD/$0 at line $LINENO" >&2 && exit 1' 0
 
+# The following code is just to have the owl and info scroll bye slowly.
 while IFS= read -r line; do
   printf '%s\n' "$line"
   sleep .1
@@ -88,23 +110,27 @@ Press enter to continue
 
 EOF
 
+# Discard all input in buffer.
 read -t .1 -n 10000 discard || true
+# Read 'Press enter ..'
 read
 
+# Turn on debugging output of every comand run
 set -x
 
+# Check if running as root
 [ $(id -u) -eq 0 ] || exit 1
 
 
 cd /root
 
+# Refresh package repositories.
 apt-get update -y
 
-
-# install base tools
+# Install basic tools.
 apt-get install -y vim ipython less iputils-ping socket netcat git curl
 
-# install cuckoo
+# Install Cuckoo dependencies.
 apt-get install -y python python-pip python-dev libffi-dev libssl-dev
 apt-get install -y python-virtualenv python-setuptools
 apt-get install -y libjpeg-dev zlib1g-dev swig
@@ -112,132 +138,140 @@ apt-get install -y sqlite3
 apt-get install -y swig
 apt-get install -y mongodb 
 
-
 pip install -U pip 
 pip install -U setuptools
 pip install -U cuckoo
+# TODO: since 2.0.4 yara is included
 pip install -U yara-python==3.6.3
 
-
+# Install tcpdump and set capability.
 apt-get install -y tcpdump
 setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
 
 
-
-# install peekaboo
+# Install Peekaboo
 cd /opt
 
+# Skip if /opt/peekaboo already exists
 if [ -d /opt/peekaboo ]
 then
   echo "Reusing peekaboo code /opt/peekaboo" 
 else
-  if [ -d ${datadir}/peekabooav-gitlab/ ]
+  # Use PeekabooAV code in Installer directory if present.
+  if [ -d ${datadir}/peekabooav/ ]
   then
-    git clone ${datadir}/peekabooav-gitlab/ peekaboo
+    git clone ${datadir}/peekabooav/ peekaboo
   else
     git clone https://github.com/scvenus/peekabooav peekaboo
   fi
 fi
 
-# git remote add gitlab https://10.108.245.48/secsol/PeekabooAV.git
-# git -c http.sslVerify=false pull gitlab development
-
-
+# Create a new group peekaboo.
 groupadd -g 150 peekaboo || echo "Couldn't add group, probably exists already"
+# Create a new user peekaboo.
 useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add user, probably exists already"
 
-
+# TODO: This means /opt/peekaboo
 cd peekaboo
 
+# If python-pyasn1 is already installed by apt uninstall it
 apt-get autoremove python-pyasn1
+# so it can be installed with pip as a requirement in the 
+# correct version.
 pip install -r /opt/peekaboo/requirements.txt
+# Run the Peekaboo install routine.
 python setup.py install
 
-
-# allow peekaboo/cuckoo to write to log db and storage directory
-#mkdir /opt/cuckoo/log /opt/cuckoo/db /opt/cuckoo/storage
-#chown -R peekaboo:peekaboo /opt/cuckoo/log /opt/cuckoo/db /opt/cuckoo/storage /opt/cuckoo/data
-
-
-# add directories for peekaboo to put socket, pid file and database
-#mkdir /var/run/peekaboo /var/lib/peekaboo
-#chown -R peekaboo:peekaboo /var/run/peekaboo /var/lib/peekaboo
-
+# Copy systemd unit files to /etc.
 cp ${datadir}/peekaboo.service /etc/systemd/system
 cp ${datadir}/cuckoohttpd.service /etc/systemd/system
-cp ${datadir}/peekaboo.conf /opt/peekaboo
+# Enable services to run on startup.
 systemctl enable peekaboo
 systemctl enable cuckoohttpd
 
+# Place Peekaboo config in /opt/peekaboo
+cp ${datadir}/peekaboo.conf /opt/peekaboo
 
-# wrapper to run vboxmanage command on remote host
+
+# Now place wrapper to run vboxmanage command on remote host.
+# This is necessary to control vm start, stop and snapshot restore
+# on the host from within the Peekaboo-VM.
 cp ${datadir}/vboxmanage /usr/local/bin
+# The configuration contains IP address and username of the target
+# user on the host that owns all virtual box vms.
+cp ${datadir}/vboxmanage.conf /var/lib/peekaboo/
+
+# Install ssh and setup ssh key for peekaboo user.
 apt-get install -y ssh
 [ -d /var/lib/peekaboo/.ssh ] || mkdir /var/lib/peekaboo/.ssh
 chown peekaboo:peekaboo /var/lib/peekaboo/.ssh
+# This key will have to be allowed on the host to authenticate the vm user.
 su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
-cp ${datadir}/vboxmanage.conf /var/lib/peekaboo/
 
+# Setup chown2me.
+# This is still necessary so Peekaboo can take ownership of
+# the files created by amavis (patch).
 touch /opt/peekaboo/chown2me.log
 chown peekaboo:peekaboo /opt/peekaboo/chown2me.log
 setcap cap_chown+ep /opt/peekaboo/bin/chown2me
 
 
-# initial run of cuckoo
+# Initial run of Cuckoo to create directory structure in peekaboo $HOME.
 [ -d /var/lib/peekaboo/.cuckoo ] || su -c "cuckoo" peekaboo
-# install cuckoo community signatures
-#if [ -n "$http_proxy" ]
-#then
-  su -c "cuckoo community" peekaboo
-#else
-#  su -c "http_proxy=$http_proxy https_proxy=$https_proxy cuckoo community" peekaboo
-#fi
 
-# copy config for cuckoo
+# Install cuckoo community signatures.
+su -c "cuckoo community" peekaboo
+
+# Copy config files for cuckoo
 cp ${datadir}/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
 cp ${datadir}/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
 cp ${datadir}/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
 
 
-
-# install amavis
+# Install amavis and dependencies.
 apt-get install -y amavisd-new && true
 apt-get install -y arj bzip2 cabextract cpio file gzip lhasa nomarch pax rar unrar unzip zip zoo || true
 
-# get current version and patch
+# Get current version and patch amavisd-new.
 cd /opt/peekaboo/amavis
+# If contained in the Installer directory use it.
 if [ -f ${datadir}/amavisd-new-2.11.0.tar.xz ]
 then
   cp ${datadir}/amavisd-new-2.11.0.tar.xz .
 else
   curl https://www.ijs.si/software/amavisd/amavisd-new-2.11.0.tar.xz -o amavisd-new-2.11.0.tar.xz
 fi
+
+# Only these files are needed.
 tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd.conf-default
 tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd
+
+# Now apply the dump-info patch.
 cd amavisd-new-2.11.0/
 patch -p4 < ../peekaboo-amavisd.patch 
 patch -p1 < ../debian-find_config_files.patch
 mv amavisd /usr/sbin/amavisd-new
 
-# copy amavis config
+# Copy amavis configs to conf.d.
 cp ${datadir}/15-av_scanners /etc/amavis/conf.d/
 cp ${datadir}/15-content_filter_mode /etc/amavis/conf.d/
 cp ${datadir}/50-user /etc/amavis/conf.d/
 
+# Restart amavis
 systemctl restart amavis
 
-
+# Allow access files and sockets for both.
 gpasswd -a amavis peekaboo
 gpasswd -a peekaboo amavis
 
 
 
-# install mysql database
+# Install mysql database and setup users and databases.
 apt-get install -y mariadb-server python-mysqldb
 mysql < ${datadir}/mysql.txt || echo "Couldn't create dabases and users. Probably already exists"
 
 
-
+# Clear screen.
 clear
 
 cat << EOF
