@@ -24,8 +24,8 @@
 
 # `datadir` contains the location of the PeekabooAV-Installer
 # repository clone
-# TODO: change to dirname $0
-datadir=$(pwd)
+datadir=$(dirname $(readlink -e "$0"))
+echo "Datadir set to $datadir"
 
 # Use the environment proxy settings.
 http_proxy=${http_proxy:-}
@@ -171,8 +171,7 @@ groupadd -g 150 peekaboo || echo "Couldn't add group, probably exists already"
 # Create a new user peekaboo.
 useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add user, probably exists already"
 
-# TODO: This means /opt/peekaboo
-cd peekaboo
+cd /opt/peekaboo
 
 # If python-pyasn1 is already installed by apt uninstall it
 apt-get autoremove python-pyasn1
@@ -183,23 +182,23 @@ pip install -r /opt/peekaboo/requirements.txt
 python setup.py install
 
 # Copy systemd unit files to /etc.
-cp ${datadir}/peekaboo.service /etc/systemd/system
-cp ${datadir}/cuckoohttpd.service /etc/systemd/system
+cp ${datadir}/systemd/peekaboo.service /etc/systemd/system
+cp ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
 # Enable services to run on startup.
 systemctl enable peekaboo
 systemctl enable cuckoohttpd
 
 # Place Peekaboo config in /opt/peekaboo
-cp ${datadir}/peekaboo.conf /opt/peekaboo
+cp ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
 
 
 # Now place wrapper to run vboxmanage command on remote host.
 # This is necessary to control vm start, stop and snapshot restore
 # on the host from within the Peekaboo-VM.
-cp ${datadir}/vboxmanage /usr/local/bin
+cp ${datadir}/vbox/vboxmanage /usr/local/bin
 # The configuration contains IP address and username of the target
 # user on the host that owns all virtual box vms.
-cp ${datadir}/vboxmanage.conf /var/lib/peekaboo/
+cp ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
 
 # Install ssh and setup ssh key for peekaboo user.
 apt-get install -y ssh
@@ -223,9 +222,9 @@ setcap cap_chown+ep /opt/peekaboo/bin/chown2me
 su -c "cuckoo community" peekaboo
 
 # Copy config files for cuckoo
-cp ${datadir}/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
-cp ${datadir}/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
-cp ${datadir}/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
+cp ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
+cp ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
+cp ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
 
 
 # Install amavis and dependencies.
@@ -247,15 +246,15 @@ tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd.conf-default
 tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd
 
 # Now apply the dump-info patch.
-cd amavisd-new-2.11.0/
+cd /opt/peekaboo/amavis/amavisd-new-2.11.0/
 patch -p4 < ../peekaboo-amavisd.patch 
 patch -p1 < ../debian-find_config_files.patch
 mv amavisd /usr/sbin/amavisd-new
 
 # Copy amavis configs to conf.d.
-cp ${datadir}/15-av_scanners /etc/amavis/conf.d/
-cp ${datadir}/15-content_filter_mode /etc/amavis/conf.d/
-cp ${datadir}/50-user /etc/amavis/conf.d/
+cp ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
+cp ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
+cp ${datadir}/amavis/50-user /etc/amavis/conf.d/
 
 # Restart amavis
 systemctl restart amavis
@@ -268,7 +267,7 @@ gpasswd -a peekaboo amavis
 
 # Install mysql database and setup users and databases.
 apt-get install -y mariadb-server python-mysqldb
-mysql < ${datadir}/mysql.txt || echo "Couldn't create dabases and users. Probably already exists"
+mysql < ${datadir}/mysql/mysql.txt || echo "Couldn't create dabases and users. Probably already exists"
 
 
 # Clear screen.
