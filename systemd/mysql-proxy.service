@@ -1,0 +1,6 @@
+[Unit]
+Requires=mysql-proxy.service
+After=mysql-proxy.service
+
+[Service]
+ExecStart=/lib/systemd/systemd-socket-proxyd 10.0.300.15:3306

@@ -1,0 +1,8 @@
+# systemctl enable mysql-proxy.socket
+# systemctl start mysql-proxy.socket
+
+[Socket]
+ListenStream=192.168.57.1:3306
+
+[Install]
+WantedBy=sockets.target
