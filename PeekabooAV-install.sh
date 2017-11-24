@@ -8,6 +8,9 @@
 #   - an easy way to have a fast installation
 #   - documentation on how to set things up
 #
+#   it can also be used to update an installation
+#
+#
 #   by felix bauer
 #  felix.bauer@atos.net
 #
@@ -48,7 +51,7 @@ else
 fi
 
 # In combination with the bash -fue in line 1 this will give information
-# and crash this script on any error.
+# and crash this script on any uncaught error.
 # That's also why some commands that are expected to return an error code
 # are appended with `|| true`
 trap '[ $? -gt 0 ] && echo "ERROR in $PWD/$0 at line $LINENO" >&2 && exit 1' 0
@@ -98,11 +101,12 @@ Welcome to the PeekabooAV installer
 ===================================
 
 we assume the following:
+- you want to install or update PeekabooAV
 - this is a Ubuntu 16.04 VM
-- ist is fully updated
+- ist is fully updated (apt-get upgrade)
 - nothing else runs on this
 - you run this installer as root
-- you know what you're doing
+- you know what you're doing!
 
 If any of these is not the case please hit Ctrl+c
 
@@ -155,7 +159,10 @@ cd /opt
 # Skip if /opt/peekaboo already exists
 if [ -d /opt/peekaboo ]
 then
-  echo "Reusing peekaboo code /opt/peekaboo" 
+  cd /opt/peekaboo
+  echo "Updating peekaboo code /opt/peekaboo" 
+  git checkout master
+  git pull
 else
   # Use PeekabooAV code in Installer directory if present.
   if [ -d ${datadir}/peekabooav/ ]
@@ -165,6 +172,9 @@ else
     git clone https://github.com/scvenus/peekabooav peekaboo
   fi
 fi
+cd /opt/peekaboo
+git checkout master
+git checkout $(git tag | grep "^v" | tail -1)
 
 # Create a new group peekaboo.
 groupadd -g 150 peekaboo || echo "Couldn't add group, probably exists already"
@@ -205,7 +215,7 @@ apt-get install -y ssh
 [ -d /var/lib/peekaboo/.ssh ] || mkdir /var/lib/peekaboo/.ssh
 chown peekaboo:peekaboo /var/lib/peekaboo/.ssh
 # This key will have to be allowed on the host to authenticate the vm user.
-su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
+[ -f /var/lib/peekaboo/.ssh/id_ed25519 ] || su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
 
 # Setup chown2me.
 # This is still necessary so Peekaboo can take ownership of
@@ -268,6 +278,9 @@ gpasswd -a peekaboo amavis
 # Install mysql database and setup users and databases.
 apt-get install -y mariadb-server python-mysqldb
 mysql < ${datadir}/mysql/mysql.txt || echo "Couldn't create dabases and users. Probably already exists"
+
+# Restart services
+systemctl restart peekaboo || echo "Peekaboo restart didn't work. Probably not configured yet"
 
 
 # Clear screen.
