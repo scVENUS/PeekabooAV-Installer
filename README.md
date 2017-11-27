@@ -10,6 +10,9 @@ Necessary packages and source code is pulled and installed automatically.
 
 Have a read of ``PeekabooAV-install.sh`` it contains lots of information and explanations.
 
+Quick and easy, download ``pstrap.sh`` and run.
+(It pulls the repo to ``/tmp`` and runs the installer)
+
 
 ## Prerequisites ##
 
