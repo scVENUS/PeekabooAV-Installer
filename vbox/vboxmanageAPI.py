@@ -13,6 +13,12 @@ felix.bauer@atos.net
 
 8.11.2017
 
+
+
+# in powershell
+$env:Path += ";C:\Program Files\Oracle\VirtualBox\"
+C:\Python27\python.exe .\vboxmanageAPI.py
+
 """
 
 
@@ -31,13 +37,15 @@ port = int(4444);
 def runstuff(c, addr):
 	data=c.recv(1024);
 	if len(data) > 3:
-		print data;
+		print ":"+data+":";
 	# vboxmanage showvminfo cuckoo101 --machinereadable
-	m = re.search('^(vboxmanage[a-z0-9- ]*)$', data)
+	m = re.search('^(vboxmanage [a-z0-9- ]*)$', data)
 	if not m:
+		print m
 		c.send("Illegal command\n")
 		c.shutdown(socket.SHUT_RDWR)	
 		s.close()
+		print "child done"
 		return
 
 	for line in os.popen(data):
