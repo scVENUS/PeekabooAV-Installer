@@ -192,23 +192,23 @@ pip install -r /opt/peekaboo/requirements.txt
 python setup.py install
 
 # Copy systemd unit files to /etc.
-cp ${datadir}/systemd/peekaboo.service /etc/systemd/system
-cp ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
+cp -ub ${datadir}/systemd/peekaboo.service /etc/systemd/system
+cp -ub ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
 # Enable services to run on startup.
 systemctl enable peekaboo
 systemctl enable cuckoohttpd
 
 # Place Peekaboo config in /opt/peekaboo
-cp ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
+cp -ub ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
 
 
 # Now place wrapper to run vboxmanage command on remote host.
 # This is necessary to control vm start, stop and snapshot restore
 # on the host from within the Peekaboo-VM.
-cp ${datadir}/vbox/vboxmanage /usr/local/bin
+cp -ub ${datadir}/vbox/vboxmanage /usr/local/bin
 # The configuration contains IP address and username of the target
 # user on the host that owns all virtual box vms.
-cp ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
+cp -ub ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
 
 # Install ssh and setup ssh key for peekaboo user.
 apt-get install -y ssh
@@ -232,9 +232,9 @@ setcap cap_chown+ep /opt/peekaboo/bin/chown2me
 su -c "cuckoo community" peekaboo
 
 # Copy config files for cuckoo
-cp ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
-cp ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
-cp ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
+cp -ub ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
+cp -ub ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
+cp -ub ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
 
 
 # Install amavis and dependencies.
@@ -262,9 +262,9 @@ patch -p1 < ../debian-find_config_files.patch
 mv amavisd /usr/sbin/amavisd-new
 
 # Copy amavis configs to conf.d.
-cp ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
-cp ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
-cp ${datadir}/amavis/50-user /etc/amavis/conf.d/
+cp -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
+cp -ub ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
+cp -ub ${datadir}/amavis/50-user /etc/amavis/conf.d/
 
 # Restart amavis
 systemctl restart amavis
