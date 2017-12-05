@@ -1,6 +1,6 @@
 # PeekabooAV Installer #
 
-This repository provides scripts and configuration files to install and test a
+This repository provides scripts and configuration files to install/update and test a
 Peekaboo installation.
 
 The outcome is a virtual machine that takes email messages via AMaViS, processes
@@ -12,6 +12,10 @@ Have a read of ``PeekabooAV-install.sh`` it contains lots of information and exp
 
 Quick and easy, download ``pstrap.sh`` and run.
 (It pulls the repo to ``/tmp`` and runs the installer)
+
+Certainly it is possible to run the installer again if e.g. network timeouts have stoped
+its execution. This installer can also be used as an updater, it implements tests and
+replaces updated files and performes an installation of the latest PeekabooAV release.
 
 
 ## Prerequisites ##
