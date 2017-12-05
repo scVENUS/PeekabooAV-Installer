@@ -89,5 +89,6 @@ send_mail("%s@%s" % (user, host),
         ["scan@peekaboohost"],
         "Check this for me pls",
         "Are the attached files malicious?",
-        argv[1:], "192.168.56.5", 10024)
+#        argv[1:], "192.168.56.5", 10024)
+        argv[1:], "127.0.0.1", 10024)
 

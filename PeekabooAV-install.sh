@@ -132,7 +132,7 @@ cd /root
 apt-get update -y
 
 # Install basic tools.
-apt-get install -y vim ipython less iputils-ping socket netcat git curl
+apt-get install -y vim ipython less iputils-ping socket netcat git curl socat
 
 # Install Cuckoo dependencies.
 apt-get install -y python python-pip python-dev libffi-dev libssl-dev
@@ -235,6 +235,7 @@ su -c "cuckoo community" peekaboo
 cp -ub ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
 cp -ub ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
 cp -ub ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
+cp -ub ${datadir}/cuckoo/cuckooprocessor.sh /opt/peekaboo/
 
 
 # Install amavis and dependencies.
