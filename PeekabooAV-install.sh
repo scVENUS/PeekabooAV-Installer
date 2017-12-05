@@ -54,7 +54,7 @@ fi
 # and crash this script on any uncaught error.
 # That's also why some commands that are expected to return an error code
 # are appended with `|| true`
-trap '[ $? -gt 0 ] && echo "ERROR in $PWD/$0 at line $LINENO" >&2 && exit 1' 0
+trap '[ $? -gt 0 ] && echo "ERROR in $PWD/$0 at line $LINENO - you might want to run it again" >&2 && exit 1' 0
 
 # The following code is just to have the owl and info scroll bye slowly.
 while IFS= read -r line; do
