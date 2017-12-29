@@ -8,6 +8,14 @@ echo -e $BLUE$@$NC
 
 cat /etc/issue
 uname -a
+echo
+
+blue "Status of systemd units"
+for t in amavis peekaboo cuckoohttpd
+do
+  systemctl status $t | grep "\($t.service \|Active:\)"
+done
+echo
 
 unit=$(systemctl status peekaboo | grep "Loaded: " | sed 's/.*(\([^;]*\);.*).*/\1/')
 blue "Systemd Unit: $unit"

@@ -30,6 +30,9 @@
 datadir=$(dirname $(readlink -e "$0"))
 echo "Datadir set to $datadir"
 
+# can take git tags, branches or commit hashes, defaults to highest version tag
+#latest=master
+
 # Use the environment proxy settings.
 http_proxy=${http_proxy:-}
 
@@ -174,7 +177,12 @@ else
 fi
 cd /opt/peekaboo
 git checkout master
-git checkout $(git tag | grep "^v" | tail -1)
+if [[ -z "$latest" ]]
+then
+  git checkout $(git tag | grep "^v" | tail -1)
+else
+  git checkout $latest
+fi
 
 # Create a new group peekaboo.
 groupadd -g 150 peekaboo || echo "Couldn't add group, probably exists already"
@@ -187,7 +195,8 @@ cd /opt/peekaboo
 apt-get autoremove python-pyasn1
 # so it can be installed with pip as a requirement in the 
 # correct version.
-pip install -r /opt/peekaboo/requirements.txt
+# remove comment as soon as requirements are fixed
+#pip install -r /opt/peekaboo/requirements.txt
 # Run the Peekaboo install routine.
 python setup.py install
 
@@ -209,6 +218,7 @@ cp -ub ${datadir}/vbox/vboxmanage /usr/local/bin
 # The configuration contains IP address and username of the target
 # user on the host that owns all virtual box vms.
 cp -ub ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
+chown peekaboo:peekaboo /var/lib/peekaboo/vboxmanage.conf
 
 # Install ssh and setup ssh key for peekaboo user.
 apt-get install -y ssh
@@ -258,6 +268,7 @@ tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd
 
 # Now apply the dump-info patch.
 cd /opt/peekaboo/amavis/amavisd-new-2.11.0/
+# patch -p1 for new patch, change as soon as no longer broken
 patch -p4 < ../peekaboo-amavisd.patch 
 patch -p1 < ../debian-find_config_files.patch
 mv amavisd /usr/sbin/amavisd-new
