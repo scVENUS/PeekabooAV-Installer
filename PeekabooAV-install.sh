@@ -30,8 +30,8 @@
 datadir=$(dirname $(readlink -e "$0"))
 echo "Datadir set to $datadir"
 
-# can take git tags, branches or commit hashes, defaults to highest version tag
-#latest=master
+# source config
+[ -f ./PeekabooAV-install.conf ] && source ./PeekabooAV-install.conf
 
 # Use the environment proxy settings.
 http_proxy=${http_proxy:-}
