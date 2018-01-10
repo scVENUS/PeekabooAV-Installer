@@ -106,7 +106,7 @@ Welcome to the PeekabooAV installer
 we assume the following:
 - you want to install or update PeekabooAV
 - this is a Ubuntu 16.04 VM
-- ist is fully updated (apt-get upgrade)
+- is fully updated (apt-get upgrade)
 - nothing else runs on this
 - you run this installer as root
 - you know what you're doing!
@@ -253,25 +253,19 @@ apt-get install -y amavisd-new && true
 apt-get install -y arj bzip2 cabextract cpio file gzip lhasa nomarch pax rar unrar unzip zip zoo || true
 
 # Get current version and patch amavisd-new.
-cd /opt/peekaboo/amavis
-# If contained in the Installer directory use it.
-if [ -f ${datadir}/amavisd-new-2.11.0.tar.xz ]
+cd /opt/peekaboo
+if [ -d peekabooav-amavisd ]
 then
-  cp ${datadir}/amavisd-new-2.11.0.tar.xz .
+  cd peekabooav-amavisd
+  git pull
 else
-  curl https://www.ijs.si/software/amavisd/amavisd-new-2.11.0.tar.xz -o amavisd-new-2.11.0.tar.xz
+  git clone -b debian-find_config_files https://github.com/scvenus/peekabooav-amavisd
+  cd peekabooav-amavisd
 fi
 
-# Only these files are needed.
-tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd.conf-default
-tar xvf amavisd-new-2.11.0.tar.xz  amavisd-new-2.11.0/amavisd
-
-# Now apply the dump-info patch.
-cd /opt/peekaboo/amavis/amavisd-new-2.11.0/
-# patch -p1 for new patch, change as soon as no longer broken
-patch -p4 < ../peekaboo-amavisd.patch 
-patch -p1 < ../debian-find_config_files.patch
 mv amavisd /usr/sbin/amavisd-new
+#TODO:
+#cp -ub 50-peekaboo /etc/amavis/conf.d/
 
 # Copy amavis configs to conf.d.
 cp -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
