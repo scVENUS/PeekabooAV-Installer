@@ -1,0 +1,46 @@
+use strict;
+
+#
+# Sample configuration for peekaboo-amavis on Debian / Ubuntu systems.
+#
+
+
+#
+# Place your configuration directives here.  They will override those in
+# earlier files.
+#
+# See /usr/share/doc/amavisd-new/ for documentation and examples of
+# the directives you can use in this file
+#
+
+$max_requests = 1;
+
+$myhostname = 'owl.peekabooav.test';
+$mydomain = 'peekabooav.test';
+$virus_admin = 'peekaboo@peekabooav.test';
+
+$warnvirussender = 1;
+$warnvirusrecip = 1;
+
+$enable_dump_info  = 1;       # set to 1 to enable dump_info feature
+$dump_info_tempdir = '/tmp';  # base directory where dump_info() will put its stuff
+
+# Change the default mail digest from MD5 and SHA-1 to SHA-256.
+# This is mandatory to correlate Peekaboo results with mail logs, since
+# Peekaboo uses SHA-256.
+
+$mail_digest_algorithm = 'SHA-256';
+$mail_part_digest_algorithm = 'SHA-256';
+
+
+#$inet_socket_bind = '192.168.56.5'; # limit socket bind to loopback interface
+                                  # (default is '127.0.0.1')
+#@inet_acl = qw(192.168.56.1 [::1]);  # allow SMTP access only from localhost IP
+                                  # (default is qw(127.0.0.1 [::1]) )
+
+#$notify_method  = 'smtp:[127.0.0.1]:10025';
+#$forward_method = 'smtp:[127.0.0.1]:10025';
+
+
+#------------ Do not modify anything below this line -------------
+1; # ensure a defined return
