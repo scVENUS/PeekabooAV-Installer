@@ -15,9 +15,9 @@ use strict;
 
 $max_requests = 1;
 
-$myhostname = 'owl.peekabooav.test';
-$mydomain = 'peekabooav.test';
-$virus_admin = 'peekaboo@peekabooav.test';
+$myhostname = 'peekabooav-demo.int';
+$mydomain = 'peekabooav-demo.int';
+$virus_admin = 'root@peekabooav-demo.int';
 
 $warnvirussender = 1;
 $warnvirusrecip = 1;

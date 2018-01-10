@@ -192,11 +192,11 @@ useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add use
 cd /opt/peekaboo
 
 # If python-pyasn1 is already installed by apt uninstall it
-apt-get autoremove python-pyasn1
+apt-get autoremove -y python-pyasn1
 # so it can be installed with pip as a requirement in the 
 # correct version.
 # remove comment as soon as requirements are fixed
-#pip install -r /opt/peekaboo/requirements.txt
+pip install -r /opt/peekaboo/requirements.txt
 # Run the Peekaboo install routine.
 python setup.py install
 
@@ -264,13 +264,11 @@ else
 fi
 
 mv amavisd /usr/sbin/amavisd-new
-#TODO:
-#cp -ub 50-peekaboo /etc/amavis/conf.d/
 
 # Copy amavis configs to conf.d.
 cp -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
 cp -ub ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
-cp -ub ${datadir}/amavis/50-user /etc/amavis/conf.d/
+cp -ub ${datadir}/amavis/50-peekaboo /etc/amavis/conf.d/
 
 # Restart amavis
 systemctl restart amavis
