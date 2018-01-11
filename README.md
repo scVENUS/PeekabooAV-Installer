@@ -63,7 +63,9 @@ Thanks
 have a nice day
 
 
-Than carry on reading [REAMDE-postinstallation.md](REAMDE-postinstallation.md)
+### Do more ###
+
+Then carry on reading [REAMDE-postinstallation.md](REAMDE-postinstallation.md)
 
 AND find useful scripts in [utils](utils)
 
