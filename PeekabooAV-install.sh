@@ -263,7 +263,7 @@ else
   cd peekabooav-amavisd
 fi
 
-mv amavisd /usr/sbin/amavisd-new
+cp amavisd /usr/sbin/amavisd-new
 
 # Copy amavis configs to conf.d.
 cp -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/

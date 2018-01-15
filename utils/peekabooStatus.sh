@@ -46,3 +46,6 @@ home=$(grep $user /etc/passwd | cut -d : -f 6)
 blue "Malware Reports:"
 ls $home/malware_reports | wc -l
 du -sh $home/malware_reports
+
+echo
+mailq
