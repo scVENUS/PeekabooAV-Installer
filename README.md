@@ -72,4 +72,4 @@ AND find useful scripts in [utils](utils)
 
 ## Copyright ##
 
-Copyright (C) 2016-2017 science + computing ag
+Copyright (C) 2016-2018 science + computing ag

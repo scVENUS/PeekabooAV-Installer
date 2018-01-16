@@ -16,7 +16,7 @@
 #
 # 23.08.2017
 #
-# Copyright (C) 2016-2017 science + computing ag
+# Copyright (C) 2016-2018 science + computing ag
 #
 #
 
@@ -203,6 +203,8 @@ python setup.py install
 # Copy systemd unit files to /etc.
 cp -ub ${datadir}/systemd/peekaboo.service /etc/systemd/system
 cp -ub ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
+cp -ub ${datadir}/systemd/mysql-proxy.service /etc/systemd/system
+cp -ub ${datadir}/systemd/mysql-proxy.socket /etc/systemd/system
 # Enable services to run on startup.
 systemctl enable peekaboo
 systemctl enable cuckoohttpd
