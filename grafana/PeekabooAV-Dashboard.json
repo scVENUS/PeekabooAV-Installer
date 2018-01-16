@@ -466,27 +466,27 @@
                 },
                 {
                   "click": "menuItemSelected(1,1)",
-                  "text": "Pounds (£)",
+                  "text": "Pounds (Â£)",
                   "value": "currencyGBP"
                 },
                 {
                   "click": "menuItemSelected(1,2)",
-                  "text": "Euro (€)",
+                  "text": "Euro (â‚¬)",
                   "value": "currencyEUR"
                 },
                 {
                   "click": "menuItemSelected(1,3)",
-                  "text": "Yen (¥)",
+                  "text": "Yen (Â¥)",
                   "value": "currencyJPY"
                 },
                 {
                   "click": "menuItemSelected(1,4)",
-                  "text": "Rubles (₽)",
+                  "text": "Rubles (â‚½)",
                   "value": "currencyRUB"
                 },
                 {
                   "click": "menuItemSelected(1,5)",
-                  "text": "Hryvnias (₴)",
+                  "text": "Hryvnias (â‚´)",
                   "value": "currencyUAH"
                 },
                 {
@@ -531,8 +531,8 @@
                 },
                 {
                   "click": "menuItemSelected(2,2)",
-                  "text": "microseconds (µs)",
-                  "value": "µs"
+                  "text": "microseconds (Âµs)",
+                  "value": "Âµs"
                 },
                 {
                   "click": "menuItemSelected(2,3)",
@@ -931,12 +931,12 @@
               "submenu": [
                 {
                   "click": "menuItemSelected(13,0)",
-                  "text": "Celsius (°C)",
+                  "text": "Celsius (Â°C)",
                   "value": "celsius"
                 },
                 {
                   "click": "menuItemSelected(13,1)",
-                  "text": "Farenheit (°F)",
+                  "text": "Farenheit (Â°F)",
                   "value": "farenheit"
                 },
                 {
@@ -1102,7 +1102,12 @@
       "height": 437,
       "panels": [
         {
-          "aliasColors": {},
+          "aliasColors": {
+            "Bad": "#bf1b00",
+            "Ignored": "#1f78c1",
+            "Rest": "#fce2de",
+            "Unknown": "#508642"
+          },
           "cacheTimeout": null,
           "combine": {
             "label": "Others",
@@ -1115,6 +1120,7 @@
           "interval": null,
           "legend": {
             "show": true,
+            "sortDesc": true,
             "values": true
           },
           "legendType": "Under graph",
@@ -1146,7 +1152,7 @@
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress / Failed\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"InProgress\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"InProgress\"",
               "refId": "D"
             },
             {
@@ -1189,7 +1195,7 @@
           "spaceLength": 10,
           "span": 6,
           "stack": false,
-          "steppedLine": false,
+          "steppedLine": true,
           "targets": [
             {
               "alias": "",
@@ -1340,5 +1346,5 @@
   },
   "timezone": "",
   "title": "PeekabooAV",
-  "version": 2
+  "version": 4
 }
