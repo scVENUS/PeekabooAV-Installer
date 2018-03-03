@@ -48,4 +48,9 @@ ls $home/malware_reports | wc -l
 du -sh $home/malware_reports
 
 echo
+blue "Mailq"
 mailq
+
+echo
+blue "Chown2me Capability"
+getcap /opt/peekaboo/bin/chown2me

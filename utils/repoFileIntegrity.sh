@@ -7,22 +7,36 @@ GREEN='\033[0;32m'
 WHITE='\033[1;37m'
 NC='\033[0m'
 
+if [[ "$1" == "-h" || "$1" == "--help" ]]
+then
+  shift
+  echo "$0 [-h|--help|-v|--verbose]"
+  exit 0
+fi
+
+VERBOSE=0
+if [[ "$1" == "-v" || "$1" == "--verbose" ]]
+then
+  shift
+  VERBOSE=1
+fi
+
 while read p
 do
   IFS=' ' read -ra p <<< "$p"
   if [ ! -f ${p[1]} ]
   then
     echo -e "${RED}Doesn't exist${NC} ${p[1]}"
-    continue
-  fi
-  if cmp -s ${p[0]} ${p[1]}
+  elif cmp -s ${p[0]} ${p[1]}
   then
     echo -e "${GREEN}File OK${NC} ${p[1]}"
-    continue
   else
     echo -e "${WHITE}Changed${NC} ${p[1]}"
     #echo "  $(cmp ${p[0]} ${p[1]})"
-    continue
+  fi
+  if [ $VERBOSE -eq 1 ]
+  then
+    diff ${p[0]} ${p[1]}
   fi
 done <<EOF
 ../amavis/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
