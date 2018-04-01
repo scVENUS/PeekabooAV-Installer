@@ -32,6 +32,7 @@ from threading import Thread
 host = "0.0.0.0"; #! address to bind on.
 src  = ("127.0.0.1","10.0.2.15");
 port = int(4444);
+machineprefix = "(cuckoo|list)";
 
 
 def runstuff(c, addr):
@@ -39,7 +40,7 @@ def runstuff(c, addr):
 	if len(data) > 3:
 		print ":"+data+":";
 	# vboxmanage showvminfo cuckoo101 --machinereadable
-	m = re.search('^(vboxmanage [a-z0-9- ]*)$', data)
+	m = re.search('^(vboxmanage [a-z0-9- ]*%s[a-z0-9- ]*)$' % machineprefix, data)
 	if not m:
 		print m
 		c.send("Illegal command\n")
