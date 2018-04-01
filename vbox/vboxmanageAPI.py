@@ -40,7 +40,7 @@ def runstuff(c, addr):
 	if len(data) > 3:
 		print ":"+data+":";
 	# vboxmanage showvminfo cuckoo101 --machinereadable
-	m = re.search('^(vboxmanage [a-z0-9- ]*%s[a-z0-9- ]*)$' % machineprefix, data)
+	m = re.search('^(vboxmanage [a-z0-9- ]*%s[A-Za-z0-9- ]*)$' % machineprefix, data)
 	if not m:
 		print m
 		c.send("Illegal command\n")
