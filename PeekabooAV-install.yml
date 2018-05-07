@@ -1,0 +1,473 @@
+---
+#
+#
+#   PeekabooAV Installation Ansible Playbook
+#
+#   this playbook is work in progress
+#   it has two purposes
+#   - an easy way to have a fast installation
+#   - documentation on how to set things up
+#
+#   it can also be used to update an installation
+#
+#
+#   by felix bauer felix.bauer@atos.net
+#
+# 23.08.2017
+#
+# Copyright (C) 2016-2018 science + computing ag
+#
+#
+
+#
+# This ansible playbook describes and performs a basic installation 
+# of PeekabooAV
+#
+
+# The following code is just to have the owl and info scroll bye slowly.
+- name: Print Peekaboo logo
+  hosts: localhost
+  become: no
+  gather_facts: false
+  vars:
+    peekabooinst_banner: |
+      Welcome to the PeekabooAV installer
+      ====================================================================
+                                                                          
+                           ==                             =               
+                           ========                 =======               
+                             ===========?     ===========                 
+                               ========================                   
+                              ==       ========       ===                 
+                             =           ====           =                 
+                            +=     ?     ====     ?     ==                
+                            ==           =,,=           ==                
+                             =          ,,,,,,,         =+                
+                             ==         =,,,,=         ==                 
+                              +====+=======,====== =====                  
+                              ==========================                  
+                            ==============================                
+                           ===============77===============               
+                           =========77777777777777+========               
+                           ======77777777777777777777======               
+                           =====7777777777777777777777=====               
+                            ===777777777777777777777777====               
+                            ===7777777777777777777777777==                
+                             ==7777777777777777777777777=                 
+                             +=777777777777777777777777==                 
+                              ==77777777777777777777777=                  
+                               ==777777777777777777777=                   
+                                +=7777777777777777777=                    
+                                  =7777777777777777=                      
+                                   ==777777777777==                       
+                                      ==777777==                          
+                              ,,,,,,::::::==::::::,,,,,,                  
+                      ,,,,,,,,,,,,,,,              ,,,,,,,,,,,,,          
+                ,,,,,,,,                                        ,,,,,,    
+            ,,,,,                                                      ,,,
+         ,,,                                                              
+      ,                                                                   
+
+  tasks:
+    - debug:
+        msg: "{{ peekabooinst_banner.split('\n') }}"
+
+
+- name: Check OS version
+  hosts: localhost
+  tasks:
+    - fail: 
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} not yet supported"
+      when: (ansible_distribution != "Ubuntu") or (ansible_distribution_version != "16.04")
+
+- name: Install software packages
+  hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Refresh apt package repositories
+      apt:
+        update_cache: yes
+    - name: Install basic tools
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - vim
+        - ipython
+        - less
+        - iputils-ping
+        - socket
+        - netcat
+        - git
+        - curl
+        - socat
+    - name: Install Cuckoo dependencies
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - python
+        - python-pip
+        - python-dev
+        - libffi-dev
+        - libssl-dev
+        - python-virtualenv
+        - python-setuptools
+        - libjpeg-dev
+        - zlib1g-dev
+        - swig
+        - sqlite3 
+        - swig
+        - mongodb 
+    - name: Install python packages
+      pip:
+        name: "{{ item }} "
+        state: latest
+      with_items:
+        - pip 
+        - setuptools
+        - cuckoo
+# yara-python will be installed due to peekaboo's requirements.txt
+#    # TODO: since 2.0.4 yara is included
+#    - name: Install yara version 3.6.3
+#      pip:
+#        name: yara-python
+#        version: 3.6.3
+
+- name: Install tcpdump and set capability
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Install tcpdump
+      apt:
+        name: tcpdump
+        state: latest
+    - name: Set capability
+      capabilities:
+        path: /usr/sbin/tcpdump
+        capability: cap_net_raw,cap_net_admin=eip
+        state: present
+
+- name: Install Peekaboo
+  hosts: localhost
+  gather_facts: no
+  become: true
+  vars:
+    peekaboo_version: "{{ lookup('ini', 'latest type=properties file=PeekabooAV-install.conf ') }}"
+  tasks:
+    - name: Checking that /opt/peekaboo exists
+      file:
+        path: /opt/peekaboo
+        state: directory
+        mode: 0755
+    - name: Updating peekaboo code /opt/peekaboo
+      git:
+        repo: https://github.com/scvenus/peekabooav 
+        dest: /opt/peekaboo
+        version: "{{ peekaboo_version }}"
+
+- name: Create a new peekaboo user and group 
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Create a new group peekaboo
+      group:
+        name: peekaboo
+        state: present
+        gid: 150
+    - name: Create a new user peekaboo
+      user:
+        name: peekaboo
+        group: peekaboo
+        uid: 150
+        home: /var/lib/peekaboo
+
+- name: Install Peekaboo
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Remove Ubuntu package of python-pyasn1
+      # If python-pyasn1 is already installed by apt uninstall it so it
+      # can be installed with pip as a requirement in the correct
+      # version.
+      apt:
+        name: python-pyasn1
+        state: absent
+        autoremove: true
+
+    - name: Install more Peekaboo requirements
+      pip:
+        requirements: /opt/peekaboo/requirements.txt
+
+    - name: Run the Peekaboo install routine
+      command: python setup.py install
+      args:
+        chdir: /opt/peekaboo
+
+    - name: Copy systemd unit files to /etc
+      copy:
+        src: systemd/{{ item }}
+        dest: /etc/systemd/system/
+        owner: root
+        group: root
+        mode: 0755
+        backup: true
+      with_items:
+        - peekaboo.service
+        - cuckoohttpd.service
+        - mysql-proxy.service
+        - mysql-proxy.socket
+
+    - name: Enable services to run on startup
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - peekaboo
+        - cuckoohttpd
+
+    - name: Place Peekaboo config in /opt/peekaboo
+      copy:
+        src: peekaboo/peekaboo.conf 
+        dest: /opt/peekaboo/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+
+    - name: Now place wrapper to run vboxmanage command on remote host
+      # This is necessary to control vm start, stop and snapshot
+      # restore on the host from within the Peekaboo-VM.
+      copy:
+        src: vbox/vboxmanage
+        dest: /usr/local/bin/
+        owner: root
+        group: root
+        mode: 0755
+        backup: true
+
+    - name: Copy /var/lib/peekaboo/vboxmanage.conf
+      # The configuration contains IP address and username of the
+      # target user on the host that owns all virtual box vms.
+      copy:
+        src: vbox/vboxmanage.conf
+        dest: /var/lib/peekaboo/vboxmanage.conf
+        owner: peekaboo
+        group: peekaboo
+        mode: 0644
+        backup: true
+
+    - name: Install ssh
+      apt:
+        name: ssh
+        state: latest
+
+    - name: Setup ssh key for peekaboo user
+      file:
+        path: /var/lib/peekaboo/.ssh
+        state: directory
+        mode: 0700
+        owner: peekaboo
+        group: peekaboo
+
+    - name: This key will have to be allowed on the host to authenticate the vm user
+      command: su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
+      args:
+        chdir: /var/lib/peekaboo
+        creates: /var/lib/peekaboo/.ssh/id_ed25519
+
+    - name: Setup chown2me
+      # This is still necessary so Peekaboo can take ownership of the
+      # files created by amavis (patch).
+      file:
+        path: /opt/peekaboo/chown2me.log
+        state: touch
+        owner: peekaboo
+        group: peekaboo
+        mode: 0600
+
+    - name: Set chown capability to chown2me
+      capabilities:
+        path: /opt/peekaboo/bin/chown2me
+        capability: cap_chown+e
+        state: present
+
+
+- name: Setting up Cuckoo
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
+      command: su -c "cuckoo" peekaboo
+      args:
+        chdir: /var/lib/peekaboo
+        creates: /var/lib/peekaboo/.cuckoo
+
+
+
+    - name: Install cuckoo community signatures
+      command: su -c "cuckoo community" peekaboo
+      args:
+        chdir: /var/lib/peekaboo
+    - name: Copy config files for cuckoo
+      copy:
+        src: cuckoo/{{ item }}
+        dest: /var/lib/peekaboo/.cuckoo/conf/
+        owner: peekaboo
+        group: peekaboo
+        mode: 0644
+        backup: true
+      with_items:
+        - cuckoo.conf    
+        - virtualbox.conf
+        - reporting.conf 
+
+
+- name: Install amavis and dependencies
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Installing software
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - amavisd-new
+        - arj
+        - bzip2
+        - cabextract
+        - cpio
+        - file
+        - gzip
+        - lhasa
+        - nomarch
+        - pax
+        - rar
+        - unrar
+        - unzip
+        - zip
+        - zoo
+    - name: Checking that /opt/peekaboo/peekabooav-amavisd exists
+      file:
+        path: /opt/peekaboo/peekabooav-amavisd
+        state: directory
+        mode: 0755
+        owner: peekaboo
+        group: peekaboo
+
+    - name: Get current version and patch amavisd-new
+      git:
+        repo: https://github.com/scvenus/peekabooav-amavisd
+        dest: /opt/peekaboo/peekabooav-amavisd
+        version: debian-find_config_files
+
+    - name: copy patched amavisd-new to system
+      copy:
+        src: /opt/peekaboo/peekabooav-amavisd/amavisd
+        dest: /usr/sbin/amavisd-new
+        remote_src: true
+
+    - name: Copy amavis configs to conf.d
+      copy:
+        src: amavis/{{ item }}
+        dest: /etc/amavis/conf.d/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+      with_items:
+        - 15-av_scanners
+        - 15-content_filter_mode
+        - 50-peekaboo
+
+    - name: Restart amavis
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: amavis
+
+- name: Allow access to files and sockets for amavis and peekaboo
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Add secondary group amavis to user peekaboo
+      user:
+        name: peekaboo
+        groups: amavis
+    - name: Add secondary group peekaboo to user amavis
+      user:
+        name: amavis
+        groups: peekaboo
+
+
+- name: Install mysql database and setup users and databases
+  hosts: localhost
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Installing Software
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - mariadb-server
+        - python-mysqldb
+    - name: Copy temp file for databayse creation
+      copy:
+        src: mysql/mysql.txt
+        dest: /tmp/mysql.txt
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Create database
+      shell: mysql < /tmp/mysql.txt
+      ignore_errors: yes
+
+    - name: remove temp file for databayse creation
+      file:
+        name: /tmp/mysql.txt
+        state: absent
+
+    - name: Restart services
+      service:
+        name: peekaboo
+        state: restarted
+
+#XXX#
+#XXX#
+#XXX## Clear screen.
+#XXX#clear
+#XXX#
+#XXX#cat << EOF
+#XXX#Things are Done
+#XXX#===============
+#XXX#
+#XXX#now there is a user called peekaboo whose home is at /var/lib/peekaboo
+#XXX#
+#XXX#assuming you've done this:
+#XXX#- installed and replicated your VMs on your vmhost
+#XXX#- configured networking properly
+#XXX#- configured some mail thing on the host
+#XXX#- configured cuckoo properly to know and use your VMs
+#XXX#
+#XXX#now it's your turn to do the following:
+#XXX#- set your own fqdn (/etc/hosts)
+#XXX#- configure vmhost to allow SSH connections from $HOSTNAME (.ssh/authorized_keys)
+#XXX#- configure static ip in /etc/network/interfaces
+#XXX#- reboot & snapshot
+#XXX#
+#XXX#That's it well done
+#XXX#
+#XXX#Thanks
+#XXX#have a nice day
+#XXX#EOF
+#XXX#
+#XXX#
