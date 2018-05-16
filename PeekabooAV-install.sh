@@ -25,6 +25,17 @@
 # of PeekabooAV
 #
 
+# The following function will clear all buffered stdin.  (See
+# http://compgroups.net/comp.unix.shell/clear-stdin-before-place-read-a/507380)
+fflush_stdin() {
+    local dummy=""
+    local originalSettings=""
+    originalSettings=`stty -g`
+    stty -icanon min 0 time 0
+    while read dummy ; do : ; done
+    stty "$originalSettings"
+}
+
 # The following code is just to have the owl and info scroll bye slowly.
 while IFS= read -r line; do
   printf '%s\n' "$line"
@@ -84,7 +95,8 @@ Press enter to continue
 EOF
 
 # Discard all input in buffer.
-read -t .1 -n 10000 discard || true
+fflush_stdin
+
 # Read 'Press enter ..'
 read
 
