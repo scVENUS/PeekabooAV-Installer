@@ -125,7 +125,7 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
-pip install ansible
+LC_ALL=C pip install ansible
 if [ $? != 0 ]; then
    echo "ERROR: the installation of 'ansible failed. Please fix manually" >&2
    exit 1
