@@ -74,14 +74,14 @@
 
 
 - name: Check OS version
-  hosts: localhost
+  hosts: all
   tasks:
     - fail: 
         msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} not yet supported"
       when: (ansible_distribution != "Ubuntu") or (ansible_distribution_version != "16.04")
 
 - name: Install software packages
-  hosts: localhost
+  hosts: all
   gather_facts: no
   become: yes
   tasks:
@@ -128,15 +128,10 @@
         - pip 
         - setuptools
         - cuckoo
-# yara-python will be installed due to peekaboo's requirements.txt
-#    # TODO: since 2.0.4 yara is included
-#    - name: Install yara version 3.6.3
-#      pip:
-#        name: yara-python
-#        version: 3.6.3
+
 
 - name: Install tcpdump and set capability
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -151,7 +146,7 @@
         state: present
 
 - name: Install Peekaboo
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   vars:
@@ -169,7 +164,7 @@
         version: "{{ peekaboo_version }}"
 
 - name: Create a new peekaboo user and group 
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -186,7 +181,7 @@
         home: /var/lib/peekaboo
 
 - name: Install Peekaboo
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -298,7 +293,7 @@
 
 
 - name: Setting up Cuckoo
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -329,7 +324,7 @@
 
 
 - name: Install amavis and dependencies
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -393,7 +388,7 @@
         name: amavis
 
 - name: Allow access to files and sockets for amavis and peekaboo
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -408,7 +403,7 @@
 
 
 - name: Install mysql database and setup users and databases
-  hosts: localhost
+  hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
@@ -441,33 +436,3 @@
         name: peekaboo
         state: restarted
 
-#XXX#
-#XXX#
-#XXX## Clear screen.
-#XXX#clear
-#XXX#
-#XXX#cat << EOF
-#XXX#Things are Done
-#XXX#===============
-#XXX#
-#XXX#now there is a user called peekaboo whose home is at /var/lib/peekaboo
-#XXX#
-#XXX#assuming you've done this:
-#XXX#- installed and replicated your VMs on your vmhost
-#XXX#- configured networking properly
-#XXX#- configured some mail thing on the host
-#XXX#- configured cuckoo properly to know and use your VMs
-#XXX#
-#XXX#now it's your turn to do the following:
-#XXX#- set your own fqdn (/etc/hosts)
-#XXX#- configure vmhost to allow SSH connections from $HOSTNAME (.ssh/authorized_keys)
-#XXX#- configure static ip in /etc/network/interfaces
-#XXX#- reboot & snapshot
-#XXX#
-#XXX#That's it well done
-#XXX#
-#XXX#Thanks
-#XXX#have a nice day
-#XXX#EOF
-#XXX#
-#XXX#

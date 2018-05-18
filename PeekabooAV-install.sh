@@ -130,8 +130,20 @@ if [ $? != 0 ]; then
    echo "ERROR: the installation of 'ansible failed. Please fix manually" >&2
    exit 1
 fi
+ANSIBLE_INVENTORY=$(dirname $0)/ansible-inventory
+ANSIBLE_PLAYBOOK=$(basename $0 .sh).yml
 
-ansible-playbook $(basename $0 .sh).yml
+if [ ! -r "$ANSIBLE_INVENTORY" ]; then
+    echo "ERROR: ansible inventory file "$ANSIBLE_INVENTORY" not found" >&2
+    exit 1
+fi
+
+if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
+    echo "ERROR: ansible playbook "$ANSIBLE_PLAYBOOK" not found" >&2
+    exit 1
+fi
+ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+
 if [ $? != 0 ];then
    echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
    exit 1
