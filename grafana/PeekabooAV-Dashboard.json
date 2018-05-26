@@ -1,16 +1,16 @@
 {
   "__inputs": [
     {
-      "name": "DS_DS_PEEKABOOAV_MYSQL",
-      "label": "DS_PEEKABOOAV_MYSQL",
+      "name": "DS_PEEKABOO",
+      "label": "peekaboo",
       "description": "",
       "type": "datasource",
       "pluginId": "mysql",
       "pluginName": "MySQL"
     },
     {
-      "name": "DS_DS_CUCKOO",
-      "label": "DS_CUCKOO",
+      "name": "DS_CUCKOO",
+      "label": "cuckoo",
       "description": "",
       "type": "datasource",
       "pluginId": "mysql",
@@ -22,7 +22,7 @@
       "type": "panel",
       "id": "briangann-gauge-panel",
       "name": "D3 Gauge",
-      "version": "0.0.4"
+      "version": "0.0.6"
     },
     {
       "type": "grafana",
@@ -34,7 +34,7 @@
       "type": "panel",
       "id": "grafana-piechart-panel",
       "name": "Pie Chart",
-      "version": "1.1.6"
+      "version": "1.3.0"
     },
     {
       "type": "panel",
@@ -95,7 +95,7 @@
             "rgba(237, 129, 40, 0.89)",
             "#d44a3a"
           ],
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -144,7 +144,7 @@
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "select\n  0 as time_sec,\n  count(*) as value\nfrom sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id",
+              "rawSql": "select\n  0 as time_sec,\n  count(*) as value\nfrom sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id",
               "refId": "A"
             }
           ],
@@ -170,7 +170,7 @@
             "rgba(237, 129, 40, 0.89)",
             "#d44a3a"
           ],
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -219,7 +219,7 @@
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  FORMAT(count(*),2) as value\nfrom sample_info_v2\n",
+              "rawSql": "SELECT\n  0 as time_sec,\n  FORMAT(count(*),2) as value\nfrom sample_info_v3\n",
               "refId": "A"
             }
           ],
@@ -242,7 +242,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": "${DS_DS_CUCKOO}",
+          "datasource": "${DS_CUCKOO}",
           "decimals": 0,
           "fontSizes": [
             4,
@@ -1043,7 +1043,7 @@
         },
         {
           "columns": [],
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "fontSize": "100%",
           "id": 6,
           "links": [],
@@ -1108,12 +1108,13 @@
             "Rest": "#fce2de",
             "Unknown": "#508642"
           },
+          "breakPoint": "50%",
           "cacheTimeout": null,
           "combine": {
             "label": "Others",
             "threshold": 0
           },
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "fontSize": "80%",
           "format": "short",
           "id": 3,
@@ -1134,31 +1135,31 @@
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Bad\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"bad\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Bad\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"bad\"",
               "refId": "A"
             },
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Ignored\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"ignored\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Ignored\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"ignored\"",
               "refId": "B"
             },
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Unknown\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"unknown\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Unknown\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"unknown\"",
               "refId": "C"
             },
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name = \"InProgress\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"InProgress\"",
               "refId": "D"
             },
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Rest\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\n# $__timeFilter(analysis_jobs_v2.analyses_time)\nWHERE analysis_result_v2.name <> \"InProgress\"\nand analysis_result_v2.name <> \"unknown\"\nand analysis_result_v2.name <> \"ignored\"\nand analysis_result_v2.name <> \"bad\"",
+              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Rest\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name <> \"InProgress\"\nand analysis_result_v3.name <> \"unknown\"\nand analysis_result_v3.name <> \"ignored\"\nand analysis_result_v3.name <> \"bad\"",
               "refId": "E"
             }
           ],
@@ -1171,7 +1172,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "fill": 1,
           "id": 7,
           "legend": {
@@ -1200,7 +1201,7 @@
             {
               "alias": "",
               "format": "time_series",
-              "rawSql": "SELECT\n  UNIX_TIMESTAMP(analyses_time) as time_sec,\n  count(*) as value,\n  \"Sample Count\" as metric\nFROM sample_info_v2\n  left join analysis_jobs_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\nWHERE $__timeFilter(analyses_time)\n\nGROUP BY UNIX_TIMESTAMP(analyses_time) DIV 60\n\nORDER BY analyses_time ASC",
+              "rawSql": "SELECT\n  UNIX_TIMESTAMP(analyses_time) as time_sec,\n  count(*) as value,\n  \"Sample Count\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\nWHERE $__timeFilter(analyses_time)\n\nGROUP BY UNIX_TIMESTAMP(analyses_time) DIV 60\n\nORDER BY analyses_time ASC",
               "refId": "A"
             }
           ],
@@ -1254,7 +1255,7 @@
       "panels": [
         {
           "columns": [],
-          "datasource": "${DS_DS_PEEKABOOAV_MYSQL}",
+          "datasource": "${DS_PEEKABOO}",
           "fontSize": "100%",
           "id": 5,
           "links": [],
@@ -1275,6 +1276,24 @@
             },
             {
               "alias": "",
+              "colorMode": "cell",
+              "colors": [
+                "#052b51",
+                "rgba(237, 129, 40, 0.89)",
+                "rgba(50, 172, 45, 0.97)"
+              ],
+              "dateFormat": "YYYY-MM-DD HH:mm:ss",
+              "decimals": 2,
+              "link": true,
+              "linkTargetBlank": true,
+              "linkUrl": "dashboard/db/detailed-job-info?var-job_hash=$__cell",
+              "pattern": "Job Hash",
+              "thresholds": [],
+              "type": "number",
+              "unit": "short"
+            },
+            {
+              "alias": "",
               "colorMode": null,
               "colors": [
                 "rgba(245, 54, 54, 0.9)",
@@ -1292,7 +1311,7 @@
             {
               "alias": "",
               "format": "table",
-              "rawSql": "select\n  FORMAT(sample_info_v2.id,0) as ID,\n  analyses_time as Date,\n  sha256sum as SHA256,\n  analysis_result_v2.name as Result,\n  sample_info_v2.file_extension as \"File extension\",\n  job_hash as \"Job Hash\"\nfrom analysis_jobs_v2\n  join sample_info_v2 on sample_info_v2.id = analysis_jobs_v2.sample_id\n  join analysis_result_v2 on result_id = analysis_result_v2.id\norder by analyses_time desc",
+              "rawSql": "select\n  FORMAT(sample_info_v3.id,0) as ID,\n  analyses_time as Date,\n  sha256sum as SHA256,\n  analysis_result_v3.name as Result,\n  sample_info_v3.file_extension as \"File extension\",\n  job_hash as \"Job Hash\"\nfrom analysis_jobs_v3\n  join sample_info_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\norder by analyses_time desc",
               "refId": "A"
             }
           ],
@@ -1345,6 +1364,6 @@
     ]
   },
   "timezone": "",
-  "title": "PeekabooAV",
-  "version": 4
+  "title": "PeekabooAVV3",
+  "version": 2
 }
