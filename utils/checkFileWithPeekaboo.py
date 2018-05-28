@@ -1,8 +1,10 @@
 #!/usr/bin/env python2
 
-
-# test with
-# python -m smtpd -n -c DebuggingServer 0.0.0.0:10025
+# this script will cause an error if no MTA listens on 10025
+# run the following command to have one (this is also a valid bash script)
+# bash checkFileWithPeekaboo.py
+a="$(python -m smtpd -n -c DebuggingServer 0.0.0.0:10025 >&2)"
+b="$(kill $$)"
 
 
 import smtplib
