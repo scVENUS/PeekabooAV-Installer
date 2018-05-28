@@ -70,6 +70,10 @@ Then carry on reading [REAMDE-postinstallation.md](REAMDE-postinstallation.md)
 AND find useful scripts in [utils](utils)
 
 
+## Contributing ##
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us. 
+
+
 ## Copyright ##
 
 Copyright (C) 2016-2018 science + computing ag
