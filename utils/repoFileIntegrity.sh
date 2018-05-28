@@ -11,6 +11,7 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]
 then
   shift
   echo "$0 [-h|--help|-v|--verbose]"
+  echo "$0 update  # copies changed files to repository"
   exit 0
 fi
 
@@ -33,6 +34,10 @@ do
   else
     echo -e "${WHITE}Changed${NC} ${p[1]}"
     #echo "  $(cmp ${p[0]} ${p[1]})"
+    if [[ "$1" == "update" ]]
+    then
+      cp -uv ${p[1]} ${p[0]}
+    fi
   fi
   if [ $VERBOSE -eq 1 ]
   then
