@@ -20,4 +20,11 @@ echo "
 
 
 Connect to Grafana on port 3000
-login with admin:admin"
+login with admin:admin
+
+
+from there you can install dashboards:
+6306	PeekabooAV_v3
+6309	PeekabooAV drill down - Detailed Job Info
+
+"
