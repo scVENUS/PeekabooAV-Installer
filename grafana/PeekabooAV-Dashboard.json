@@ -28,37 +28,37 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "4.6.3"
+      "version": "5.1.3"
     },
     {
       "type": "panel",
       "id": "grafana-piechart-panel",
       "name": "Pie Chart",
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     {
       "type": "panel",
       "id": "graph",
       "name": "Graph",
-      "version": ""
+      "version": "5.0.0"
     },
     {
       "type": "datasource",
       "id": "mysql",
       "name": "MySQL",
-      "version": "1.0.0"
+      "version": "5.0.0"
     },
     {
       "type": "panel",
       "id": "singlestat",
       "name": "Singlestat",
-      "version": ""
+      "version": "5.0.0"
     },
     {
       "type": "panel",
       "id": "table",
       "name": "Table",
-      "version": ""
+      "version": "5.0.0"
     }
   ],
   "annotations": {
@@ -77,1258 +77,1260 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "hideControls": false,
   "id": null,
   "links": [],
-  "refresh": "5s",
-  "rows": [
+  "panels": [
     {
-      "collapse": false,
-      "height": 309,
-      "panels": [
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "${DS_PEEKABOO}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
         {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": "${DS_PEEKABOO}",
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "id": 1,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "span": 2,
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "select\n  0 as time_sec,\n  count(*) as value\nfrom sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "title": "Total",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
+          "name": "value to text",
+          "value": 1
         },
         {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": "${DS_PEEKABOO}",
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "id": 4,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "span": 2,
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  FORMAT(count(*),2) as value\nfrom sample_info_v3\n",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "title": "Individual Samples",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
-        },
-        {
-          "colors": [
-            "rgba(50, 172, 45, 0.97)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(245, 54, 54, 0.9)"
-          ],
-          "datasource": "${DS_CUCKOO}",
-          "decimals": 0,
-          "fontSizes": [
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            22,
-            24,
-            26,
-            28,
-            30,
-            32,
-            34,
-            36,
-            38,
-            40,
-            42,
-            44,
-            46,
-            48,
-            50,
-            52,
-            54,
-            56,
-            58,
-            60,
-            62,
-            64,
-            66,
-            68,
-            70
-          ],
-          "fontTypes": [
-            "Arial",
-            "Avant Garde",
-            "Bookman",
-            "Consolas",
-            "Courier",
-            "Courier New",
-            "Garamond",
-            "Helvetica",
-            "Open Sans",
-            "Palatino",
-            "Times",
-            "Times New Roman",
-            "Verdana"
-          ],
-          "format": "short",
-          "gauge": {
-            "animateNeedleValueTransition": true,
-            "animateNeedleValueTransitionSpeed": 100,
-            "edgeWidth": 0.05,
-            "gaugeRadius": 0,
-            "gaugeUnits": "",
-            "innerCol": "rgba(71, 71, 71, 0)",
-            "labelFontSize": 18,
-            "maxNeedleAngle": 320,
-            "maxTickAngle": 300,
-            "maxValue": 20,
-            "minValue": 0,
-            "needleCol": "#0099CC",
-            "needleLengthNeg": 0.2,
-            "needleTickGap": 0.05,
-            "needleWidth": 5,
-            "outerEdgeCol": "rgba(0, 153, 204, 0)",
-            "padding": 0.05,
-            "pivotCol": "#999",
-            "pivotRadius": 0.1,
-            "show": true,
-            "showLowerThresholdRange": true,
-            "showMiddleThresholdRange": true,
-            "showThresholdColorOnBackground": true,
-            "showThresholdColorOnValue": false,
-            "showThresholdOnGauge": true,
-            "showUpperThresholdRange": true,
-            "tickColMaj": "#0099CC",
-            "tickColMin": "#000",
-            "tickEdgeGap": 0.05,
-            "tickFont": "Open Sans",
-            "tickLabelCol": "#fceaca",
-            "tickLengthMaj": 0.15,
-            "tickLengthMin": 0.05,
-            "tickSpaceMajVal": 10,
-            "tickSpaceMinVal": 1,
-            "tickWidthMaj": 5,
-            "tickWidthMin": 1,
-            "ticknessGaugeBasis": 200,
-            "unitsFont": "Open Sans",
-            "unitsLabelCol": "#fceaca",
-            "unitsLabelFontSize": 22,
-            "valueYOffset": 0,
-            "zeroNeedleAngle": 40,
-            "zeroTickAngle": 60
-          },
-          "gaugeDivId": "d3gauge_svg_9",
-          "id": 9,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "minSpan": null,
-          "operatorName": "avg",
-          "operatorNameOptions": [
-            "min",
-            "max",
-            "avg",
-            "current",
-            "total",
-            "name"
-          ],
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "span": 4,
-          "svgContainer": {},
-          "targets": [
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"runningvms\" as metric\nFROM machines\nWHeRE status = \"running\"\n",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "15,17,19",
-          "tickMaps": [],
-          "title": "Running Cuckoo VMs",
-          "transparent": false,
-          "type": "briangann-gauge-panel",
-          "unitFormats": [
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(0,0)",
-                  "text": "none",
-                  "value": "none"
-                },
-                {
-                  "click": "menuItemSelected(0,1)",
-                  "text": "short",
-                  "value": "short"
-                },
-                {
-                  "click": "menuItemSelected(0,2)",
-                  "text": "percent (0-100)",
-                  "value": "percent"
-                },
-                {
-                  "click": "menuItemSelected(0,3)",
-                  "text": "percent (0.0-1.0)",
-                  "value": "percentunit"
-                },
-                {
-                  "click": "menuItemSelected(0,4)",
-                  "text": "Humidity (%H)",
-                  "value": "humidity"
-                },
-                {
-                  "click": "menuItemSelected(0,5)",
-                  "text": "ppm",
-                  "value": "ppm"
-                },
-                {
-                  "click": "menuItemSelected(0,6)",
-                  "text": "decibel",
-                  "value": "dB"
-                },
-                {
-                  "click": "menuItemSelected(0,7)",
-                  "text": "hexadecimal (0x)",
-                  "value": "hex0x"
-                },
-                {
-                  "click": "menuItemSelected(0,8)",
-                  "text": "hexadecimal",
-                  "value": "hex"
-                },
-                {
-                  "click": "menuItemSelected(0,9)",
-                  "text": "scientific notation",
-                  "value": "sci"
-                },
-                {
-                  "click": "menuItemSelected(0,10)",
-                  "text": "locale format",
-                  "value": "locale"
-                }
-              ],
-              "text": "none"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(1,0)",
-                  "text": "Dollars ($)",
-                  "value": "currencyUSD"
-                },
-                {
-                  "click": "menuItemSelected(1,1)",
-                  "text": "Pounds (Â£)",
-                  "value": "currencyGBP"
-                },
-                {
-                  "click": "menuItemSelected(1,2)",
-                  "text": "Euro (â‚¬)",
-                  "value": "currencyEUR"
-                },
-                {
-                  "click": "menuItemSelected(1,3)",
-                  "text": "Yen (Â¥)",
-                  "value": "currencyJPY"
-                },
-                {
-                  "click": "menuItemSelected(1,4)",
-                  "text": "Rubles (â‚½)",
-                  "value": "currencyRUB"
-                },
-                {
-                  "click": "menuItemSelected(1,5)",
-                  "text": "Hryvnias (â‚´)",
-                  "value": "currencyUAH"
-                },
-                {
-                  "click": "menuItemSelected(1,6)",
-                  "text": "Real (R$)",
-                  "value": "currencyBRL"
-                },
-                {
-                  "click": "menuItemSelected(1,7)",
-                  "text": "Danish Krone (kr)",
-                  "value": "currencyDKK"
-                },
-                {
-                  "click": "menuItemSelected(1,8)",
-                  "text": "Icelandic Krone (kr)",
-                  "value": "currencyISK"
-                },
-                {
-                  "click": "menuItemSelected(1,9)",
-                  "text": "Norwegian Krone (kr)",
-                  "value": "currencyNOK"
-                },
-                {
-                  "click": "menuItemSelected(1,10)",
-                  "text": "Swedish Krone (kr)",
-                  "value": "currencySEK"
-                }
-              ],
-              "text": "currency"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(2,0)",
-                  "text": "Hertz (1/s)",
-                  "value": "hertz"
-                },
-                {
-                  "click": "menuItemSelected(2,1)",
-                  "text": "nanoseconds (ns)",
-                  "value": "ns"
-                },
-                {
-                  "click": "menuItemSelected(2,2)",
-                  "text": "microseconds (Âµs)",
-                  "value": "Âµs"
-                },
-                {
-                  "click": "menuItemSelected(2,3)",
-                  "text": "milliseconds (ms)",
-                  "value": "ms"
-                },
-                {
-                  "click": "menuItemSelected(2,4)",
-                  "text": "seconds (s)",
-                  "value": "s"
-                },
-                {
-                  "click": "menuItemSelected(2,5)",
-                  "text": "minutes (m)",
-                  "value": "m"
-                },
-                {
-                  "click": "menuItemSelected(2,6)",
-                  "text": "hours (h)",
-                  "value": "h"
-                },
-                {
-                  "click": "menuItemSelected(2,7)",
-                  "text": "days (d)",
-                  "value": "d"
-                },
-                {
-                  "click": "menuItemSelected(2,8)",
-                  "text": "duration (ms)",
-                  "value": "dtdurationms"
-                },
-                {
-                  "click": "menuItemSelected(2,9)",
-                  "text": "duration (s)",
-                  "value": "dtdurations"
-                }
-              ],
-              "text": "time"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(3,0)",
-                  "text": "YYYY-MM-DD HH:mm:ss",
-                  "value": "dateTimeAsIso"
-                },
-                {
-                  "click": "menuItemSelected(3,1)",
-                  "text": "DD/MM/YYYY h:mm:ss a",
-                  "value": "dateTimeAsUS"
-                },
-                {
-                  "click": "menuItemSelected(3,2)",
-                  "text": "From Now",
-                  "value": "dateTimeFromNow"
-                }
-              ],
-              "text": "date & time"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(4,0)",
-                  "text": "bits",
-                  "value": "bits"
-                },
-                {
-                  "click": "menuItemSelected(4,1)",
-                  "text": "bytes",
-                  "value": "bytes"
-                },
-                {
-                  "click": "menuItemSelected(4,2)",
-                  "text": "kibibytes",
-                  "value": "kbytes"
-                },
-                {
-                  "click": "menuItemSelected(4,3)",
-                  "text": "mebibytes",
-                  "value": "mbytes"
-                },
-                {
-                  "click": "menuItemSelected(4,4)",
-                  "text": "gibibytes",
-                  "value": "gbytes"
-                }
-              ],
-              "text": "data (IEC)"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(5,0)",
-                  "text": "bits",
-                  "value": "decbits"
-                },
-                {
-                  "click": "menuItemSelected(5,1)",
-                  "text": "bytes",
-                  "value": "decbytes"
-                },
-                {
-                  "click": "menuItemSelected(5,2)",
-                  "text": "kilobytes",
-                  "value": "deckbytes"
-                },
-                {
-                  "click": "menuItemSelected(5,3)",
-                  "text": "megabytes",
-                  "value": "decmbytes"
-                },
-                {
-                  "click": "menuItemSelected(5,4)",
-                  "text": "gigabytes",
-                  "value": "decgbytes"
-                }
-              ],
-              "text": "data (Metric)"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(6,0)",
-                  "text": "packets/sec",
-                  "value": "pps"
-                },
-                {
-                  "click": "menuItemSelected(6,1)",
-                  "text": "bits/sec",
-                  "value": "bps"
-                },
-                {
-                  "click": "menuItemSelected(6,2)",
-                  "text": "bytes/sec",
-                  "value": "Bps"
-                },
-                {
-                  "click": "menuItemSelected(6,3)",
-                  "text": "kilobits/sec",
-                  "value": "Kbits"
-                },
-                {
-                  "click": "menuItemSelected(6,4)",
-                  "text": "kilobytes/sec",
-                  "value": "KBs"
-                },
-                {
-                  "click": "menuItemSelected(6,5)",
-                  "text": "megabits/sec",
-                  "value": "Mbits"
-                },
-                {
-                  "click": "menuItemSelected(6,6)",
-                  "text": "megabytes/sec",
-                  "value": "MBs"
-                },
-                {
-                  "click": "menuItemSelected(6,7)",
-                  "text": "gigabytes/sec",
-                  "value": "GBs"
-                },
-                {
-                  "click": "menuItemSelected(6,8)",
-                  "text": "gigabits/sec",
-                  "value": "Gbits"
-                }
-              ],
-              "text": "data rate"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(7,0)",
-                  "text": "ops/sec (ops)",
-                  "value": "ops"
-                },
-                {
-                  "click": "menuItemSelected(7,1)",
-                  "text": "reads/sec (rps)",
-                  "value": "rps"
-                },
-                {
-                  "click": "menuItemSelected(7,2)",
-                  "text": "writes/sec (wps)",
-                  "value": "wps"
-                },
-                {
-                  "click": "menuItemSelected(7,3)",
-                  "text": "I/O ops/sec (iops)",
-                  "value": "iops"
-                },
-                {
-                  "click": "menuItemSelected(7,4)",
-                  "text": "ops/min (opm)",
-                  "value": "opm"
-                },
-                {
-                  "click": "menuItemSelected(7,5)",
-                  "text": "reads/min (rpm)",
-                  "value": "rpm"
-                },
-                {
-                  "click": "menuItemSelected(7,6)",
-                  "text": "writes/min (wpm)",
-                  "value": "wpm"
-                }
-              ],
-              "text": "throughput"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(8,0)",
-                  "text": "millimetre (mm)",
-                  "value": "lengthmm"
-                },
-                {
-                  "click": "menuItemSelected(8,1)",
-                  "text": "meter (m)",
-                  "value": "lengthm"
-                },
-                {
-                  "click": "menuItemSelected(8,2)",
-                  "text": "kilometer (km)",
-                  "value": "lengthkm"
-                },
-                {
-                  "click": "menuItemSelected(8,3)",
-                  "text": "mile (mi)",
-                  "value": "lengthmi"
-                }
-              ],
-              "text": "length"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(9,0)",
-                  "text": "milligram (mg)",
-                  "value": "massmg"
-                },
-                {
-                  "click": "menuItemSelected(9,1)",
-                  "text": "gram (g)",
-                  "value": "massg"
-                },
-                {
-                  "click": "menuItemSelected(9,2)",
-                  "text": "kilogram (kg)",
-                  "value": "masskg"
-                },
-                {
-                  "click": "menuItemSelected(9,3)",
-                  "text": "metric ton (t)",
-                  "value": "masst"
-                }
-              ],
-              "text": "mass"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(10,0)",
-                  "text": "m/s",
-                  "value": "velocityms"
-                },
-                {
-                  "click": "menuItemSelected(10,1)",
-                  "text": "km/h",
-                  "value": "velocitykmh"
-                },
-                {
-                  "click": "menuItemSelected(10,2)",
-                  "text": "mph",
-                  "value": "velocitymph"
-                },
-                {
-                  "click": "menuItemSelected(10,3)",
-                  "text": "knot (kn)",
-                  "value": "velocityknot"
-                }
-              ],
-              "text": "velocity"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(11,0)",
-                  "text": "millilitre",
-                  "value": "mlitre"
-                },
-                {
-                  "click": "menuItemSelected(11,1)",
-                  "text": "litre",
-                  "value": "litre"
-                },
-                {
-                  "click": "menuItemSelected(11,2)",
-                  "text": "cubic metre",
-                  "value": "m3"
-                },
-                {
-                  "click": "menuItemSelected(11,3)",
-                  "text": "cubic decimetre",
-                  "value": "dm3"
-                },
-                {
-                  "click": "menuItemSelected(11,4)",
-                  "text": "gallons",
-                  "value": "gallons"
-                }
-              ],
-              "text": "volume"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(12,0)",
-                  "text": "watt (W)",
-                  "value": "watt"
-                },
-                {
-                  "click": "menuItemSelected(12,1)",
-                  "text": "kilowatt (kW)",
-                  "value": "kwatt"
-                },
-                {
-                  "click": "menuItemSelected(12,2)",
-                  "text": "volt-ampere (VA)",
-                  "value": "voltamp"
-                },
-                {
-                  "click": "menuItemSelected(12,3)",
-                  "text": "kilovolt-ampere (kVA)",
-                  "value": "kvoltamp"
-                },
-                {
-                  "click": "menuItemSelected(12,4)",
-                  "text": "volt-ampere reactive (var)",
-                  "value": "voltampreact"
-                },
-                {
-                  "click": "menuItemSelected(12,5)",
-                  "text": "kilovolt-ampere reactive (kvar)",
-                  "value": "kvoltampreact"
-                },
-                {
-                  "click": "menuItemSelected(12,6)",
-                  "text": "watt-hour (Wh)",
-                  "value": "watth"
-                },
-                {
-                  "click": "menuItemSelected(12,7)",
-                  "text": "kilowatt-hour (kWh)",
-                  "value": "kwatth"
-                },
-                {
-                  "click": "menuItemSelected(12,8)",
-                  "text": "joule (J)",
-                  "value": "joule"
-                },
-                {
-                  "click": "menuItemSelected(12,9)",
-                  "text": "electron volt (eV)",
-                  "value": "ev"
-                },
-                {
-                  "click": "menuItemSelected(12,10)",
-                  "text": "Ampere (A)",
-                  "value": "amp"
-                },
-                {
-                  "click": "menuItemSelected(12,11)",
-                  "text": "Kiloampere (kA)",
-                  "value": "kamp"
-                },
-                {
-                  "click": "menuItemSelected(12,12)",
-                  "text": "Volt (V)",
-                  "value": "volt"
-                },
-                {
-                  "click": "menuItemSelected(12,13)",
-                  "text": "Kilovolt (kV)",
-                  "value": "kvolt"
-                },
-                {
-                  "click": "menuItemSelected(12,14)",
-                  "text": "Decibel-milliwatt (dBm)",
-                  "value": "dBm"
-                }
-              ],
-              "text": "energy"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(13,0)",
-                  "text": "Celsius (Â°C)",
-                  "value": "celsius"
-                },
-                {
-                  "click": "menuItemSelected(13,1)",
-                  "text": "Farenheit (Â°F)",
-                  "value": "farenheit"
-                },
-                {
-                  "click": "menuItemSelected(13,2)",
-                  "text": "Kelvin (K)",
-                  "value": "kelvin"
-                }
-              ],
-              "text": "temperature"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(14,0)",
-                  "text": "Millibars",
-                  "value": "pressurembar"
-                },
-                {
-                  "click": "menuItemSelected(14,1)",
-                  "text": "Bars",
-                  "value": "pressurebar"
-                },
-                {
-                  "click": "menuItemSelected(14,2)",
-                  "text": "Kilobars",
-                  "value": "pressurekbar"
-                },
-                {
-                  "click": "menuItemSelected(14,3)",
-                  "text": "Hectopascals",
-                  "value": "pressurehpa"
-                },
-                {
-                  "click": "menuItemSelected(14,4)",
-                  "text": "Inches of mercury",
-                  "value": "pressurehg"
-                },
-                {
-                  "click": "menuItemSelected(14,5)",
-                  "text": "PSI",
-                  "value": "pressurepsi"
-                }
-              ],
-              "text": "pressure"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(15,0)",
-                  "text": "Newton-meters (Nm)",
-                  "value": "forceNm"
-                },
-                {
-                  "click": "menuItemSelected(15,1)",
-                  "text": "Kilonewton-meters (kNm)",
-                  "value": "forcekNm"
-                },
-                {
-                  "click": "menuItemSelected(15,2)",
-                  "text": "Newtons (N)",
-                  "value": "forceN"
-                },
-                {
-                  "click": "menuItemSelected(15,3)",
-                  "text": "Kilonewtons (kN)",
-                  "value": "forcekN"
-                }
-              ],
-              "text": "force"
-            },
-            {
-              "submenu": [
-                {
-                  "click": "menuItemSelected(16,0)",
-                  "text": "Gallons/min (gpm)",
-                  "value": "flowgpm"
-                },
-                {
-                  "click": "menuItemSelected(16,1)",
-                  "text": "Cubic meters/sec (cms)",
-                  "value": "flowcms"
-                },
-                {
-                  "click": "menuItemSelected(16,2)",
-                  "text": "Cubic feet/sec (cfs)",
-                  "value": "flowcfs"
-                },
-                {
-                  "click": "menuItemSelected(16,3)",
-                  "text": "Cubic feet/min (cfm)",
-                  "value": "flowcfm"
-                }
-              ],
-              "text": "flow"
-            }
-          ],
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ]
-        },
-        {
-          "columns": [],
-          "datasource": "${DS_PEEKABOO}",
-          "fontSize": "100%",
-          "id": 6,
-          "links": [],
-          "pageSize": null,
-          "scroll": true,
-          "showHeader": true,
-          "sort": {
-            "col": 0,
-            "desc": true
-          },
-          "span": 4,
-          "styles": [
-            {
-              "alias": "Time",
-              "dateFormat": "YYYY-MM-DD HH:mm:ss",
-              "pattern": "Time",
-              "type": "date"
-            },
-            {
-              "alias": "",
-              "colorMode": null,
-              "colors": [
-                "rgba(245, 54, 54, 0.9)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
-              ],
-              "decimals": 2,
-              "pattern": "/.*/",
-              "thresholds": [],
-              "type": "number",
-              "unit": "short"
-            }
-          ],
-          "targets": [
-            {
-              "alias": "",
-              "format": "table",
-              "rawSql": " SELECT peekaboo_version as \"Peekaboo Version\",\n   db_schema_version as \"DB Schema Version\",\n   cuckoo_version as \"Cuckoo Version\"\n from _meta;",
-              "refId": "A"
-            }
-          ],
-          "title": "Versions",
-          "transform": "table",
-          "type": "table"
+          "name": "range to text",
+          "value": 2
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "select\n  0 as time_sec,\n  count(*) as value\nfrom sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
     },
     {
-      "collapse": false,
-      "height": 437,
-      "panels": [
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "${DS_PEEKABOO}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 4,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
         {
-          "aliasColors": {
-            "Bad": "#bf1b00",
-            "Ignored": "#1f78c1",
-            "Rest": "#fce2de",
-            "Unknown": "#508642"
-          },
-          "breakPoint": "50%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
-          "datasource": "${DS_PEEKABOO}",
-          "fontSize": "80%",
-          "format": "short",
-          "id": 3,
-          "interval": null,
-          "legend": {
-            "show": true,
-            "sortDesc": true,
-            "values": true
-          },
-          "legendType": "Under graph",
-          "links": [],
-          "maxDataPoints": 3,
-          "nullPointMode": "connected",
-          "pieType": "pie",
-          "span": 6,
-          "strokeWidth": 1,
-          "targets": [
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Bad\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"bad\"",
-              "refId": "A"
-            },
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Ignored\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"ignored\"",
-              "refId": "B"
-            },
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Unknown\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"unknown\"",
-              "refId": "C"
-            },
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"InProgress\"",
-              "refId": "D"
-            },
-            {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Rest\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name <> \"InProgress\"\nand analysis_result_v3.name <> \"unknown\"\nand analysis_result_v3.name <> \"ignored\"\nand analysis_result_v3.name <> \"bad\"",
-              "refId": "E"
-            }
-          ],
-          "title": "Results",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "name": "value to text",
+          "value": 1
         },
         {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_PEEKABOO}",
-          "fill": 1,
-          "id": 7,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 6,
-          "stack": false,
-          "steppedLine": true,
-          "targets": [
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value\nfrom sample_info_v3\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Individual Samples",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "${DS_CUCKOO}",
+      "decimals": 0,
+      "fontSizes": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42,
+        44,
+        46,
+        48,
+        50,
+        52,
+        54,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        68,
+        70
+      ],
+      "fontTypes": [
+        "Arial",
+        "Avant Garde",
+        "Bookman",
+        "Consolas",
+        "Courier",
+        "Courier New",
+        "Garamond",
+        "Helvetica",
+        "Open Sans",
+        "Palatino",
+        "Times",
+        "Times New Roman",
+        "Verdana"
+      ],
+      "format": "short",
+      "gauge": {
+        "animateNeedleValueTransition": true,
+        "animateNeedleValueTransitionSpeed": 100,
+        "edgeWidth": 0.05,
+        "gaugeRadius": 0,
+        "gaugeUnits": "",
+        "innerCol": "rgba(71, 71, 71, 0)",
+        "labelFontSize": 18,
+        "maxNeedleAngle": 320,
+        "maxTickAngle": 300,
+        "maxValue": 20,
+        "minValue": 0,
+        "needleCol": "#0099CC",
+        "needleLengthNeg": 0.2,
+        "needleTickGap": 0.05,
+        "needleWidth": 5,
+        "outerEdgeCol": "rgba(0, 153, 204, 0)",
+        "padding": 0.05,
+        "pivotCol": "#999",
+        "pivotRadius": 0.1,
+        "show": true,
+        "showLowerThresholdRange": true,
+        "showMiddleThresholdRange": true,
+        "showThresholdColorOnBackground": true,
+        "showThresholdColorOnValue": false,
+        "showThresholdOnGauge": true,
+        "showUpperThresholdRange": true,
+        "tickColMaj": "#0099CC",
+        "tickColMin": "#000",
+        "tickEdgeGap": 0.05,
+        "tickFont": "Open Sans",
+        "tickLabelCol": "#fceaca",
+        "tickLengthMaj": 0.15,
+        "tickLengthMin": 0.05,
+        "tickSpaceMajVal": 10,
+        "tickSpaceMinVal": 1,
+        "tickWidthMaj": 5,
+        "tickWidthMin": 1,
+        "ticknessGaugeBasis": 200,
+        "unitsFont": "Open Sans",
+        "unitsLabelCol": "#fceaca",
+        "unitsLabelFontSize": 22,
+        "valueYOffset": 0,
+        "zeroNeedleAngle": 40,
+        "zeroTickAngle": 60
+      },
+      "gaugeDivId": "d3gauge_svg_9",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 9,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "minSpan": null,
+      "operatorName": "avg",
+      "operatorNameOptions": [
+        "min",
+        "max",
+        "avg",
+        "current",
+        "total",
+        "name"
+      ],
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "svgContainer": {},
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"runningvms\" as metric\nFROM machines\nWHeRE status = \"running\"\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "15,17,19",
+      "tickMaps": [],
+      "title": "Running Cuckoo VMs",
+      "transparent": false,
+      "type": "briangann-gauge-panel",
+      "unitFormats": [
+        {
+          "submenu": [
             {
-              "alias": "",
-              "format": "time_series",
-              "rawSql": "SELECT\n  UNIX_TIMESTAMP(analyses_time) as time_sec,\n  count(*) as value,\n  \"Sample Count\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\nWHERE $__timeFilter(analyses_time)\n\nGROUP BY UNIX_TIMESTAMP(analyses_time) DIV 60\n\nORDER BY analyses_time ASC",
-              "refId": "A"
+              "click": "menuItemSelected(0,0)",
+              "text": "none",
+              "value": "none"
+            },
+            {
+              "click": "menuItemSelected(0,1)",
+              "text": "short",
+              "value": "short"
+            },
+            {
+              "click": "menuItemSelected(0,2)",
+              "text": "percent (0-100)",
+              "value": "percent"
+            },
+            {
+              "click": "menuItemSelected(0,3)",
+              "text": "percent (0.0-1.0)",
+              "value": "percentunit"
+            },
+            {
+              "click": "menuItemSelected(0,4)",
+              "text": "Humidity (%H)",
+              "value": "humidity"
+            },
+            {
+              "click": "menuItemSelected(0,5)",
+              "text": "ppm",
+              "value": "ppm"
+            },
+            {
+              "click": "menuItemSelected(0,6)",
+              "text": "decibel",
+              "value": "dB"
+            },
+            {
+              "click": "menuItemSelected(0,7)",
+              "text": "hexadecimal (0x)",
+              "value": "hex0x"
+            },
+            {
+              "click": "menuItemSelected(0,8)",
+              "text": "hexadecimal",
+              "value": "hex"
+            },
+            {
+              "click": "menuItemSelected(0,9)",
+              "text": "scientific notation",
+              "value": "sci"
+            },
+            {
+              "click": "menuItemSelected(0,10)",
+              "text": "locale format",
+              "value": "locale"
             }
           ],
+          "text": "none"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(1,0)",
+              "text": "Dollars ($)",
+              "value": "currencyUSD"
+            },
+            {
+              "click": "menuItemSelected(1,1)",
+              "text": "Pounds (Ã‚Â£)",
+              "value": "currencyGBP"
+            },
+            {
+              "click": "menuItemSelected(1,2)",
+              "text": "Euro (Ã¢â€šÂ¬)",
+              "value": "currencyEUR"
+            },
+            {
+              "click": "menuItemSelected(1,3)",
+              "text": "Yen (Ã‚Â¥)",
+              "value": "currencyJPY"
+            },
+            {
+              "click": "menuItemSelected(1,4)",
+              "text": "Rubles (Ã¢â€šÂ½)",
+              "value": "currencyRUB"
+            },
+            {
+              "click": "menuItemSelected(1,5)",
+              "text": "Hryvnias (Ã¢â€šÂ´)",
+              "value": "currencyUAH"
+            },
+            {
+              "click": "menuItemSelected(1,6)",
+              "text": "Real (R$)",
+              "value": "currencyBRL"
+            },
+            {
+              "click": "menuItemSelected(1,7)",
+              "text": "Danish Krone (kr)",
+              "value": "currencyDKK"
+            },
+            {
+              "click": "menuItemSelected(1,8)",
+              "text": "Icelandic Krone (kr)",
+              "value": "currencyISK"
+            },
+            {
+              "click": "menuItemSelected(1,9)",
+              "text": "Norwegian Krone (kr)",
+              "value": "currencyNOK"
+            },
+            {
+              "click": "menuItemSelected(1,10)",
+              "text": "Swedish Krone (kr)",
+              "value": "currencySEK"
+            }
+          ],
+          "text": "currency"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(2,0)",
+              "text": "Hertz (1/s)",
+              "value": "hertz"
+            },
+            {
+              "click": "menuItemSelected(2,1)",
+              "text": "nanoseconds (ns)",
+              "value": "ns"
+            },
+            {
+              "click": "menuItemSelected(2,2)",
+              "text": "microseconds (Ã‚Âµs)",
+              "value": "Ã‚Âµs"
+            },
+            {
+              "click": "menuItemSelected(2,3)",
+              "text": "milliseconds (ms)",
+              "value": "ms"
+            },
+            {
+              "click": "menuItemSelected(2,4)",
+              "text": "seconds (s)",
+              "value": "s"
+            },
+            {
+              "click": "menuItemSelected(2,5)",
+              "text": "minutes (m)",
+              "value": "m"
+            },
+            {
+              "click": "menuItemSelected(2,6)",
+              "text": "hours (h)",
+              "value": "h"
+            },
+            {
+              "click": "menuItemSelected(2,7)",
+              "text": "days (d)",
+              "value": "d"
+            },
+            {
+              "click": "menuItemSelected(2,8)",
+              "text": "duration (ms)",
+              "value": "dtdurationms"
+            },
+            {
+              "click": "menuItemSelected(2,9)",
+              "text": "duration (s)",
+              "value": "dtdurations"
+            }
+          ],
+          "text": "time"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(3,0)",
+              "text": "YYYY-MM-DD HH:mm:ss",
+              "value": "dateTimeAsIso"
+            },
+            {
+              "click": "menuItemSelected(3,1)",
+              "text": "DD/MM/YYYY h:mm:ss a",
+              "value": "dateTimeAsUS"
+            },
+            {
+              "click": "menuItemSelected(3,2)",
+              "text": "From Now",
+              "value": "dateTimeFromNow"
+            }
+          ],
+          "text": "date & time"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(4,0)",
+              "text": "bits",
+              "value": "bits"
+            },
+            {
+              "click": "menuItemSelected(4,1)",
+              "text": "bytes",
+              "value": "bytes"
+            },
+            {
+              "click": "menuItemSelected(4,2)",
+              "text": "kibibytes",
+              "value": "kbytes"
+            },
+            {
+              "click": "menuItemSelected(4,3)",
+              "text": "mebibytes",
+              "value": "mbytes"
+            },
+            {
+              "click": "menuItemSelected(4,4)",
+              "text": "gibibytes",
+              "value": "gbytes"
+            }
+          ],
+          "text": "data (IEC)"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(5,0)",
+              "text": "bits",
+              "value": "decbits"
+            },
+            {
+              "click": "menuItemSelected(5,1)",
+              "text": "bytes",
+              "value": "decbytes"
+            },
+            {
+              "click": "menuItemSelected(5,2)",
+              "text": "kilobytes",
+              "value": "deckbytes"
+            },
+            {
+              "click": "menuItemSelected(5,3)",
+              "text": "megabytes",
+              "value": "decmbytes"
+            },
+            {
+              "click": "menuItemSelected(5,4)",
+              "text": "gigabytes",
+              "value": "decgbytes"
+            }
+          ],
+          "text": "data (Metric)"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(6,0)",
+              "text": "packets/sec",
+              "value": "pps"
+            },
+            {
+              "click": "menuItemSelected(6,1)",
+              "text": "bits/sec",
+              "value": "bps"
+            },
+            {
+              "click": "menuItemSelected(6,2)",
+              "text": "bytes/sec",
+              "value": "Bps"
+            },
+            {
+              "click": "menuItemSelected(6,3)",
+              "text": "kilobits/sec",
+              "value": "Kbits"
+            },
+            {
+              "click": "menuItemSelected(6,4)",
+              "text": "kilobytes/sec",
+              "value": "KBs"
+            },
+            {
+              "click": "menuItemSelected(6,5)",
+              "text": "megabits/sec",
+              "value": "Mbits"
+            },
+            {
+              "click": "menuItemSelected(6,6)",
+              "text": "megabytes/sec",
+              "value": "MBs"
+            },
+            {
+              "click": "menuItemSelected(6,7)",
+              "text": "gigabytes/sec",
+              "value": "GBs"
+            },
+            {
+              "click": "menuItemSelected(6,8)",
+              "text": "gigabits/sec",
+              "value": "Gbits"
+            }
+          ],
+          "text": "data rate"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(7,0)",
+              "text": "ops/sec (ops)",
+              "value": "ops"
+            },
+            {
+              "click": "menuItemSelected(7,1)",
+              "text": "reads/sec (rps)",
+              "value": "rps"
+            },
+            {
+              "click": "menuItemSelected(7,2)",
+              "text": "writes/sec (wps)",
+              "value": "wps"
+            },
+            {
+              "click": "menuItemSelected(7,3)",
+              "text": "I/O ops/sec (iops)",
+              "value": "iops"
+            },
+            {
+              "click": "menuItemSelected(7,4)",
+              "text": "ops/min (opm)",
+              "value": "opm"
+            },
+            {
+              "click": "menuItemSelected(7,5)",
+              "text": "reads/min (rpm)",
+              "value": "rpm"
+            },
+            {
+              "click": "menuItemSelected(7,6)",
+              "text": "writes/min (wpm)",
+              "value": "wpm"
+            }
+          ],
+          "text": "throughput"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(8,0)",
+              "text": "millimetre (mm)",
+              "value": "lengthmm"
+            },
+            {
+              "click": "menuItemSelected(8,1)",
+              "text": "meter (m)",
+              "value": "lengthm"
+            },
+            {
+              "click": "menuItemSelected(8,2)",
+              "text": "kilometer (km)",
+              "value": "lengthkm"
+            },
+            {
+              "click": "menuItemSelected(8,3)",
+              "text": "mile (mi)",
+              "value": "lengthmi"
+            }
+          ],
+          "text": "length"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(9,0)",
+              "text": "milligram (mg)",
+              "value": "massmg"
+            },
+            {
+              "click": "menuItemSelected(9,1)",
+              "text": "gram (g)",
+              "value": "massg"
+            },
+            {
+              "click": "menuItemSelected(9,2)",
+              "text": "kilogram (kg)",
+              "value": "masskg"
+            },
+            {
+              "click": "menuItemSelected(9,3)",
+              "text": "metric ton (t)",
+              "value": "masst"
+            }
+          ],
+          "text": "mass"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(10,0)",
+              "text": "m/s",
+              "value": "velocityms"
+            },
+            {
+              "click": "menuItemSelected(10,1)",
+              "text": "km/h",
+              "value": "velocitykmh"
+            },
+            {
+              "click": "menuItemSelected(10,2)",
+              "text": "mph",
+              "value": "velocitymph"
+            },
+            {
+              "click": "menuItemSelected(10,3)",
+              "text": "knot (kn)",
+              "value": "velocityknot"
+            }
+          ],
+          "text": "velocity"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(11,0)",
+              "text": "millilitre",
+              "value": "mlitre"
+            },
+            {
+              "click": "menuItemSelected(11,1)",
+              "text": "litre",
+              "value": "litre"
+            },
+            {
+              "click": "menuItemSelected(11,2)",
+              "text": "cubic metre",
+              "value": "m3"
+            },
+            {
+              "click": "menuItemSelected(11,3)",
+              "text": "cubic decimetre",
+              "value": "dm3"
+            },
+            {
+              "click": "menuItemSelected(11,4)",
+              "text": "gallons",
+              "value": "gallons"
+            }
+          ],
+          "text": "volume"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(12,0)",
+              "text": "watt (W)",
+              "value": "watt"
+            },
+            {
+              "click": "menuItemSelected(12,1)",
+              "text": "kilowatt (kW)",
+              "value": "kwatt"
+            },
+            {
+              "click": "menuItemSelected(12,2)",
+              "text": "volt-ampere (VA)",
+              "value": "voltamp"
+            },
+            {
+              "click": "menuItemSelected(12,3)",
+              "text": "kilovolt-ampere (kVA)",
+              "value": "kvoltamp"
+            },
+            {
+              "click": "menuItemSelected(12,4)",
+              "text": "volt-ampere reactive (var)",
+              "value": "voltampreact"
+            },
+            {
+              "click": "menuItemSelected(12,5)",
+              "text": "kilovolt-ampere reactive (kvar)",
+              "value": "kvoltampreact"
+            },
+            {
+              "click": "menuItemSelected(12,6)",
+              "text": "watt-hour (Wh)",
+              "value": "watth"
+            },
+            {
+              "click": "menuItemSelected(12,7)",
+              "text": "kilowatt-hour (kWh)",
+              "value": "kwatth"
+            },
+            {
+              "click": "menuItemSelected(12,8)",
+              "text": "joule (J)",
+              "value": "joule"
+            },
+            {
+              "click": "menuItemSelected(12,9)",
+              "text": "electron volt (eV)",
+              "value": "ev"
+            },
+            {
+              "click": "menuItemSelected(12,10)",
+              "text": "Ampere (A)",
+              "value": "amp"
+            },
+            {
+              "click": "menuItemSelected(12,11)",
+              "text": "Kiloampere (kA)",
+              "value": "kamp"
+            },
+            {
+              "click": "menuItemSelected(12,12)",
+              "text": "Volt (V)",
+              "value": "volt"
+            },
+            {
+              "click": "menuItemSelected(12,13)",
+              "text": "Kilovolt (kV)",
+              "value": "kvolt"
+            },
+            {
+              "click": "menuItemSelected(12,14)",
+              "text": "Decibel-milliwatt (dBm)",
+              "value": "dBm"
+            }
+          ],
+          "text": "energy"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(13,0)",
+              "text": "Celsius (Ã‚Â°C)",
+              "value": "celsius"
+            },
+            {
+              "click": "menuItemSelected(13,1)",
+              "text": "Farenheit (Ã‚Â°F)",
+              "value": "farenheit"
+            },
+            {
+              "click": "menuItemSelected(13,2)",
+              "text": "Kelvin (K)",
+              "value": "kelvin"
+            }
+          ],
+          "text": "temperature"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(14,0)",
+              "text": "Millibars",
+              "value": "pressurembar"
+            },
+            {
+              "click": "menuItemSelected(14,1)",
+              "text": "Bars",
+              "value": "pressurebar"
+            },
+            {
+              "click": "menuItemSelected(14,2)",
+              "text": "Kilobars",
+              "value": "pressurekbar"
+            },
+            {
+              "click": "menuItemSelected(14,3)",
+              "text": "Hectopascals",
+              "value": "pressurehpa"
+            },
+            {
+              "click": "menuItemSelected(14,4)",
+              "text": "Inches of mercury",
+              "value": "pressurehg"
+            },
+            {
+              "click": "menuItemSelected(14,5)",
+              "text": "PSI",
+              "value": "pressurepsi"
+            }
+          ],
+          "text": "pressure"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(15,0)",
+              "text": "Newton-meters (Nm)",
+              "value": "forceNm"
+            },
+            {
+              "click": "menuItemSelected(15,1)",
+              "text": "Kilonewton-meters (kNm)",
+              "value": "forcekNm"
+            },
+            {
+              "click": "menuItemSelected(15,2)",
+              "text": "Newtons (N)",
+              "value": "forceN"
+            },
+            {
+              "click": "menuItemSelected(15,3)",
+              "text": "Kilonewtons (kN)",
+              "value": "forcekN"
+            }
+          ],
+          "text": "force"
+        },
+        {
+          "submenu": [
+            {
+              "click": "menuItemSelected(16,0)",
+              "text": "Gallons/min (gpm)",
+              "value": "flowgpm"
+            },
+            {
+              "click": "menuItemSelected(16,1)",
+              "text": "Cubic meters/sec (cms)",
+              "value": "flowcms"
+            },
+            {
+              "click": "menuItemSelected(16,2)",
+              "text": "Cubic feet/sec (cfs)",
+              "value": "flowcfs"
+            },
+            {
+              "click": "menuItemSelected(16,3)",
+              "text": "Cubic feet/min (cfm)",
+              "value": "flowcfm"
+            }
+          ],
+          "text": "flow"
+        }
+      ],
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ]
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_PEEKABOO}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 6,
+      "links": [],
+      "pageSize": null,
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
           "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Samples by Minute",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
+          "type": "number",
+          "unit": "short"
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
+      "targets": [
+        {
+          "alias": "",
+          "format": "table",
+          "rawSql": " SELECT peekaboo_version as \"Peekaboo Version\",\n   db_schema_version as \"DB Schema Version\",\n   cuckoo_version as \"Cuckoo Version\"\n from _meta;",
+          "refId": "A"
+        }
+      ],
+      "title": "Versions",
+      "transform": "table",
+      "type": "table"
     },
     {
-      "collapse": false,
-      "height": 317,
-      "panels": [
+      "aliasColors": {
+        "Bad": "#bf1b00",
+        "Ignored": "#1f78c1",
+        "Rest": "#fce2de",
+        "Unknown": "#508642"
+      },
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "${DS_PEEKABOO}",
+      "fontSize": "80%",
+      "format": "short",
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "sortDesc": true,
+        "values": true
+      },
+      "legendType": "Under graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "strokeWidth": 1,
+      "targets": [
         {
-          "columns": [],
-          "datasource": "${DS_PEEKABOO}",
-          "fontSize": "100%",
-          "id": 5,
-          "links": [],
-          "pageSize": null,
-          "scroll": true,
-          "showHeader": true,
-          "sort": {
-            "col": 1,
-            "desc": true
-          },
-          "span": 12,
-          "styles": [
-            {
-              "alias": "Time",
-              "dateFormat": "YYYY-MM-DD HH:mm:ss",
-              "pattern": "Time",
-              "type": "date"
-            },
-            {
-              "alias": "",
-              "colorMode": "cell",
-              "colors": [
-                "#052b51",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
-              ],
-              "dateFormat": "YYYY-MM-DD HH:mm:ss",
-              "decimals": 2,
-              "link": true,
-              "linkTargetBlank": true,
-              "linkUrl": "dashboard/db/detailed-job-info?var-job_hash=$__cell",
-              "pattern": "Job Hash",
-              "thresholds": [],
-              "type": "number",
-              "unit": "short"
-            },
-            {
-              "alias": "",
-              "colorMode": null,
-              "colors": [
-                "rgba(245, 54, 54, 0.9)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
-              ],
-              "decimals": 2,
-              "pattern": "/.*/",
-              "thresholds": [],
-              "type": "number",
-              "unit": "short"
-            }
-          ],
-          "targets": [
-            {
-              "alias": "",
-              "format": "table",
-              "rawSql": "select\n  FORMAT(sample_info_v3.id,0) as ID,\n  analyses_time as Date,\n  sha256sum as SHA256,\n  analysis_result_v3.name as Result,\n  sample_info_v3.file_extension as \"File extension\",\n  job_hash as \"Job Hash\"\nfrom analysis_jobs_v3\n  join sample_info_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\norder by analyses_time desc",
-              "refId": "A"
-            }
-          ],
-          "title": "Last Analysed Sampes",
-          "transform": "table",
-          "type": "table"
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Bad\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"bad\"",
+          "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Ignored\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"ignored\"",
+          "refId": "B"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Unknown\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"unknown\"",
+          "refId": "C"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"InProgress\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name = \"InProgress\"",
+          "refId": "D"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  0 as time_sec,\n  count(*) as value,\n  \"Rest\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\n# $__timeFilter(analysis_jobs_v3.analyses_time)\nWHERE analysis_result_v3.name <> \"InProgress\"\nand analysis_result_v3.name <> \"unknown\"\nand analysis_result_v3.name <> \"ignored\"\nand analysis_result_v3.name <> \"bad\"",
+          "refId": "E"
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
+      "title": "Results",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PEEKABOO}",
+      "fill": 1,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 7,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "alias": "",
+          "format": "time_series",
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(analyses_time) as time_sec,\n  count(*) as value,\n  \"Sample Count\" as metric\nFROM sample_info_v3\n  left join analysis_jobs_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\nWHERE $__timeFilter(analyses_time)\n\nGROUP BY UNIX_TIMESTAMP(analyses_time) DIV 60\n\nORDER BY analyses_time ASC",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Samples by Minute",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "datasource": "${DS_PEEKABOO}",
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 5,
+      "links": [],
+      "pageSize": null,
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 1,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "colorMode": "cell",
+          "colors": [
+            "#052b51",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "link": true,
+          "linkTargetBlank": true,
+          "linkUrl": "dashboard/db/detailed-job-info?var-job_hash=$__cell",
+          "pattern": "Job Hash",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "alias": "",
+          "format": "table",
+          "rawSql": "select\n  FORMAT(sample_info_v3.id,0) as ID,\n  analyses_time as Date,\n  sha256sum as SHA256,\n  analysis_result_v3.name as Result,\n  sample_info_v3.file_extension as \"File extension\",\n  job_hash as \"Job Hash\"\nfrom analysis_jobs_v3\n  join sample_info_v3 on sample_info_v3.id = analysis_jobs_v3.sample_id\n  join analysis_result_v3 on result_id = analysis_result_v3.id\norder by analyses_time desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Last Analysed Sampes",
+      "transform": "table",
+      "type": "table"
     }
   ],
-  "schemaVersion": 14,
+  "refresh": "5s",
+  "schemaVersion": 16,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1365,5 +1367,6 @@
   },
   "timezone": "",
   "title": "PeekabooAVV3",
+  "uid": "oAoGWPVmk",
   "version": 2
 }
