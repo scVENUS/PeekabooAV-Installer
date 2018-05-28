@@ -36,7 +36,7 @@ do
     #echo "  $(cmp ${p[0]} ${p[1]})"
     if [[ "$1" == "update" ]]
     then
-      cp -uv ${p[1]} ${p[0]}
+      cp -v ${p[1]} ${p[0]}
     fi
   fi
   if [ $VERBOSE -eq 1 ]
@@ -52,6 +52,7 @@ done <<EOF
 ../cuckoo/cuckooprocessor.sh /opt/peekaboo/cuckooprocessor.sh
 ../cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/reporting.conf
 ../peekaboo/peekaboo.conf /opt/peekaboo/peekaboo.conf
+../peekaboo/ruleset.conf /opt/peekaboo/ruleset.conf
 ../postfix/master.cf /etc/postfix/master.cf
 ../postfix/main.cf /etc/postfix/main.cf
 ../systemd/mysql-proxy.socket /etc/systemd/system/mysql-proxy.socket

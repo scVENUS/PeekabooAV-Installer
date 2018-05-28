@@ -30,6 +30,10 @@
 datadir=$(dirname $(readlink -e "$0"))
 echo "Datadir set to $datadir"
 
+# to run cp commands interactively pass -i as $1
+interactive=$1
+
+
 # source config
 [ -f ./PeekabooAV-install.conf ] && source ./PeekabooAV-install.conf
 
@@ -201,25 +205,26 @@ pip install -r /opt/peekaboo/requirements.txt
 python setup.py install
 
 # Copy systemd unit files to /etc.
-cp -ub ${datadir}/systemd/peekaboo.service /etc/systemd/system
-cp -ub ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
-cp -ub ${datadir}/systemd/mysql-proxy.service /etc/systemd/system
-cp -ub ${datadir}/systemd/mysql-proxy.socket /etc/systemd/system
+cp $interactive -ub ${datadir}/systemd/peekaboo.service /etc/systemd/system
+cp $interactive -ub ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
+cp $interactive -ub ${datadir}/systemd/mysql-proxy.service /etc/systemd/system
+cp $interactive -ub ${datadir}/systemd/mysql-proxy.socket /etc/systemd/system
 # Enable services to run on startup.
 systemctl enable peekaboo
 systemctl enable cuckoohttpd
 
 # Place Peekaboo config in /opt/peekaboo
-cp -ub ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
+cp $interactive -ub ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
+cp $interactive -ub ${datadir}/peekaboo/ruleset.conf /opt/peekaboo
 
 
 # Now place wrapper to run vboxmanage command on remote host.
 # This is necessary to control vm start, stop and snapshot restore
 # on the host from within the Peekaboo-VM.
-cp -ub ${datadir}/vbox/vboxmanage /usr/local/bin
+cp $interactive -ub ${datadir}/vbox/vboxmanage /usr/local/bin
 # The configuration contains IP address and username of the target
 # user on the host that owns all virtual box vms.
-cp -ub ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
+cp $interactive -ub ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
 chown peekaboo:peekaboo /var/lib/peekaboo/vboxmanage.conf
 
 # Install ssh and setup ssh key for peekaboo user.
@@ -244,10 +249,10 @@ setcap cap_chown+ep /opt/peekaboo/bin/chown2me
 su -c "cuckoo community" peekaboo
 
 # Copy config files for cuckoo
-cp -ub ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
-cp -ub ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
-cp -ub ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
-cp -ub ${datadir}/cuckoo/cuckooprocessor.sh /opt/peekaboo/
+cp $interactive -ub ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
+cp $interactive -ub ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
+cp $interactive -ub ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
+cp $interactive -ub ${datadir}/cuckoo/cuckooprocessor.sh /opt/peekaboo/
 
 
 # Install amavis and dependencies.
@@ -265,12 +270,12 @@ else
   cd peekabooav-amavisd
 fi
 
-cp amavisd /usr/sbin/amavisd-new
+cp $interactive amavisd /usr/sbin/amavisd-new
 
 # Copy amavis configs to conf.d.
-cp -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
-cp -ub ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
-cp -ub ${datadir}/amavis/50-peekaboo /etc/amavis/conf.d/
+cp $interactive -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
+cp $interactive -ub ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
+cp $interactive -ub ${datadir}/amavis/50-peekaboo /etc/amavis/conf.d/
 
 # Restart amavis
 systemctl restart amavis
