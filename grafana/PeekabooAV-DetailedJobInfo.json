@@ -164,8 +164,8 @@
           "scroll": true,
           "showHeader": true,
           "sort": {
-            "col": 5,
-            "desc": true
+            "col": 2,
+            "desc": false
           },
           "span": 12,
           "styles": [
@@ -185,7 +185,7 @@
               ],
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
               "decimals": 0,
-              "pattern": "sample_id",
+              "pattern": "Sample ID",
               "thresholds": [],
               "type": "number",
               "unit": "short"
@@ -200,7 +200,7 @@
               ],
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
               "decimals": 0,
-              "pattern": "id",
+              "pattern": "ID",
               "thresholds": [],
               "type": "number",
               "unit": "short"
@@ -258,7 +258,7 @@
             {
               "alias": "",
               "format": "table",
-              "rawSql": "SELECT distinct job.id AS 'ID', job.filename AS 'Filename', job.cuckoo_job_id AS 'Cuckoo ID', info.file_extension AS 'File extension', result.name AS 'Result', job.analyses_time AS 'Analyses time', job.sample_id AS 'Sample ID', Incomes.value AS 'Incomes'\n from\n (SELECT COUNT(*) AS value, job.sample_id\n FROM analysis_jobs_v3 job, sample_info_v3 info\n WHERE job.sample_id=info.id\nGROUP BY job.sample_id\n) AS Incomes,\n analysis_jobs_v3 AS job, analysis_result_v3 AS result, sample_info_v3 as info \n WHERE (job.sample_id=info.id AND info.result_id=result.id AND job.job_hash =[[job_hash]] AND Incomes.sample_id=job.sample_id) \n",
+              "rawSql": "SELECT distinct job.id AS 'ID', job.filename AS 'Filename', Incomes.cuckooid AS 'Cuckoo ID' , info.file_extension AS 'File extension', result.name AS 'Result', job.analyses_time AS 'Analyses time', job.sample_id AS 'Sample ID', Incomes.value AS 'Incomes'\n from\n (SELECT COUNT(*) AS value, job.sample_id ,max(cuckoo_job_id) as cuckooid\n FROM analysis_jobs_v3 job, sample_info_v3 info\n WHERE job.sample_id=info.id\nGROUP BY job.sample_id\n) AS Incomes,\n\n analysis_jobs_v3 AS job, analysis_result_v3 AS result, sample_info_v3 as info \n WHERE (job.sample_id=info.id AND info.result_id=result.id AND job.job_hash =[[job_hash]] AND Incomes.sample_id=job.sample_id) \n",
               "refId": "A"
             }
           ],
@@ -300,8 +300,8 @@
     ]
   },
   "time": {
-    "from": "2018-05-04T11:54:15.319Z",
-    "to": "2018-05-12T11:54:15.319Z"
+    "from": "2018-04-22T11:54:15.319Z",
+    "to": "2018-05-24T11:54:15.319Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -329,6 +329,6 @@
     ]
   },
   "timezone": "",
-  "title": "Detailed Job Info",
-  "version": 2
+  "title": "detailed_job_info_v3",
+  "version": 1
 }
