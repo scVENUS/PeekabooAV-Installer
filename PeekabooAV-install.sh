@@ -84,7 +84,10 @@ we assume the following:
 - you want to install or update PeekabooAV
 - this is a Ubuntu 16.04 VM
 - is fully updated (apt-get upgrade)
-- nothing else runs on this
+- apt working and package source available
+- recent version of ansible is installed (>2.4 (not available via apt)
+- /etc/hostname is a valid FQDN
+- nothing else runs on this machine
 - you run this installer as root
 - you know what you're doing!
 
@@ -105,31 +108,41 @@ if [ $(id -u) != 0 ]; then
    exit 1
 fi
 
+# Check if hostname fqdn is properly set and resolves
+if ! hostname --fqdn > /dev/null 2>&1
+then
+   echo "ERROR: hostname FQDN not explicitly assigned"
+   exit 1
+fi
+
 # Refresh package repositories.
 apt-get update -y
 if [ $? != 0 ]; then
    echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
    exit 1
 fi
-# Install python and ansible
 
-apt-get install -y python2.7
-if [ $? != 0 ]; then
-   echo "ERROR: the installation of 'python2.7' failed. Please fix manually" >&2
+# Check for installed ansible
+if ! command -v ansible
+then
+   echo "ERROR: ansible missing"
    exit 1
 fi
 
-apt-get install -y python-pip
-if [ $? != 0 ]; then
-   echo "ERROR: the installation of 'python-pip' failed. Please fix manually" >&2
+# Warn if installed via apt and possibly too old
+if dpkg -l ansible > /dev/null 2>&1
+then
+   echo "WARNING: ansible is already installed with apt (apt-get purge ansible)"
+fi
+
+# Check for SYSTEMD module
+if ansible-doc ansible | grep -q SYSTEMD
+then
+   echo "ERROR: ansible version maybe too old, SYSTEMD module missing"
    exit 1
 fi
 
-LC_ALL=C pip install ansible
-if [ $? != 0 ]; then
-   echo "ERROR: the installation of 'ansible failed. Please fix manually" >&2
-   exit 1
-fi
+
 ANSIBLE_INVENTORY=$(dirname $0)/ansible-inventory
 ANSIBLE_PLAYBOOK=$(basename $0 .sh).yml
 
