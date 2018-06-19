@@ -145,7 +145,7 @@
         capability: cap_net_raw,cap_net_admin=eip
         state: present
 
-- name: Install Peekaboo
+- name: Clone Peekaboo Repository
   hosts: peekabooav_server
   gather_facts: no
   become: true
@@ -194,14 +194,10 @@
         state: absent
         autoremove: true
 
-    - name: Install more Peekaboo requirements
+    - name: Install Peekaboo
       pip:
-        requirements: /opt/peekaboo/requirements.txt
-
-    - name: Run the Peekaboo install routine
-      command: python setup.py install
-      args:
-        chdir: /opt/peekaboo
+        name: peekabooav
+        state: present
 
     - name: Copy systemd unit files to /etc
       copy:
@@ -406,6 +402,7 @@
   hosts: peekabooav_server
   gather_facts: no
   become: true
+  tags: mysql
   tasks:
     - name: Installing Software
       apt:
@@ -414,25 +411,32 @@
       with_items:
         - mariadb-server
         - python-mysqldb
-    - name: Copy temp file for databayse creation
-      copy:
-        src: mysql/mysql.txt
-        dest: /tmp/mysql.txt
-        owner: root
-        group: root
-        mode: 0644
 
-    - name: Create database
-      shell: mysql < /tmp/mysql.txt
-      ignore_errors: yes
+    - name: Create databases
+      mysql_db:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - cuckoo
+        - peekaboo
 
-    - name: remove temp file for databayse creation
-      file:
-        name: /tmp/mysql.txt
-        state: absent
+    - name: Create database user cuckoo
+      mysql_user:
+        name: cuckoo
+        password: newpassword
+        priv: 'cuckoo@localhost:all'
+        state: present
 
-    - name: Restart services
-      service:
+    - name: Create database user peekaboo
+      mysql_user:
         name: peekaboo
-        state: restarted
+        password: differentnewpassword
+        priv: 'peekaboo@localhost:all'
+        state: present
+
+
+#    - name: Restart services
+#      service:
+#        name: peekaboo
+#        state: restarted
 

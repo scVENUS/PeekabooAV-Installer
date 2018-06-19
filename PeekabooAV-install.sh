@@ -109,7 +109,7 @@ if [ $(id -u) != 0 ]; then
 fi
 
 # Check if hostname fqdn is properly set and resolves
-if ! hostname --fqdn > /dev/null 2>&1
+if ! hostname --fqdn | grep -q "\." > /dev/null 2>&1
 then
    echo "ERROR: hostname FQDN not explicitly assigned"
    exit 1
@@ -129,14 +129,8 @@ then
    exit 1
 fi
 
-# Warn if installed via apt and possibly too old
-if dpkg -l ansible > /dev/null 2>&1
-then
-   echo "WARNING: ansible is already installed with apt (apt-get purge ansible)"
-fi
-
 # Check for SYSTEMD module
-if ansible-doc ansible | grep -q SYSTEMD
+if ! ansible-doc systemd 2>/dev/null | grep -q SYSTEMD
 then
    echo "ERROR: ansible version maybe too old, SYSTEMD module missing"
    exit 1
@@ -177,9 +171,9 @@ assuming you've done this:
 - configured cuckoo properly to know and use your VMs
 
 now it's your turn to do the following:
-- set your own fqdn (/etc/hosts)
 - configure vmhost to allow SSH connections from $HOSTNAME (.ssh/authorized_keys)
 - configure static ip in /etc/network/interfaces
+- check dataflow through mail, amavis, peekaboo, cuckoo
 - reboot & snapshot
 
 That's it well done
