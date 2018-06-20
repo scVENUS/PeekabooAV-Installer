@@ -24,6 +24,17 @@
 # of PeekabooAV
 #
 
+# Require minimal ansible version
+- hosts: all
+  tasks:
+    - name: Check for systemd module in ansible (minimal version required 2.5)
+      systemd:
+    - name: Verify ansible version
+      assert:
+        that: "ansible_version.full | version_compare('2.5', '>=')"
+        msg: >
+          "Minimum ansible version required is 2.5"
+
 # The following code is just to have the owl and info scroll bye slowly.
 - name: Print Peekaboo logo
   hosts: localhost
