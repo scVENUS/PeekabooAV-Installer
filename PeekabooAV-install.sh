@@ -105,14 +105,36 @@ if [ $(id -u) != 0 ]; then
    exit 1
 fi
 
+# Check for installed ansible
+if dpkg -l ansible > /dev/null 2>&1
+then
+   echo "WARNING: ansible is already installed with apt (apt-get purge ansible)"
+fi
+
+ansibleversion=$(ansible --version | head -n 1 | grep -o "[0-9\.]*")
+IFS='.' read -r -a ansibleversionarray <<< "$ansibleversion"
+# check major version
+if [[ ${ansibleversionarray[0]} -eq 2 ]]
+then
+  # check minor version
+  if [[ ${ansibleversionarray[1]} -lt 5 ]]
+  then
+     echo "ERROR: ansible version (${ansibleversion}) too old, at least version 2.5 required"
+     exit 1
+  fi
+else
+  echo "ERROR: ansible version likely not compatable, at least version 2.5 required"
+  exit 1
+fi
+
 # Refresh package repositories.
 apt-get update -y
 if [ $? != 0 ]; then
    echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
    exit 1
 fi
-# Install python and ansible
 
+# Install python and ansible
 apt-get install -y python2.7
 if [ $? != 0 ]; then
    echo "ERROR: the installation of 'python2.7' failed. Please fix manually" >&2
@@ -174,5 +196,3 @@ That's it well done
 Thanks
 have a nice day
 EOF
-
-
