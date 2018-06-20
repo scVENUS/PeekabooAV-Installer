@@ -151,13 +151,6 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
-# Install python and ansible
-apt-get install -y python2.7
-if [ $? != 0 ]; then
-   echo "ERROR: the installation of 'python2.7' failed. Please fix manually" >&2
-   exit 1
-fi
-
 # Check for SYSTEMD module
 if ! ansible-doc systemd 2>/dev/null | grep -q SYSTEMD
 then
