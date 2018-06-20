@@ -222,8 +222,28 @@
         - cuckoohttpd
 
     - name: Place Peekaboo config in /opt/peekaboo
+      tags: peekabooconf
       copy:
         src: peekaboo/peekaboo.conf 
+        dest: /opt/peekaboo/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+
+    - name: Place Peekaboo ruleset.conf in /opt/peekaboo
+      tags: peekabooconf
+      copy:
+        src: /opt/peekaboo/ruleset.conf.sample
+        dest: /opt/peekaboo/ruleset.conf
+        owner: root
+        group: root
+        mode: 0755
+        backup: true
+
+    - name: Place cuckoo processor wrapper in /opt/peekaboo
+      copy:
+        src: cuckoo/cuckooprocessor.sh
         dest: /opt/peekaboo/
         owner: root
         group: root
@@ -282,9 +302,10 @@
         mode: 0600
 
     - name: Set chown capability to chown2me
+      tags: chown
       capabilities:
         path: /opt/peekaboo/bin/chown2me
-        capability: cap_chown+e
+        capability: cap_chown+ep
         state: present
 
 
@@ -424,14 +445,16 @@
       mysql_user:
         name: cuckoo
         password: newpassword
-        priv: 'cuckoo@localhost:all'
+        host: localhost
+        priv: 'cuckoo.*:ALL,GRANT'
         state: present
 
     - name: Create database user peekaboo
       mysql_user:
         name: peekaboo
         password: differentnewpassword
-        priv: 'peekaboo@localhost:all'
+        host: localhost
+        priv: 'peekaboo.*:ALL,GRANT'
         state: present
 
 
