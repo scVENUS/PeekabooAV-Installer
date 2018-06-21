@@ -312,6 +312,12 @@
         group: peekaboo
         mode: 0600
 
+    - name: Compile chown2me
+      command: make chown2me
+      args:
+        chdir: /opt/peekaboo/bin
+        creates: /opt/peekaboo/bin/chown2me
+
     - name: Set chown capability to chown2me
       tags: chown
       capabilities:
