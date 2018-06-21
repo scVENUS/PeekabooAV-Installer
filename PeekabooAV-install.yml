@@ -216,7 +216,7 @@
         dest: /etc/systemd/system/
         owner: root
         group: root
-        mode: 0755
+        mode: 0644
         backup: true
       with_items:
         - peekaboo.service
