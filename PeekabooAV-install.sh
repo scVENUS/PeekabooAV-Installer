@@ -1,4 +1,4 @@
-#!/bin/bash -fue
+#!/bin/bash
 #
 #
 #   PeekabooAV Installer
@@ -25,43 +25,16 @@
 # of PeekabooAV
 #
 
-# `datadir` contains the location of the PeekabooAV-Installer
-# repository clone
-datadir=$(dirname $(readlink -e "$0"))
-echo "Datadir set to $datadir"
-
-# to run cp commands interactively pass -i as $1
-interactive=$1
-
-
-# source config
-[ -f ./PeekabooAV-install.conf ] && source ./PeekabooAV-install.conf
-
-# Use the environment proxy settings.
-http_proxy=${http_proxy:-}
-
-# If no proxy is set yet try default.
-if [ -z "$http_proxy" ]
-then
-  IP=10.0.2.4
-  PORT=3128
-  # Check if default proxy is reachable.
-  # Like I said, this is just for me.
-  if nc -w 1 -z ${IP} ${PORT}
-  then
-    export http_proxy=http://${IP}:${PORT}
-    export https_proxy=http://${IP}:${PORT}
-  fi
-else
-  echo "Proxy Setting"
-  echo $http_proxy
-fi
-
-# In combination with the bash -fue in line 1 this will give information
-# and crash this script on any uncaught error.
-# That's also why some commands that are expected to return an error code
-# are appended with `|| true`
-trap '[ $? -gt 0 ] && echo "ERROR in $PWD/$0 at line $LINENO - you might want to run it again" >&2 && exit 1' 0
+# The following function will clear all buffered stdin.  (See
+# http://compgroups.net/comp.unix.shell/clear-stdin-before-place-read-a/507380)
+fflush_stdin() {
+    local dummy=""
+    local originalSettings=""
+    originalSettings=`stty -g`
+    stty -icanon min 0 time 0
+    while read dummy ; do : ; done
+    stty "$originalSettings"
+}
 
 # The following code is just to have the owl and info scroll bye slowly.
 while IFS= read -r line; do
@@ -111,7 +84,10 @@ we assume the following:
 - you want to install or update PeekabooAV
 - this is a Ubuntu 16.04 VM
 - is fully updated (apt-get upgrade)
-- nothing else runs on this
+- apt working and package source available
+- recent version of ansible is installed (>2.4 (not available via apt)
+- /etc/hostname is a valid FQDN
+- nothing else runs on this machine
 - you run this installer as root
 - you know what you're doing!
 
@@ -122,178 +98,85 @@ Press enter to continue
 EOF
 
 # Discard all input in buffer.
-read -t .1 -n 10000 discard || true
+fflush_stdin
+
 # Read 'Press enter ..'
 read
 
-# Turn on debugging output of every comand run
-set -x
+if [ $(id -u) != 0 ]; then
+   echo "ERROR: $(basename $0) needs to be run as root" >&2
+   exit 1
+fi
 
-# Check if running as root
-[ $(id -u) -eq 0 ] || exit 1
+# Check if hostname fqdn is properly set and resolves
+if ! hostname --fqdn | grep -q "\." > /dev/null 2>&1
+then
+   echo "ERROR: hostname FQDN not explicitly assigned"
+   exit 1
+fi
 
+# Check for installed ansible
+if ! command -v ansible
+then
+   echo "ERROR: ansible missing"
+   exit 1
+fi
 
-cd /root
+# Check for installed ansible
+if dpkg -l ansible > /dev/null 2>&1
+then
+   echo "WARNING: ansible is already installed with apt (apt-get purge ansible)"
+fi
+
+ansibleversion=$(ansible --version | head -n 1 | grep -o "[0-9\.]*")
+IFS='.' read -r -a ansibleversionarray <<< "$ansibleversion"
+# check major version
+if [[ ${ansibleversionarray[0]} -eq 2 ]]
+then
+  # check minor version
+  if [[ ${ansibleversionarray[1]} -lt 5 ]]
+  then
+     echo "ERROR: ansible version (${ansibleversion}) too old, at least version 2.5 required"
+     exit 1
+  fi
+else
+  echo "ERROR: ansible version likely not compatable, at least version 2.5 required"
+  exit 1
+fi
 
 # Refresh package repositories.
 apt-get update -y
-
-# Install basic tools.
-apt-get install -y vim ipython less iputils-ping socket netcat git curl socat
-
-# Install Cuckoo dependencies.
-apt-get install -y python python-pip python-dev libffi-dev libssl-dev
-apt-get install -y python-virtualenv python-setuptools
-apt-get install -y libjpeg-dev zlib1g-dev swig
-apt-get install -y sqlite3 
-apt-get install -y swig
-apt-get install -y mongodb 
-
-pip install -U pip 
-pip install -U setuptools
-pip install -U cuckoo
-# TODO: since 2.0.4 yara is included
-pip install -U yara-python==3.6.3
-
-# Install tcpdump and set capability.
-apt-get install -y tcpdump
-setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
-
-
-# Install Peekaboo
-cd /opt
-
-# Skip if /opt/peekaboo already exists
-if [ -d /opt/peekaboo ]
-then
-  cd /opt/peekaboo
-  echo "Updating peekaboo code /opt/peekaboo" 
-  git checkout master
-  git pull
-else
-  # Use PeekabooAV code in Installer directory if present.
-  if [ -d ${datadir}/peekabooav/ ]
-  then
-    git clone ${datadir}/peekabooav/ peekaboo
-  else
-    git clone https://github.com/scvenus/peekabooav peekaboo
-  fi
-fi
-cd /opt/peekaboo
-git checkout master
-if [[ -z "$latest" ]]
-then
-  git checkout $(git tag | grep "^v" | tail -1)
-else
-  git checkout $latest
+if [ $? != 0 ]; then
+   echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
+   exit 1
 fi
 
-# Create a new group peekaboo.
-groupadd -g 150 peekaboo || echo "Couldn't add group, probably exists already"
-# Create a new user peekaboo.
-useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo || echo "Couldn't add user, probably exists already"
-
-cd /opt/peekaboo
-
-# If python-pyasn1 is already installed by apt uninstall it
-apt-get autoremove -y python-pyasn1
-# so it can be installed with pip as a requirement in the 
-# correct version.
-# remove comment as soon as requirements are fixed
-pip install -r /opt/peekaboo/requirements.txt
-# Run the Peekaboo install routine.
-python setup.py install
-
-# Copy systemd unit files to /etc.
-cp $interactive -ub ${datadir}/systemd/peekaboo.service /etc/systemd/system
-cp $interactive -ub ${datadir}/systemd/cuckoohttpd.service /etc/systemd/system
-cp $interactive -ub ${datadir}/systemd/mysql-proxy.service /etc/systemd/system
-cp $interactive -ub ${datadir}/systemd/mysql-proxy.socket /etc/systemd/system
-# Enable services to run on startup.
-systemctl enable peekaboo
-systemctl enable cuckoohttpd
-
-# Place Peekaboo config in /opt/peekaboo
-cp $interactive -ub ${datadir}/peekaboo/peekaboo.conf /opt/peekaboo
-cp $interactive -ub ${datadir}/peekaboo/ruleset.conf /opt/peekaboo
-
-
-# Now place wrapper to run vboxmanage command on remote host.
-# This is necessary to control vm start, stop and snapshot restore
-# on the host from within the Peekaboo-VM.
-cp $interactive -ub ${datadir}/vbox/vboxmanage /usr/local/bin
-# The configuration contains IP address and username of the target
-# user on the host that owns all virtual box vms.
-cp $interactive -ub ${datadir}/vbox/vboxmanage.conf /var/lib/peekaboo/
-chown peekaboo:peekaboo /var/lib/peekaboo/vboxmanage.conf
-
-# Install ssh and setup ssh key for peekaboo user.
-apt-get install -y ssh
-[ -d /var/lib/peekaboo/.ssh ] || mkdir /var/lib/peekaboo/.ssh
-chown peekaboo:peekaboo /var/lib/peekaboo/.ssh
-# This key will have to be allowed on the host to authenticate the vm user.
-[ -f /var/lib/peekaboo/.ssh/id_ed25519 ] || su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
-
-# Setup chown2me.
-# This is still necessary so Peekaboo can take ownership of
-# the files created by amavis (patch).
-touch /opt/peekaboo/chown2me.log
-chown peekaboo:peekaboo /opt/peekaboo/chown2me.log
-setcap cap_chown+ep /opt/peekaboo/bin/chown2me
-
-
-# Initial run of Cuckoo to create directory structure in peekaboo $HOME.
-[ -d /var/lib/peekaboo/.cuckoo ] || su -c "cuckoo" peekaboo
-
-# Install cuckoo community signatures.
-su -c "cuckoo community" peekaboo
-
-# Copy config files for cuckoo
-cp $interactive -ub ${datadir}/cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/
-cp $interactive -ub ${datadir}/cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/
-cp $interactive -ub ${datadir}/cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/
-cp $interactive -ub ${datadir}/cuckoo/cuckooprocessor.sh /opt/peekaboo/
-
-
-# Install amavis and dependencies.
-apt-get install -y amavisd-new && true
-apt-get install -y arj bzip2 cabextract cpio file gzip lhasa nomarch pax rar unrar unzip zip zoo || true
-
-# Get current version and patch amavisd-new.
-cd /opt/peekaboo
-if [ -d peekabooav-amavisd ]
+# Check for SYSTEMD module
+if ! ansible-doc systemd 2>/dev/null | grep -q SYSTEMD
 then
-  cd peekabooav-amavisd
-  git pull
-else
-  git clone -b debian-find_config_files https://github.com/scvenus/peekabooav-amavisd
-  cd peekabooav-amavisd
+   echo "ERROR: ansible version maybe too old, SYSTEMD module missing"
+   exit 1
 fi
 
-cp $interactive amavisd /usr/sbin/amavisd-new
 
-# Copy amavis configs to conf.d.
-cp $interactive -ub ${datadir}/amavis/15-av_scanners /etc/amavis/conf.d/
-cp $interactive -ub ${datadir}/amavis/15-content_filter_mode /etc/amavis/conf.d/
-cp $interactive -ub ${datadir}/amavis/50-peekaboo /etc/amavis/conf.d/
+ANSIBLE_INVENTORY=$(dirname $0)/ansible-inventory
+ANSIBLE_PLAYBOOK=$(basename $0 .sh).yml
 
-# Restart amavis
-systemctl restart amavis
+if [ ! -r "$ANSIBLE_INVENTORY" ]; then
+    echo "ERROR: ansible inventory file "$ANSIBLE_INVENTORY" not found" >&2
+    exit 1
+fi
 
-# Allow access files and sockets for both.
-gpasswd -a amavis peekaboo
-gpasswd -a peekaboo amavis
+if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
+    echo "ERROR: ansible playbook "$ANSIBLE_PLAYBOOK" not found" >&2
+    exit 1
+fi
+ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
 
-
-
-# Install mysql database and setup users and databases.
-apt-get install -y mariadb-server python-mysqldb
-mysql < ${datadir}/mysql/mysql.txt || echo "Couldn't create dabases and users. Probably already exists"
-
-# Restart services
-systemctl restart peekaboo || echo "Peekaboo restart didn't work. Probably not configured yet"
-
-
+if [ $? != 0 ];then
+   echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
+   exit 1
+fi
 # Clear screen.
 clear
 
@@ -310,9 +193,9 @@ assuming you've done this:
 - configured cuckoo properly to know and use your VMs
 
 now it's your turn to do the following:
-- set your own fqdn (/etc/hosts)
 - configure vmhost to allow SSH connections from $HOSTNAME (.ssh/authorized_keys)
 - configure static ip in /etc/network/interfaces
+- check dataflow through mail, amavis, peekaboo, cuckoo
 - reboot & snapshot
 
 That's it well done
@@ -320,5 +203,3 @@ That's it well done
 Thanks
 have a nice day
 EOF
-
-

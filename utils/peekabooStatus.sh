@@ -11,7 +11,7 @@ uname -a
 echo
 
 blue "Status of systemd units"
-for t in amavis peekaboo cuckoohttpd
+for t in amavis peekaboo cuckoohttpd mongodb
 do
   systemctl status $t | grep "\($t.service \|Active:\)"
 done

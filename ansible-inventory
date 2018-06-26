@@ -1,0 +1,5 @@
+[peekabooav_server]
+localhost ansible_connection=local
+
+[mariadb_server]
+localhost ansible_connection=local
