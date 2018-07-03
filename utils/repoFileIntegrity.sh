@@ -44,24 +44,28 @@ do
     diff ${p[0]} ${p[1]}
   fi
 done <<EOF
+../amavis/15-av_scanners /etc/amavis/conf.d/15-av_scanners
 ../amavis/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 ../amavis/50-peekaboo /etc/amavis/conf.d/50-peekaboo
-../amavis/15-av_scanners /etc/amavis/conf.d/15-av_scanners
-../cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/virtualbox.conf
 ../cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
 ../cuckoo/cuckooprocessor.sh /opt/peekaboo/cuckooprocessor.sh
 ../cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/reporting.conf
+../cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/virtualbox.conf
+../grafana/node_exporter.service /etc/systemd/system/node_exporter.service
+../grafana/prometheus.service /etc/systemd/system/prometheus.service
+../grafana/prometheus.yml /etc/prometheus/prometheus.yml
 ../peekaboo/peekaboo.conf /opt/peekaboo/peekaboo.conf
 ../peekaboo/ruleset.conf /opt/peekaboo/ruleset.conf
-../postfix/master.cf /etc/postfix/master.cf
+../postfix/fetchmailrc /etc/fetchmailrc
 ../postfix/main.cf /etc/postfix/main.cf
-../systemd/mysql-proxy.socket /etc/systemd/system/mysql-proxy.socket
+../postfix/master.cf /etc/postfix/master.cf
 ../systemd/cuckoohttpd.service /etc/systemd/system/cuckoohttpd.service
-../systemd/peekaboo.service /etc/systemd/system/peekaboo.service
 ../systemd/mysql-proxy.service /etc/systemd/system/mysql-proxy.service
-../ubuntu/interfaces /etc/network/interfaces
-../ubuntu/hosts /etc/hosts
+../systemd/mysql-proxy.socket /etc/systemd/system/mysql-proxy.socket
+../systemd/peekaboo.service /etc/systemd/system/peekaboo.service
 ../ubuntu/hostname /etc/hostname
-../vbox/vboxmanage /usr/local/bin/vboxmanage
+../ubuntu/hosts /etc/hosts
+../ubuntu/interfaces /etc/network/interfaces
 ../vbox/vboxmanage.conf /var/lib/peekaboo/vboxmanage.conf
+../vbox/vboxmanage /usr/local/bin/vboxmanage
 EOF
