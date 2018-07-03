@@ -88,7 +88,7 @@
   hosts: all
   tasks:
     - fail: 
-        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} not yet supported"
+        msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} not yet supported. Please use the version that is specified in README.md"
       when: (ansible_distribution != "Ubuntu") or (ansible_distribution_version != "16.04")
 
 - name: Install software packages
