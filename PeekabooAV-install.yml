@@ -258,7 +258,7 @@
         dest: /opt/peekaboo/
         owner: root
         group: root
-        mode: 0644
+        mode: 0755
         backup: true
 
     - name: Now place wrapper to run vboxmanage command on remote host
