@@ -20,11 +20,27 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 
 ## Prerequisites ##
 
-* Ubuntu 16.04 base install virtual machine
-* Working Cuckoo Sandbox virtual machines
-* Linux host with Virtual Box
-* Postfix installation on the host
-* you know what you're doing
+* you want to install or update PeekabooAV
+* this is a Ubuntu 16.04 VM
+* is fully updated (apt-get upgrade)
+* apt working and package source available
+* recent version of ansible is installed (>2.4 (not available via apt)
+* /etc/hostname is a valid FQDN
+* nothing else runs on this machine
+* you run this installer as root
+* you know what you're doing!
+
+
+### This is what you type (copy - paste)
+```
+apt update
+apt upgrade
+apt install python-pip
+pip install ansible
+git clone https://github.com/scvenus/peekabooav-installer
+cd peekabooav-installer/
+./PeekabooAV-install.sh
+```
 
 
 ## Communication flow ##
@@ -46,16 +62,15 @@ files and reports back to AMaViS. Mail is then handed back to the host.
 There is a user called ``peekaboo`` whose home is at ``/var/lib/peekaboo``.
 
 Assuming you've done this:
-* installed and replicated your VMs on your VM host
-* configured networking properly
-* configured some mail thing on the host
-* configured cuckoo properly to know and use your VMs
-
-Then it's your turn to do the following:
-* set your own FQDN (``/etc/hosts``)
-* configure VM host to allow SSH connections from ``$HOSTNAME (.ssh/authorized_keys)``
-* configure static IP in ``/etc/network/interfaces``
-* reboot & snapshot
+* you want to install or update PeekabooAV
+* this is a Ubuntu 16.04 VM
+* is fully updated (apt-get upgrade)
+* apt working and package source available
+* recent version of ansible is installed (>2.4 (not available via apt)
+* /etc/hostname is a valid FQDN
+* nothing else runs on this machine
+* you run this installer as root
+* you know what you're doing!
 
 That's it well done
 
@@ -65,7 +80,26 @@ have a nice day
 
 ### Do more ###
 
-Then carry on reading [REAMDE-postinstallation.md](REAMDE-postinstallation.md)
+
+#### Check the components:
+
+```
+su -c "vboxmanage list vms" peekaboo
+su -c "cuckoo" peekaboo
+su -c "peekaboo -d -c /opt/peekaboo/peekaboo.conf" peekaboo
+# if you upgrade from an earlier version you might have to delete the _meta table first
+# should crash with "No such file or directory: '/var/run/peekaboo/peekaboo.pid'"
+systemctl start peekaboo
+ss -np | grep peekaboo
+socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock
+systemctl status cuckoohttpd
+systemctl status mongodb
+http://127.0.0.1:8000 # cuckoo web UI analyse a file
+python -m smtpd -n -c DebuggingServer 0.0.0.0:10025 &
+utils/checkFileWithPeekaboo.py grafana/Screenshot-2018-1-17\ Grafana\ -\ PeekabooAV.png
+```
+
+Then carry on reading [README-postinstallation.md](README-postinstallation.md)
 
 AND find useful scripts in [utils](utils)
 
