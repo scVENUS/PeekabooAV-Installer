@@ -12,6 +12,7 @@ By Felix Bauer
 felix.bauer@atos.net
 
 8.11.2017
+29.06.2017
 
 
 
@@ -22,68 +23,72 @@ C:\Python27\python.exe .\vboxmanageAPI.py
 """
 
 
-import subprocess
+import SocketServer
 import socket
-import sys
 import os
 import re
-from threading import Thread
 
-host = "0.0.0.0"; #! address to bind on.
+
+# address to bind to.
+host = "0.0.0.0";
+# allowed source IPs
 src  = ("127.0.0.1","10.0.2.15");
 port = int(4444);
+# allow only control over VMs with prefix
 machineprefix = "(cuckoo|list)";
 
 
-def runstuff(c, addr):
-	data=c.recv(1024);
-	if len(data) > 3:
-		print ":"+data+":";
-	# vboxmanage showvminfo cuckoo101 --machinereadable
-	m = re.search('^(vboxmanage [a-z0-9- ]*%s[A-Za-z0-9- ]*)$' % machineprefix, data)
-	if not m:
-		print m
-		c.send("Illegal command\n")
-		c.shutdown(socket.SHUT_RDWR)	
-		s.close()
-		print "child done"
-		return
 
-	for line in os.popen(data):
-		c.send(line);
-	c.shutdown(socket.SHUT_RDWR)	
-	s.close()
-	print "child done"
+class VBoxManageAPI(SocketServer.ThreadingTCPServer):
+    def __init__(self, bind_addr, port,
+                 request_handler,
+                 bind_and_activate=True):
+        SocketServer.ThreadingTCPServer.__init__(
+            self, (bind_addr, int(port)),
+            request_handler,
+            bind_and_activate=bind_and_activate
+        )
+        print('[+] Listening: %s on port %s' % (bind_addr, port))
+
+    def server_close(self):
+        print('[-] Shutting down VBoxManageAPI.')
+        return SocketServer.ThreadingTCPServer.server_close(self)
 
 
-while True:
-	try:
-		s = socket.socket(socket.AF_INET,socket.SOCK_STREAM);
-		s.bind((host,port));
-		s.listen(4);
-		while True:
-			print "waiting for connection"
-			c,addr=s.accept();
-			print addr;
-			if addr[0] not in src:
-				c.send("Access denied, bye\n")
-				print "Access denied"
-				c.shutdown(socket.SHUT_RDWR)
-				s.close()
-				break
-			Thread(target=runstuff,args=[c,addr]).start()
+class VBoxManageAPIHandler(SocketServer.BaseRequestHandler):
+    def handle(self):
+        if self.client_address[0] in src:
+            print('[-] Connection from %s' % self.client_address[0])
+        else:
+            print('[!] Reject connection from %s' % self.client_address[0])
+            return
 
-	except KeyboardInterrupt:
-		c.send("\n\t[ctrl+c] server forcely closed by Victim.\n");
-		s.close();
-		sys.exit(1);
-	except socket.error:
-		print "\n\t[error] Address { %s : %s } already in use."%(host,port);
-		print "\t[error] just wait a bit until we correct it for you.";
-		s.close();
-		print "\n\ntrying again ....";
-	except OSError:
-		print "\n\t[error] Address { %s : %s } already in use."%(host,port);
-		print "\t[error] just wait a bit until we correct it for you.";
-		s.close();
-		print "\n\ntrying again ....";
+        command = self.request.recv(1024).rstrip()
+        print('[-] Got request to execute %s' % command)
+
+        # vboxmanage showvminfo cuckoo101 --machinereadable
+        m = re.search('^(vboxmanage [a-z0-9- ]*%s[A-Za-z0-9- ]*)$' % machineprefix, command)
+        if m:
+            print('[-] Executing "%s"' % command)
+            for line in os.popen(command):
+                self.request.send(line)
+        else:
+            self.request.sendall('> Illegal command "%s".' % command)
+
+
+if __name__ == '__main__':
+    server = VBoxManageAPI(
+        host, port,
+        VBoxManageAPIHandler
+    )
+    try:
+        server.serve_forever()
+    except OSError:
+        print('[!] Address already in use.')
+    except socket.error:
+        print('[!] Address already in use.')
+    except KeyboardInterrupt:
+        server.shutdown()
+        print('[!] Server terminated by user.')
+    finally:
+        server.server_close()
