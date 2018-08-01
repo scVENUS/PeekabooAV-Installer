@@ -32,3 +32,10 @@ Helps a lot in debugging. We might ask you to run it so we can better help.
 # repoFileIntegrity.sh #
 
 Is mostly for me quickly find changes I made and update the installer.
+
+# forward_claws_mail.py #
+Install Claws Mail and set up you're e-mail account.
+Configuration-> Actions...-> Command like described in the screenshot: python /path/to/file/forward_claws_mail.py %f
+To use the script set up a mail server, the easiest way is to use the script "run_dev_mailserver.sh"
+For script execution select the mail you want to check-> Tools -> Actions -> the name of you're script
+
