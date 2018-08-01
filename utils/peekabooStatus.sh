@@ -31,6 +31,8 @@ git log | head -n 5
 echo
 blue "Cuckoo Version: "
 python -c "import cuckoo; print cuckoo.__version__"
+blue "PeekabooAV Version: "
+python -c "import peekaboo; print peekaboo.__version__"
 echo
 blue "Peekaboo DB:"
 echo "show tables" | mysql peekaboo
@@ -54,3 +56,6 @@ mailq ) | more
 echo
 blue "Chown2me Capability"
 getcap /opt/peekaboo/bin/chown2me
+
+blue "Installed package versions"
+dpkg -l ansible postfix mariadb-common mariadb-server amavisd-new mongodb sqlite3 tcpdump
