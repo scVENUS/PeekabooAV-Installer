@@ -59,3 +59,17 @@ getcap /opt/peekaboo/bin/chown2me
 
 blue "Installed package versions"
 dpkg -l ansible postfix mariadb-common mariadb-server amavisd-new mongodb sqlite3 tcpdump
+
+blue "Installed pip packages"
+pip show ansible pip cuckoo peekabooav
+
+
+blue "Connect to postfix"
+echo HELLO | nc -N 127.0.0.1 25
+
+blue "Connect to amavis"
+echo HELLO | nc -N 127.0.0.1 10024
+
+blue "Connect to peekaboo socket"
+echo HELLO | nc -NU /var/run/peekaboo/peekaboo.sock
+echo
