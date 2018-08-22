@@ -304,7 +304,7 @@
 
     - name: Setup chown2me
       # This is still necessary so Peekaboo can take ownership of the
-      # files created by amavis (patch).
+      # files created by amavis.
       file:
         path: /opt/peekaboo/chown2me.log
         state: touch
@@ -382,25 +382,6 @@
         - unzip
         - zip
         - zoo
-    - name: Checking that /opt/peekaboo/peekabooav-amavisd exists
-      file:
-        path: /opt/peekaboo/peekabooav-amavisd
-        state: directory
-        mode: 0755
-        owner: peekaboo
-        group: peekaboo
-
-    - name: Get current version and patch amavisd-new
-      git:
-        repo: https://github.com/scvenus/peekabooav-amavisd
-        dest: /opt/peekaboo/peekabooav-amavisd
-        version: debian-find_config_files
-
-    - name: copy patched amavisd-new to system
-      copy:
-        src: /opt/peekaboo/peekabooav-amavisd/amavisd
-        dest: /usr/sbin/amavisd-new
-        remote_src: true
 
     - name: Copy amavis configs to conf.d
       copy:
@@ -411,6 +392,7 @@
         mode: 0644
         backup: true
       with_items:
+        - 10-ask_peekaboo
         - 15-av_scanners
         - 15-content_filter_mode
         - 50-peekaboo
