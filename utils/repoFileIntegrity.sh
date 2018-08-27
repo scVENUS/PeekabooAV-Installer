@@ -12,6 +12,7 @@ then
   shift
   echo "$0 [-h|--help|-v|--verbose]"
   echo "$0 update  # copies changed files to repository"
+  echo "$0 install # copies repository files to system (use with care)"
   exit 0
 fi
 
@@ -38,6 +39,11 @@ do
     then
       cp -v ${p[1]} ${p[0]}
     fi
+  fi
+  if [[ "$1" == "install" ]]
+  then
+    [ ! -d $(dirname ${p[1]}) ] && mkdir -p $(dirname ${p[1]})
+    cp -v ${p[0]} ${p[1]}
   fi
   if [ $VERBOSE -eq 1 ]
   then
