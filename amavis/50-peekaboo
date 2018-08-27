@@ -22,9 +22,6 @@ $virus_admin = 'root@peekabooav-demo.int';
 $warnvirussender = 1;
 $warnvirusrecip = 1;
 
-$enable_dump_info  = 1;       # set to 1 to enable dump_info feature
-$dump_info_tempdir = '/tmp';  # base directory where dump_info() will put its stuff
-
 # Change the default mail digest from MD5 and SHA-1 to SHA-256.
 # This is mandatory to correlate Peekaboo results with mail logs, since
 # Peekaboo uses SHA-256.

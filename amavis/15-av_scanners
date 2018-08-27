@@ -7,7 +7,7 @@ use strict;
 @av_scanners = (
 
  ['Peekaboo-Analysis',
-   \&ask_daemon, ["{}\n", "/var/run/peekaboo/peekaboo.sock"],
+   \&ask_peekaboo, ["{}\n", "/var/run/peekaboo/peekaboo.sock"],
    qr/wurde als "(unknown|checked|good|ignored)" eingestuft/m,
    qr/wurde als "bad" eingestuft/m ],
 
