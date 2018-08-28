@@ -50,6 +50,7 @@ do
     diff ${p[0]} ${p[1]}
   fi
 done <<EOF
+../amavis/10-ask_peekaboo /etc/amavis/conf.d/10-ask_peekaboo
 ../amavis/15-av_scanners /etc/amavis/conf.d/15-av_scanners
 ../amavis/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 ../amavis/50-peekaboo /etc/amavis/conf.d/50-peekaboo
