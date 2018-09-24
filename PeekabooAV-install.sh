@@ -36,14 +36,7 @@ fflush_stdin() {
     stty "$originalSettings"
 }
 
-if [[ "$1" != "--quiet" ]]
-then
-    shift
-    # The following code is just to have the owl and info scroll bye slowly.
-    while IFS= read -r line; do
-      printf '%s\n' "$line"
-      sleep .1
-    done << EOF
+owl="
                                                                                 
                          ==                             =                       
                          ========                 =======                       
@@ -78,8 +71,9 @@ then
           ,,,,,                                                      ,,,        
        ,,,                                                                      
     ,                                                                           
-                                                                                
-                                                                                
+"
+
+note="                                                                              
 Welcome to the PeekabooAV installer
 ===================================
 
@@ -93,12 +87,32 @@ we assume the following:
 - nothing else runs on this machine
 - you run this installer as root
 - you know what you're doing!
+"
 
-If any of these is not the case please hit Ctrl+c
+if [[ "$1" == "--help" || "$1" == "-h" ]]
+then
+    echo "$0 [-h|--help] [--quiet]"
+    echo
+    echo "Autoamtes the standard installation of"
+    echo "PeekabooAV."
+    echo
+    echo "$note"
+    exit
+fi
 
-Press enter to continue
+if [[ "$1" != "--quiet" ]]
+then
+    shift
+    # The following code is just to have the owl and info scroll bye slowly.
+    ( echo "$owl"; echo "$note" ) | while IFS= read -r line; do
+      printf '%s\n' "$line"
+      sleep .1
+    done
 
-EOF
+    echo "If any of these is not the case please hit Ctrl+c"
+    echo 
+    echo "Press enter to continue"
+
 
     # Discard all input in buffer.
     fflush_stdin
