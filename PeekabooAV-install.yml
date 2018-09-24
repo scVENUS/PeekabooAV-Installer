@@ -168,11 +168,6 @@
         path: /opt/peekaboo
         state: directory
         mode: 0755
-    - name: Updating peekaboo code /opt/peekaboo
-      git:
-        repo: https://github.com/scvenus/peekabooav 
-        dest: /opt/peekaboo
-        version: "{{ peekaboo_version }}"
 
 - name: Create a new peekaboo user and group 
   hosts: peekabooav_server

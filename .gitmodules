@@ -1,5 +1,3 @@
 [submodule "PeekabooAV"]
 	path = PeekabooAV
 	url = https://github.com/scvenus/PeekabooAV
-	shallow = true
-	branch = 1.6
