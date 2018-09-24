@@ -36,11 +36,14 @@ fflush_stdin() {
     stty "$originalSettings"
 }
 
-# The following code is just to have the owl and info scroll bye slowly.
-while IFS= read -r line; do
-  printf '%s\n' "$line"
-  sleep .1
-done << EOF
+if [[ "$1" != "--quiet" ]]
+then
+    shift
+    # The following code is just to have the owl and info scroll bye slowly.
+    while IFS= read -r line; do
+      printf '%s\n' "$line"
+      sleep .1
+    done << EOF
                                                                                 
                          ==                             =                       
                          ========                 =======                       
@@ -97,11 +100,13 @@ Press enter to continue
 
 EOF
 
-# Discard all input in buffer.
-fflush_stdin
+    # Discard all input in buffer.
+    fflush_stdin
 
-# Read 'Press enter ..'
-read
+    # Read 'Press enter ..'
+    read
+fi
+
 
 if [ $(id -u) != 0 ]; then
    echo "ERROR: $(basename $0) needs to be run as root" >&2
