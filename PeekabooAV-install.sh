@@ -141,12 +141,6 @@ then
    exit 1
 fi
 
-# Check for installed ansible
-if dpkg -l ansible > /dev/null 2>&1
-then
-   echo "WARNING: ansible is already installed with apt (apt-get purge ansible)"
-fi
-
 ansibleversion=$(ansible --version | head -n 1 | grep -o "[0-9\.]*")
 IFS='.' read -r -a ansibleversionarray <<< "$ansibleversion"
 # check major version
