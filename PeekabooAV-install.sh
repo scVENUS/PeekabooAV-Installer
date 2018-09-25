@@ -171,7 +171,8 @@ then
    exit 1
 fi
 
-if [ ! -d PeekabooAV/.git ]
+# PeekabooAV/.git can be a file or directory
+if [ ! -e PeekabooAV/.git ]
 then
     echo "ERROR: no local copy of PeekabooAV found"
     echo "run 'git submodule init' and 'git submodule update' or place files in directory 'PeekabooAV'"
