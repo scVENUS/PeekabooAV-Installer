@@ -192,9 +192,13 @@
   become: true
   tasks:
     - name: Install Peekaboo
-      pip:
-        name: peekabooav
-        state: present
+      command: python setup.py install
+      args:
+        chdir: PeekabooAV
+        creates: /usr/local/bin/peekaboo
+#      pip:
+#        name: peekabooav
+#        state: present
 
     - name: Copy systemd unit files to /etc
       copy:
