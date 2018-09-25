@@ -191,15 +191,6 @@
   gather_facts: no
   become: true
   tasks:
-    - name: Remove Ubuntu package of python-pyasn1
-      # If python-pyasn1 is already installed by apt uninstall it so it
-      # can be installed with pip as a requirement in the correct
-      # version.
-      apt:
-        name: python-pyasn1
-        state: absent
-        autoremove: true
-
     - name: Install Peekaboo
       pip:
         name: peekabooav
