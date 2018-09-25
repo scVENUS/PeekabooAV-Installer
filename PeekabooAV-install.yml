@@ -288,29 +288,6 @@
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.ssh/id_ed25519
 
-    - name: Setup chown2me
-      # This is still necessary so Peekaboo can take ownership of the
-      # files created by amavis.
-      file:
-        path: /opt/peekaboo/chown2me.log
-        state: touch
-        owner: peekaboo
-        group: peekaboo
-        mode: 0600
-
-    - name: Compile chown2me
-      command: make chown2me
-      args:
-        chdir: /opt/peekaboo/bin
-        creates: /opt/peekaboo/bin/chown2me
-
-    - name: Set chown capability to chown2me
-      tags: chown
-      capabilities:
-        path: /opt/peekaboo/bin/chown2me
-        capability: cap_chown+ep
-        state: present
-
 
 - name: Setting up Cuckoo
   hosts: peekabooav_server
