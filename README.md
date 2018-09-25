@@ -21,7 +21,7 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 ## Prerequisites ##
 
 * you want to install or update PeekabooAV
-* this is a Ubuntu 16.04 VM
+* this is a Ubuntu 18.04 VM
 * is fully updated (apt-get upgrade)
 * apt working and package source available
 * recent version of ansible is installed (>2.4 (not available via apt)
