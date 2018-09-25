@@ -231,7 +231,7 @@
     - name: Place Peekaboo ruleset.conf in /opt/peekaboo
       tags: peekabooconf
       copy:
-        src: /opt/peekaboo/ruleset.conf.sample
+        src: PeekabooAV/ruleset.conf.sample
         dest: /opt/peekaboo/ruleset.conf
         owner: root
         group: root
@@ -344,7 +344,6 @@
         - unrar
         - unzip
         - zip
-        - zoo
 
     - name: Copy amavis configs to conf.d
       copy:
