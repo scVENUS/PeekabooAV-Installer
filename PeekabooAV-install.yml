@@ -156,12 +156,10 @@
         capability: cap_net_raw,cap_net_admin=eip
         state: present
 
-- name: Clone Peekaboo Repository
+- name: Create Peekaboo in /opt
   hosts: peekabooav_server
   gather_facts: no
   become: true
-  vars:
-    peekaboo_version: "{{ lookup('ini', 'latest type=properties file=PeekabooAV-install.conf ') }}"
   tasks:
     - name: Checking that /opt/peekaboo exists
       file:
