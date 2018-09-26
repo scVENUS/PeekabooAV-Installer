@@ -35,8 +35,7 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 ```
 apt update
 apt upgrade
-apt install python-pip
-pip install ansible
+apt install ansible
 git clone https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
 ./PeekabooAV-install.sh
@@ -63,7 +62,7 @@ There is a user called ``peekaboo`` whose home is at ``/var/lib/peekaboo``.
 
 Assuming you've done this:
 * you want to install or update PeekabooAV
-* this is a Ubuntu 16.04 VM
+* this is a Ubuntu 18.04 VM
 * is fully updated (apt-get upgrade)
 * apt working and package source available
 * recent version of ansible is installed (>2.4 (not available via apt)
