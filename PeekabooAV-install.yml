@@ -356,10 +356,18 @@
         mode: 0644
         backup: true
       with_items:
-        - 10-ask_peekaboo
         - 15-av_scanners
         - 15-content_filter_mode
         - 50-peekaboo
+
+    - name: Copy amavis plugin to conf.d
+      copy:
+        src: PeekabooAV/amavis/10-ask_peekaboo
+        dest: /etc/amavis/conf.d/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
 
     - name: Restart amavis
       systemd:
