@@ -13,7 +13,15 @@ echo
 blue "Status of systemd units"
 for t in amavis peekaboo cuckoohttpd mongodb postfix fetchmail grafana-server prometheus node_exporter
 do
+  echo -n $t
   systemctl status $t | grep "\($t.service \|Active:\)"
+done
+echo
+
+blue "Status of uwsgi services"
+for s in cuckoo-web cuckoo-api
+do
+  service uwsgi status $s
 done
 echo
 
