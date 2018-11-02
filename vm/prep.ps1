@@ -138,6 +138,7 @@ function reboot {
 ##         ACTIONS           ##
 ###############################
 $PSVersionTable.PSVersion
+# https://github.com/PowerShell/PowerShell/releases
 #extract
 disableUAC
 disableFW
