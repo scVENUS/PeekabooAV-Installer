@@ -137,6 +137,7 @@ function reboot {
 ###############################
 ##         ACTIONS           ##
 ###############################
+$PSVersionTable.PSVersion
 #extract
 disableUAC
 disableFW
