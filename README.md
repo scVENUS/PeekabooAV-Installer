@@ -36,7 +36,7 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 apt update
 apt upgrade
 apt install ansible
-git clone https://github.com/scvenus/peekabooav-installer
+git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
 ./PeekabooAV-install.sh
 ```
