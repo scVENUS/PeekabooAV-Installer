@@ -9,7 +9,7 @@
 set -x
 pids=()
 
-cuckoo="/usr/local/bin/cuckoo"
+cuckoo="/opt/cuckoo/bin/cuckoo"
 n=5
 
 for p in $(seq 1 $n)

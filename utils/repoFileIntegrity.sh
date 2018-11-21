@@ -55,14 +55,14 @@ done <<EOF
 ../amavis/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 ../amavis/50-peekaboo /etc/amavis/conf.d/50-peekaboo
 ../cuckoo/cuckoo.conf /var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
-../cuckoo/cuckooprocessor.sh /opt/peekaboo/cuckooprocessor.sh
+../cuckoo/cuckooprocessor.sh /opt/peekaboo/bin/cuckooprocessor.sh
 ../cuckoo/reporting.conf /var/lib/peekaboo/.cuckoo/conf/reporting.conf
 ../cuckoo/virtualbox.conf /var/lib/peekaboo/.cuckoo/conf/virtualbox.conf
 ../grafana/node_exporter.service /etc/systemd/system/node_exporter.service
 ../grafana/prometheus.service /etc/systemd/system/prometheus.service
 ../grafana/prometheus.yml /etc/prometheus/prometheus.yml
-../peekaboo/peekaboo.conf /opt/peekaboo/peekaboo.conf
-../peekaboo/ruleset.conf /opt/peekaboo/ruleset.conf
+../peekaboo/peekaboo.conf /opt/peekaboo/etc/peekaboo.conf
+../peekaboo/ruleset.conf /opt/peekaboo/etc/ruleset.conf
 ../postfix/fetchmailrc /etc/fetchmailrc
 ../postfix/main.cf /etc/postfix/main.cf
 ../postfix/master.cf /etc/postfix/master.cf

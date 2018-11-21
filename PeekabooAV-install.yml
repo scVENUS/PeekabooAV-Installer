@@ -127,12 +127,29 @@
           - sqlite3
           - swig
           - mongodb
+          # required to install mysql python module in venv using pip
+          - libmysqlclient-dev
     - name: Install Cuckoo packages
       pip:
         name:
           - pip
           - setuptools
           - cuckoo
+          - mysql
+        virtualenv: /opt/cuckoo
+        virtualenv_python: python2.7
+    - name: Install Peekaboo dependencies
+      pip:
+        chdir: PeekabooAV
+        requirements: requirements.txt
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
+    - name: Install Peekaboo optional components
+      pip:
+        name:
+          - mysql
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -183,10 +200,10 @@
   become: true
   tasks:
     - name: Install Peekaboo
-      command: python setup.py install
+      command: /opt/peekaboo/bin/python setup.py install
       args:
         chdir: PeekabooAV
-        creates: /usr/local/bin/peekaboo
+        creates: /opt/peekaboo/bin/peekaboo
 #      pip:
 #        name: peekabooav
 #        state: present
@@ -217,7 +234,7 @@
       tags: peekabooconf
       copy:
         src: peekaboo/peekaboo.conf 
-        dest: /opt/peekaboo/
+        dest: /opt/peekaboo/etc/
         owner: root
         group: root
         mode: 0644
@@ -227,7 +244,7 @@
       tags: peekabooconf
       copy:
         src: PeekabooAV/ruleset.conf.sample
-        dest: /opt/peekaboo/ruleset.conf
+        dest: /opt/peekaboo/etc/ruleset.conf
         owner: root
         group: root
         mode: 0644
@@ -236,7 +253,7 @@
     - name: Place cuckoo processor wrapper in /opt/peekaboo
       copy:
         src: cuckoo/cuckooprocessor.sh
-        dest: /opt/peekaboo/
+        dest: /opt/peekaboo/bin
         owner: root
         group: root
         mode: 0755
@@ -294,7 +311,7 @@
   become_method: su
   tasks:
     - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
-      command: cuckoo
+      command: /opt/cuckoo/bin/cuckoo
       args:
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.cuckoo
@@ -302,7 +319,7 @@
 
 
     - name: Install cuckoo community signatures
-      command: cuckoo community
+      command: /opt/cuckoo/bin/cuckoo community
       args:
         chdir: /var/lib/peekaboo
     - name: Copy config files for cuckoo
@@ -395,6 +412,8 @@
       apt:
         name:
           - mariadb-server
+          # required to be installed globally by our system-installed ansible
+          # to be able to connect to the database in the next step
           - python-mysqldb
 
     - name: Create databases

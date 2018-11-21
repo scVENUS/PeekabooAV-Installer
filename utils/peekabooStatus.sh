@@ -38,9 +38,9 @@ git log | head -n 5
 )
 echo
 blue "Cuckoo Version: "
-python -c "import cuckoo; print cuckoo.__version__"
+/opt/cuckoo/bin/python -c "import cuckoo; print cuckoo.__version__"
 blue "PeekabooAV Version: "
-python -c "import peekaboo; print peekaboo.__version__"
+/opt/peekaboo/bin/python -c "import peekaboo; print peekaboo.__version__"
 echo
 blue "Peekaboo DB:"
 echo "show tables" | mysql peekaboo
@@ -69,7 +69,8 @@ blue "Installed package versions"
 dpkg -l ansible postfix mariadb-common mariadb-server amavisd-new mongodb sqlite3 tcpdump
 
 blue "Installed pip packages"
-pip show ansible pip cuckoo peekabooav
+/opt/cuckoo/bin/pip show pip cuckoo
+/opt/peekaboo/bin/pip show pip peekabooav
 
 
 blue "Connect to postfix"
