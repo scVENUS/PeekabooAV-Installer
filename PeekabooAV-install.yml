@@ -101,45 +101,38 @@
         update_cache: yes
     - name: Install basic tools
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - vim
-        - ipython
-        - less
-        - iputils-ping
-        - socket
-        - netcat
-        - git
-        - curl
-        - socat
-    - name: Install Cuckoo dependencies
+        name:
+          - vim
+          - ipython
+          - less
+          - iputils-ping
+          - socket
+          - netcat
+          - git
+          - curl
+          - socat
+    - name: Install Cuckoo system dependencies
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - python
-        - python-pip
-        - python-dev
-        - libffi-dev
-        - libssl-dev
-        - python-virtualenv
-        - python-setuptools
-        - libjpeg-dev
-        - zlib1g-dev
-        - swig
-        - sqlite3 
-        - swig
-        - mongodb 
-    - name: Install python packages
+        name:
+          - python
+          - python-pip
+          - python-dev
+          - libffi-dev
+          - libssl-dev
+          - python-virtualenv
+          - python-setuptools
+          - libjpeg-dev
+          - zlib1g-dev
+          - swig
+          - sqlite3
+          - swig
+          - mongodb
+    - name: Install Cuckoo packages
       pip:
-        name: "{{ item }} "
-        state: latest
-      with_items:
-        - pip 
-        - setuptools
-        - cuckoo
-
+        name:
+          - pip
+          - setuptools
+          - cuckoo
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -333,23 +326,21 @@
   tasks:
     - name: Installing software
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - amavisd-new
-        - arj
-        - bzip2
-        - cabextract
-        - cpio
-        - file
-        - gzip
-        - lhasa
-        - nomarch
-        - pax
-        - rar
-        - unrar
-        - unzip
-        - zip
+        name:
+          - amavisd-new
+          - arj
+          - bzip2
+          - cabextract
+          - cpio
+          - file
+          - gzip
+          - lhasa
+          - nomarch
+          - pax
+          - rar
+          - unrar
+          - unzip
+          - zip
 
     - name: Copy amavis configs to conf.d
       copy:
@@ -402,11 +393,9 @@
   tasks:
     - name: Installing Software
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - mariadb-server
-        - python-mysqldb
+        name:
+          - mariadb-server
+          - python-mysqldb
 
     - name: Create databases
       mysql_db:
