@@ -153,7 +153,7 @@ then
      exit 1
   fi
 else
-  echo "ERROR: ansible version likely not compatable, at least version 2.5 required"
+  echo "ERROR: ansible version likely not compatible, at least version 2.5 required"
   exit 1
 fi
 
