@@ -79,10 +79,10 @@ Welcome to the PeekabooAV installer
 
 we assume the following:
 - you want to install or update PeekabooAV
-- this is a Ubuntu 16.04 VM
+- this is a Ubuntu 18.04 VM
 - is fully updated (apt-get upgrade)
-- apt working and package source available
-- recent version of ansible is installed (>2.4 (not available via apt)
+- apt working and universe (ansible) as well as multiverse (rar/unrar) package sources available
+- recent version of ansible is installed (>2.4)
 - /etc/hostname is a valid FQDN
 - nothing else runs on this machine
 - you run this installer as root
