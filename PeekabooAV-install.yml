@@ -227,7 +227,7 @@
         dest: /opt/peekaboo/
         owner: root
         group: root
-        mode: 0644
+        mode: 0600
         backup: true
 
     - name: Place Peekaboo ruleset.conf in /opt/peekaboo
