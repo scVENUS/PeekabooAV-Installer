@@ -15,4 +15,4 @@ pwd
 
 git clone https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer
-yes | ./PeekabooAV-install.sh
+./PeekabooAV-install.sh --quiet
