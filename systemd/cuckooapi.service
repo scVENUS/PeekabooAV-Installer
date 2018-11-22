@@ -1,0 +1,18 @@
+# install as /etc/systemd/system/cuckooapi.service
+
+[Unit]
+Description=Cuckoo REST API
+After=network.target
+
+[Service]
+User=peekaboo
+Group=peekaboo
+WorkingDirectory=/var/lib/peekaboo
+ExecStart=/opt/cuckoo/bin/cuckoo api
+KillMode=control-group
+Restart=on-failure
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+Alias=cuckoo-api.service

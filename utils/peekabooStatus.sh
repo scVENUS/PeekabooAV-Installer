@@ -11,7 +11,8 @@ uname -a
 echo
 
 blue "Status of systemd units"
-for t in amavis peekaboo cuckoohttpd mongodb postfix fetchmail grafana-server prometheus node_exporter
+for t in amavis peekaboo cuckoohttpd cuckooapi cuckoosandbox \
+	mongodb postfix fetchmail grafana-server prometheus node_exporter
 do
   echo -n $t
   systemctl status $t | grep "\($t.service \|Active:\)"
