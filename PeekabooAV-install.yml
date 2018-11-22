@@ -230,7 +230,7 @@
         dest: /opt/peekaboo/ruleset.conf
         owner: root
         group: root
-        mode: 0755
+        mode: 0644
         backup: true
 
     - name: Place cuckoo processor wrapper in /opt/peekaboo
