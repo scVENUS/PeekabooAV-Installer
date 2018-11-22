@@ -80,13 +80,17 @@ Welcome to the PeekabooAV installer
 we assume the following:
 - you want to install or update PeekabooAV
 - this is a Ubuntu 18.04 VM
-- is fully updated (apt-get upgrade)
-- apt working and universe (ansible) as well as multiverse (rar/unrar) package sources available
-- recent version of ansible is installed (>2.4)
 - /etc/hostname is a valid FQDN
 - nothing else runs on this machine
 - you run this installer as root
 - you know what you're doing!
+
+we will:
+- activate the universe (ansible) and multiverse (rar/unrar) repositories
+- install latest updates (apt-get dist-upgrade)
+- install ansible
+- install various system packages which are dependencies for Cuckoo and Peekaboo
+- install Cuckoo and Peekaboo with their python dependencies into virtualenvs in /opt
 "
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]
@@ -109,7 +113,7 @@ then
       sleep .1
     done
 
-    echo "If any of these is not the case please hit Ctrl+c"
+    echo "If any of these is not the case or not acceptable please hit Ctrl+c"
     echo 
     echo "Press enter to continue"
 
@@ -130,14 +134,36 @@ fi
 # Check if hostname fqdn is properly set and resolves
 if ! hostname --fqdn | grep -q "\." > /dev/null 2>&1
 then
-   echo "ERROR: hostname FQDN not explicitly assigned"
+   echo "ERROR: hostname FQDN not explicitly assigned" >&2
    exit 1
 fi
 
-# Check for installed ansible
-if ! command -v ansible
-then
-   echo "ERROR: ansible missing"
+# Refresh package repositories.
+if ! apt-get update ; then
+   echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
+   exit 1
+fi
+
+if ! apt-get install -y software-properties-common ; then
+   echo "ERROR: apt source management helpers cannot be installed" >&2
+   exit 1
+fi
+
+# multiverse also adds universe and script does an apt-get update as well
+if ! apt-add-repository multiverse ; then
+   echo "ERROR: universe/multiverse repositories cannot be added" >&2
+   exit 1
+fi
+
+# Upgrade system
+if ! apt-get dist-upgrade -y ; then
+   echo "ERROR: the command 'apt-get dist-upgrade' failed. Please fix manually" >&2
+   exit 1
+fi
+
+# Install ansible
+if ! apt-get install -y ansible ; then
+   echo "ERROR: ansible cannot be installed" >&2
    exit 1
 fi
 
@@ -155,13 +181,6 @@ then
 else
   echo "ERROR: ansible version likely not compatable, at least version 2.5 required"
   exit 1
-fi
-
-# Refresh package repositories.
-apt-get update -y
-if [ $? != 0 ]; then
-   echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
-   exit 1
 fi
 
 # Check for SYSTEMD module
