@@ -25,18 +25,6 @@ do
 done
 echo
 
-unit=$(systemctl status peekaboo | grep "Loaded: " | sed 's/.*(\([^;]*\);.*).*/\1/')
-blue "Systemd Unit: $unit"
-wd=$(grep WorkingDirectory $unit | sed 's/.*=\(.*\)/\1/')
-blue "Working Directory: $wd"
-echo
-blue "Git state:"
-(
-cd $wd
-git status
-git log | head -n 5
-)
-echo
 blue "Cuckoo Version: "
 /opt/cuckoo/bin/python -c "import cuckoo; print cuckoo.__version__"
 blue "PeekabooAV Version: "
@@ -80,5 +68,5 @@ blue "Connect to amavis"
 echo HELLO | nc -N 127.0.0.1 10024
 
 blue "Connect to peekaboo socket"
-echo HELLO | nc -NU /var/run/peekaboo/peekaboo.sock
+echo '[]' | nc -NU /var/run/peekaboo/peekaboo.sock
 echo
