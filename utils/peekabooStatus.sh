@@ -62,9 +62,6 @@ echo
 mailq ) | more
 
 echo
-blue "Chown2me Capability"
-getcap /opt/peekaboo/bin/chown2me
-
 blue "Installed package versions"
 dpkg -l ansible postfix mariadb-common mariadb-server amavisd-new mongodb sqlite3 tcpdump
 
