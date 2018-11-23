@@ -232,12 +232,12 @@
 
     - name: Place Peekaboo config in /opt/peekaboo
       tags: peekabooconf
-      copy:
+      template:
         src: peekaboo/peekaboo.conf 
         dest: /opt/peekaboo/etc/
         owner: root
         group: root
-        mode: 0644
+        mode: 0600
         backup: true
 
     - name: Place Peekaboo ruleset.conf in /opt/peekaboo
@@ -269,6 +269,11 @@
         group: root
         mode: 0755
         backup: true
+
+    - name: Secure storage directory
+      file:
+        path: /var/lib/peekaboo
+        mode: 0700
 
     - name: Copy /var/lib/peekaboo/vboxmanage.conf
       # The configuration contains IP address and username of the
@@ -323,12 +328,12 @@
       args:
         chdir: /var/lib/peekaboo
     - name: Copy config files for cuckoo
-      copy:
+      template:
         src: cuckoo/{{ item }}
         dest: /var/lib/peekaboo/.cuckoo/conf/
         owner: peekaboo
         group: peekaboo
-        mode: 0644
+        mode: 0600
         backup: true
       with_items:
         - cuckoo.conf    
@@ -360,7 +365,7 @@
           - zip
 
     - name: Copy amavis configs to conf.d
-      copy:
+      template:
         src: amavis/{{ item }}
         dest: /etc/amavis/conf.d/
         owner: root
@@ -428,7 +433,7 @@
     - name: Create database user cuckoo
       mysql_user:
         name: cuckoo
-        password: newpassword
+        password: "{{ cuckoo_db_password }}"
         host: localhost
         priv: 'cuckoo.*:ALL,GRANT'
         state: present
@@ -436,7 +441,7 @@
     - name: Create database user peekaboo
       mysql_user:
         name: peekaboo
-        password: differentnewpassword
+        password: "{{ peekaboo_db_password }}"
         host: localhost
         priv: 'peekaboo.*:ALL,GRANT'
         state: present
@@ -447,3 +452,14 @@
 #        name: peekaboo
 #        state: restarted
 
+- name: Clean up installer directory
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Remove temporary storage files of deployed passwords
+      file:
+        state: absent
+        path: "{{ item }}"
+      with_items:
+        - cuckoo_db_password
+        - peekaboo_db_password
