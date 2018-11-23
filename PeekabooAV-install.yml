@@ -222,7 +222,7 @@
 
     - name: Place Peekaboo config in /opt/peekaboo
       tags: peekabooconf
-      copy:
+      template:
         src: peekaboo/peekaboo.conf 
         dest: /opt/peekaboo/
         owner: root
@@ -309,7 +309,7 @@
       args:
         chdir: /var/lib/peekaboo
     - name: Copy config files for cuckoo
-      copy:
+      template:
         src: cuckoo/{{ item }}
         dest: /var/lib/peekaboo/.cuckoo/conf/
         owner: peekaboo
@@ -348,7 +348,7 @@
         - zip
 
     - name: Copy amavis configs to conf.d
-      copy:
+      template:
         src: amavis/{{ item }}
         dest: /etc/amavis/conf.d/
         owner: root

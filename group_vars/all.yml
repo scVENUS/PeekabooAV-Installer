@@ -1,0 +1,5 @@
+---
+peekabooav_server: localhost
+peekabooav_server_fqdn: "{{ ansible_fqdn }}"
+cuckooapi_server: localhost
+mariadb_server: localhost

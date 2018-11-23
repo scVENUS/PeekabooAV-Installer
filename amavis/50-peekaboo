@@ -15,9 +15,9 @@ use strict;
 
 $max_requests = 1;
 
-$myhostname = 'peekabooav-demo.int';
-$mydomain = 'peekabooav-demo.int';
-$virus_admin = 'root@peekabooav-demo.int';
+$myhostname = '{{ peekabooav_server_fqdn }}';
+$mydomain = '{{ peekabooav_server_fqdn }}';
+$virus_admin = 'root@{{ peekabooav_server_fqdn }}';
 
 $warnvirussender = 1;
 $warnvirusrecip = 1;
