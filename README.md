@@ -22,9 +22,6 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 
 * you want to install or update PeekabooAV
 * this is a Ubuntu 18.04 VM
-* is fully updated (apt-get upgrade)
-* apt working and package source available
-* recent version of ansible is installed (>2.4 (in Ubuntu 16.04 use pip))
 * /etc/hostname is a valid FQDN
 * nothing else runs on this machine
 * you run this installer as root
@@ -33,9 +30,6 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 
 ### This is what you type (copy - paste)
 ```
-apt update
-apt upgrade
-apt install ansible
 git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
 ./PeekabooAV-install.sh
