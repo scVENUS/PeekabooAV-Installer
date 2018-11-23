@@ -319,7 +319,7 @@
         dest: /var/lib/peekaboo/.cuckoo/conf/
         owner: peekaboo
         group: peekaboo
-        mode: 0644
+        mode: 0600
         backup: true
       with_items:
         - cuckoo.conf    
