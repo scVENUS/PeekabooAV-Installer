@@ -85,7 +85,7 @@ have a nice day
 ```
 su -c "vboxmanage list vms" peekaboo
 su -c "cuckoo" peekaboo
-su -c "peekaboo -d -c /opt/peekaboo/peekaboo.conf" peekaboo
+su -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf" peekaboo
 # if you upgrade from an earlier version you might have to delete the _meta table first
 # should crash with "No such file or directory: '/var/run/peekaboo/peekaboo.pid'"
 systemctl start peekaboo

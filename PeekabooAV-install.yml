@@ -31,7 +31,7 @@
       systemd:
     - name: Verify ansible version
       assert:
-        that: "ansible_version.full | version_compare('2.5', '>=')"
+        that: "ansible_version.full is version_compare('2.5', '>=')"
         msg: >
           "Minimum ansible version required is 2.5"
 
@@ -101,45 +101,55 @@
         update_cache: yes
     - name: Install basic tools
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - vim
-        - ipython
-        - less
-        - iputils-ping
-        - socket
-        - netcat
-        - git
-        - curl
-        - socat
-    - name: Install Cuckoo dependencies
+        name:
+          - vim
+          - ipython
+          - less
+          - iputils-ping
+          - socket
+          - netcat
+          - git
+          - curl
+          - socat
+    - name: Install Cuckoo system dependencies
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - python
-        - python-pip
-        - python-dev
-        - libffi-dev
-        - libssl-dev
-        - python-virtualenv
-        - python-setuptools
-        - libjpeg-dev
-        - zlib1g-dev
-        - swig
-        - sqlite3 
-        - swig
-        - mongodb 
-    - name: Install python packages
+        name:
+          - python
+          - python-pip
+          - python-dev
+          - libffi-dev
+          - libssl-dev
+          - python-virtualenv
+          - python-setuptools
+          - libjpeg-dev
+          - zlib1g-dev
+          - swig
+          - sqlite3
+          - swig
+          - mongodb
+          # required to install mysql python module in venv using pip
+          - libmysqlclient-dev
+    - name: Install Cuckoo packages
       pip:
-        name: "{{ item }} "
-        state: latest
-      with_items:
-        - pip 
-        - setuptools
-        - cuckoo
-
+        name:
+          - pip
+          - setuptools
+          - cuckoo
+          - mysql
+        virtualenv: /opt/cuckoo
+        virtualenv_python: python2.7
+    - name: Install Peekaboo dependencies
+      pip:
+        chdir: PeekabooAV
+        requirements: requirements.txt
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
+    - name: Install Peekaboo optional components
+      pip:
+        name:
+          - mysql
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -190,10 +200,10 @@
   become: true
   tasks:
     - name: Install Peekaboo
-      command: python setup.py install
+      command: /opt/peekaboo/bin/python setup.py install
       args:
         chdir: PeekabooAV
-        creates: /usr/local/bin/peekaboo
+        creates: /opt/peekaboo/bin/peekaboo
 #      pip:
 #        name: peekabooav
 #        state: present
@@ -224,7 +234,7 @@
       tags: peekabooconf
       copy:
         src: peekaboo/peekaboo.conf 
-        dest: /opt/peekaboo/
+        dest: /opt/peekaboo/etc/
         owner: root
         group: root
         mode: 0644
@@ -234,16 +244,16 @@
       tags: peekabooconf
       copy:
         src: PeekabooAV/ruleset.conf.sample
-        dest: /opt/peekaboo/ruleset.conf
+        dest: /opt/peekaboo/etc/ruleset.conf
         owner: root
         group: root
-        mode: 0755
+        mode: 0644
         backup: true
 
     - name: Place cuckoo processor wrapper in /opt/peekaboo
       copy:
         src: cuckoo/cuckooprocessor.sh
-        dest: /opt/peekaboo/
+        dest: /opt/peekaboo/bin
         owner: root
         group: root
         mode: 0755
@@ -285,7 +295,9 @@
         group: peekaboo
 
     - name: This key will have to be allowed on the host to authenticate the vm user
-      command: su -c "ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''" peekaboo
+      become_user: peekaboo
+      become_method: su
+      command: ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''
       args:
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.ssh/id_ed25519
@@ -295,9 +307,11 @@
   hosts: peekabooav_server
   gather_facts: no
   become: true
+  become_user: peekaboo
+  become_method: su
   tasks:
     - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
-      command: su -c "cuckoo" peekaboo
+      command: /opt/cuckoo/bin/cuckoo
       args:
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.cuckoo
@@ -305,7 +319,7 @@
 
 
     - name: Install cuckoo community signatures
-      command: su -c "cuckoo community" peekaboo
+      command: /opt/cuckoo/bin/cuckoo community
       args:
         chdir: /var/lib/peekaboo
     - name: Copy config files for cuckoo
@@ -329,23 +343,21 @@
   tasks:
     - name: Installing software
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - amavisd-new
-        - arj
-        - bzip2
-        - cabextract
-        - cpio
-        - file
-        - gzip
-        - lhasa
-        - nomarch
-        - pax
-        - rar
-        - unrar
-        - unzip
-        - zip
+        name:
+          - amavisd-new
+          - arj
+          - bzip2
+          - cabextract
+          - cpio
+          - file
+          - gzip
+          - lhasa
+          - nomarch
+          - pax
+          - rar
+          - unrar
+          - unzip
+          - zip
 
     - name: Copy amavis configs to conf.d
       copy:
@@ -398,11 +410,11 @@
   tasks:
     - name: Installing Software
       apt:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - mariadb-server
-        - python-mysqldb
+        name:
+          - mariadb-server
+          # required to be installed globally by our system-installed ansible
+          # to be able to connect to the database in the next step
+          - python-mysqldb
 
     - name: Create databases
       mysql_db:

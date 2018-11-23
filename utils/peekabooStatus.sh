@@ -25,22 +25,10 @@ do
 done
 echo
 
-unit=$(systemctl status peekaboo | grep "Loaded: " | sed 's/.*(\([^;]*\);.*).*/\1/')
-blue "Systemd Unit: $unit"
-wd=$(grep WorkingDirectory $unit | sed 's/.*=\(.*\)/\1/')
-blue "Working Directory: $wd"
-echo
-blue "Git state:"
-(
-cd $wd
-git status
-git log | head -n 5
-)
-echo
 blue "Cuckoo Version: "
-python -c "import cuckoo; print cuckoo.__version__"
+/opt/cuckoo/bin/python -c "import cuckoo; print cuckoo.__version__"
 blue "PeekabooAV Version: "
-python -c "import peekaboo; print peekaboo.__version__"
+/opt/peekaboo/bin/python -c "import peekaboo; print peekaboo.__version__"
 echo
 blue "Peekaboo DB:"
 echo "show tables" | mysql peekaboo
@@ -69,7 +57,8 @@ blue "Installed package versions"
 dpkg -l ansible postfix mariadb-common mariadb-server amavisd-new mongodb sqlite3 tcpdump
 
 blue "Installed pip packages"
-pip show ansible pip cuckoo peekabooav
+/opt/cuckoo/bin/pip show pip cuckoo
+/opt/peekaboo/bin/pip show pip peekabooav
 
 
 blue "Connect to postfix"
@@ -79,5 +68,5 @@ blue "Connect to amavis"
 echo HELLO | nc -N 127.0.0.1 10024
 
 blue "Connect to peekaboo socket"
-echo HELLO | nc -NU /var/run/peekaboo/peekaboo.sock
+echo '[]' | nc -NU /var/run/peekaboo/peekaboo.sock
 echo
