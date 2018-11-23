@@ -260,6 +260,11 @@
         mode: 0755
         backup: true
 
+    - name: Secure storage directory
+      file:
+        path: /var/lib/peekaboo
+        mode: 0700
+
     - name: Copy /var/lib/peekaboo/vboxmanage.conf
       # The configuration contains IP address and username of the
       # target user on the host that owns all virtual box vms.
