@@ -211,7 +211,13 @@ if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
     echo "ERROR: ansible playbook "$ANSIBLE_PLAYBOOK" not found" >&2
     exit 1
 fi
-ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+
+if [ -z ${NOANSIBLE+x} ]
+then
+    ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+else
+    echo "WARNING: ansible not run, override by NOANSIBLE env setting" >&2
+fi
 
 if [ $? != 0 ];then
    echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
