@@ -23,12 +23,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
-#  config.vm.provision "shell", inline: <<-SHELL
-#    sudo apt-get update
-#    sudo apt-get install -y git python
-#    git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
-#    chown -R vagrant:vagrant peekabooav-installer
-#  SHELL
+  config.vm.provision "shell" do |install|
+    # change directory first (args + env not suitable)
+    install.inline = "/bin/bash -c 'cd peekabooav-installer; NOANSIBLE=yes ./PeekabooAV-install.sh --quiet'"
+  end
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.become         = true
