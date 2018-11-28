@@ -2,8 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.synced_folder '.', '/vagrant', disabled: true
-  config.vm.synced_folder '.', '/home/vagrant/peekabooav-installer'
+  config.vm.synced_folder '.', '/vagrant'
 
   config.vm.define "peekaboo" do |peekaboo|
     peekaboo.vm.box       = "generic/ubuntu1804"
@@ -25,12 +24,11 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell" do |install|
     # change directory first (args + env not suitable)
-    install.inline = "/bin/bash -c 'cd peekabooav-installer; NOANSIBLE=yes ./PeekabooAV-install.sh --quiet'"
+    install.inline = "cd /vagrant && NOANSIBLE=yes ./PeekabooAV-install.sh --quiet"
   end
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.become         = true
-    ansible.provisioning_path = "/home/vagrant/peekabooav-installer"
     ansible.playbook       = "PeekabooAV-install.yml"
     ansible.inventory_path = "ansible-inventory"
     ansible.limit          = "all"
