@@ -238,8 +238,8 @@
       template:
         src: peekaboo/peekaboo.conf 
         dest: /opt/peekaboo/etc/
-        owner: root
-        group: root
+        owner: peekaboo
+        group: peekaboo
         mode: 0600
         backup: true
 
