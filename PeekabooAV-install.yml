@@ -138,12 +138,6 @@
           - mysql
         virtualenv: /opt/cuckoo
         virtualenv_python: python2.7
-    - name: Install Peekaboo dependencies
-      pip:
-        chdir: PeekabooAV
-        requirements: requirements.txt
-        virtualenv: /opt/peekaboo
-        virtualenv_python: python2.7
     - name: Install Peekaboo optional components
       pip:
         name:
@@ -200,13 +194,12 @@
   become: true
   tasks:
     - name: Install Peekaboo
-      command: /opt/peekaboo/bin/python setup.py install
-      args:
+      pip:
         chdir: PeekabooAV
-        creates: /opt/peekaboo/bin/peekaboo
-#      pip:
-#        name: peekabooav
-#        state: present
+        name: .
+        state: latest
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
 
     - name: Copy systemd unit files to /etc
       copy:
