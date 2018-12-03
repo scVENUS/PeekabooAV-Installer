@@ -36,6 +36,12 @@ cd peekabooav-installer/
 ```
 
 
+Then carry on reading [README-postinstallation.md](README-postinstallation.md)
+and of course the Cuckoo Sandbox [documentation](https://cuckoo.sh/docs/index.html).
+
+AND find useful scripts in [utils](utils)
+
+
 ## Communication flow ##
 
 ```
@@ -91,11 +97,6 @@ http://127.0.0.1:8000 # cuckoo web UI analyse a file
 python -m smtpd -n -c DebuggingServer 0.0.0.0:10025 &
 utils/checkFileWithPeekaboo.py grafana/Screenshot-2018-1-17\ Grafana\ -\ PeekabooAV.png
 ```
-
-Then carry on reading [README-postinstallation.md](README-postinstallation.md)
-
-AND find useful scripts in [utils](utils)
-
 
 ## Contributing ##
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us. 
