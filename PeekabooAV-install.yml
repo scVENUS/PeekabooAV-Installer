@@ -304,7 +304,6 @@
 
     - name: This key will have to be allowed on the host to authenticate the vm user
       become_user: peekaboo
-      become_method: su
       command: ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''
       args:
         chdir: /var/lib/peekaboo
@@ -316,7 +315,6 @@
   gather_facts: no
   become: true
   become_user: peekaboo
-  become_method: su
   tasks:
     - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
       command: /opt/cuckoo/bin/cuckoo
