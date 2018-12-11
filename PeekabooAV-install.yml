@@ -550,9 +550,9 @@
       template:
         src: peekaboo/peekaboo.conf
         dest: /opt/peekaboo/etc/peekaboo.conf
-        owner: peekaboo
+        owner: root
         group: peekaboo
-        mode: 0600
+        mode: 0640
         backup: true
 
     - name: Check if an old Peekaboo ruleset.conf exists in /opt/peekaboo
