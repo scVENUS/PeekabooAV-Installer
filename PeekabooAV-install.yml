@@ -312,6 +312,7 @@
         enabled: yes
       with_items:
         - cuckoohttpd
+        - cuckooapi.service
         - cuckoosandbox
 
 - name: Setting up Cuckoo

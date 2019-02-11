@@ -9,7 +9,6 @@
 [Unit]
 Description=Peekaboo Extended Email Attachment Behavior Observation Owl
 After=network.target cuckooapi.service
-Requires=cuckooapi.service
 
 [Service]
 User=peekaboo
