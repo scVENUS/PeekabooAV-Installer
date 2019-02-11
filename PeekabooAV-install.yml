@@ -111,7 +111,7 @@
           - git
           - curl
           - socat
-    - name: Install Cuckoo system dependencies
+    - name: Install Cuckoo and Peekaboo system dependencies
       apt:
         name:
           - python
@@ -129,21 +129,6 @@
           - mongodb
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
-    - name: Install Cuckoo packages
-      pip:
-        name:
-          - pip
-          - setuptools
-          - cuckoo
-          - mysql
-        virtualenv: /opt/cuckoo
-        virtualenv_python: python2.7
-    - name: Install Peekaboo optional components
-      pip:
-        name:
-          - mysql
-        virtualenv: /opt/peekaboo
-        virtualenv_python: python2.7
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -159,17 +144,6 @@
         path: /usr/sbin/tcpdump
         capability: cap_net_raw,cap_net_admin=eip
         state: present
-
-- name: Create Peekaboo in /opt
-  hosts: peekabooav_server
-  gather_facts: no
-  become: true
-  tasks:
-    - name: Checking that /opt/peekaboo exists
-      file:
-        path: /opt/peekaboo
-        state: directory
-        mode: 0755
 
 - name: Create a new peekaboo user and group 
   hosts: peekabooav_server
@@ -193,15 +167,21 @@
   gather_facts: no
   become: true
   tasks:
+    - name: Install Peekaboo optional components
+      pip:
+        name:
+          - mysql
+        virtualenv: /opt/peekaboo
+        virtualenv_python: python2.7
+
     - name: Install Peekaboo
       pip:
-        chdir: PeekabooAV
-        name: .
+        name: PeekabooAV
         state: latest
         virtualenv: /opt/peekaboo
         virtualenv_python: python2.7
 
-    - name: Copy systemd unit files to /etc
+    - name: Copy Peekaboo systemd unit files to /etc
       copy:
         src: systemd/{{ item }}
         dest: /etc/systemd/system/
@@ -211,20 +191,15 @@
         backup: true
       with_items:
         - peekaboo.service
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
         - mysql-proxy.service
         - mysql-proxy.socket
 
-    - name: Enable services to run on startup
+    - name: Enable Peekaboo services to run on startup
       systemd:
         name: "{{ item }}"
         enabled: yes
       with_items:
         - peekaboo
-        - cuckoohttpd
-        - cuckoosandbox
 
     - name: Place Peekaboo config in /opt/peekaboo
       tags: peekabooconf
@@ -303,11 +278,47 @@
         creates: /var/lib/peekaboo/.ssh/id_ed25519
 
 
-- name: Setting up Cuckoo
-  hosts: peekabooav_server
+- name: Install Peekaboo
+  hosts: cuckoo_server
   gather_facts: no
   become: true
+  tasks:
+    - name: Install Cuckoo packages
+      pip:
+        name:
+          - pip
+          - setuptools
+          - cuckoo
+          - mysql
+        virtualenv: /opt/cuckoo
+        virtualenv_python: python2.7
+
+    - name: Copy Cuckoo systemd unit files to /etc
+      copy:
+        src: systemd/{{ item }}
+        dest: /etc/systemd/system/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+      with_items:
+        - cuckoohttpd.service
+        - cuckooapi.service
+        - cuckoosandbox.service
+
+    - name: Enable Cuckcoo services to run on startup
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - cuckoohttpd
+        - cuckoosandbox
+
+- name: Setting up Cuckoo
+  hosts: cuckoo_server
+  gather_facts: no
   become_user: peekaboo
+  become: true
   tasks:
     - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
       command: /opt/cuckoo/bin/cuckoo
@@ -315,12 +326,11 @@
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.cuckoo
 
-
-
     - name: Install cuckoo community signatures
       command: /opt/cuckoo/bin/cuckoo community
       args:
         chdir: /var/lib/peekaboo
+
     - name: Copy config files for cuckoo
       template:
         src: cuckoo/{{ item }}
