@@ -104,4 +104,4 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Copyright ##
 
-Copyright (C) 2016-2018 science + computing ag
+Copyright (C) 2016-2019 science + computing ag

@@ -7,7 +7,7 @@
 # scan_emailed_file.py                                                        #
 ###############################################################################
 #                                                                             #
-# Copyright (C) 2016-2018  science + computing ag                             #
+# Copyright (C) 2016-2019  science + computing ag                             #
 # Author: Jan-Ruben Schmid
 #
 # This program is free software: you can redistribute it and/or modify        #
