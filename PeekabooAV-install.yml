@@ -395,10 +395,6 @@
       user:
         name: peekaboo
         groups: amavis
-    - name: Add secondary group peekaboo to user amavis
-      user:
-        name: amavis
-        groups: peekaboo
 
 
 - name: Install mysql database and setup users and databases
