@@ -201,17 +201,61 @@
       with_items:
         - peekaboo
 
-    - name: Place Peekaboo config in /opt/peekaboo
+    - name: Create Peekaboo configuration directory /opt/peekaboo/etc
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/etc
+        state: directory
+
+    - name: Check if an old Peekaboo configuration exists in /opt/peekaboo
+      stat: path=/opt/peekaboo/peekaboo.conf
+      register: peekaboo_conf_old_stat
+
+    # does not copy the old file if the presumably already configured target
+    # already exists
+    - name: Migrate old Peekaboo config to /opt/peekaboo/etc
+      tags: peekabooconf
+      command: cp -a /opt/peekaboo/peekaboo.conf /opt/peekaboo/etc/peekaboo.conf
+      when: peekaboo_conf_old_stat.stat.exists
+      args:
+        creates: /opt/peekaboo/etc/peekaboo.conf
+
+    - name: Remove old Peekaboo config in /opt/peekaboo
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/peekaboo.conf
+        state: absent
+
+    # takes a backup of the currently installed version - best compromise
+    # between preserving admin changes and getting new options rolled out
+    - name: Place Peekaboo config in /opt/peekaboo/etc
       tags: peekabooconf
       template:
         src: peekaboo/peekaboo.conf 
-        dest: /opt/peekaboo/etc/
+        dest: /opt/peekaboo/etc/peekaboo.conf
         owner: peekaboo
         group: peekaboo
         mode: 0600
         backup: true
 
-    - name: Place Peekaboo ruleset.conf in /opt/peekaboo
+    - name: Check if an old Peekaboo ruleset.conf exists in /opt/peekaboo
+      stat: path=/opt/peekaboo/ruleset.conf
+      register: ruleset_conf_old_stat
+
+    - name: Migrate old Peekaboo ruleset config to /opt/peekaboo/etc
+      tags: peekabooconf
+      command: cp -a /opt/peekaboo/ruleset.conf /opt/peekaboo/etc/ruleset.conf
+      when: ruleset_conf_old_stat.stat.exists
+      args:
+        creates: /opt/peekaboo/etc/ruleset.conf
+
+    - name: Remove old Peekaboo ruleset config in /opt/peekaboo
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/ruleset.conf
+        state: absent
+
+    - name: Place Peekaboo ruleset.conf in /opt/peekaboo/etc
       tags: peekabooconf
       copy:
         src: PeekabooAV/ruleset.conf.sample
@@ -221,7 +265,7 @@
         mode: 0644
         backup: true
 
-    - name: Place cuckoo processor wrapper in /opt/peekaboo
+    - name: Place cuckoo processor wrapper in /opt/peekaboo/bin
       copy:
         src: cuckoo/cuckooprocessor.sh
         dest: /opt/peekaboo/bin
