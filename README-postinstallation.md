@@ -46,7 +46,7 @@ connect back to `resultserver_ip`
 Depending on the size of your installation you might want to
 adjust the number of cuckoo processors (`$n`)
 
-`vim /opt/peekaboo/cuckooprocessor.sh`
+`vim /opt/peekaboo/bin/cuckooprocessor.sh`
 
 You can now start peekaboo
 ```
@@ -54,14 +54,14 @@ systemctl start peekaboo
 systemctl status peekaboo
 ```
 
-Use socat to connecto to peekaboo and expect the greeting
+Use socat to connect to peekaboo and expect the greeting
 ```
 su -s /bin/bash amavis
 socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock
 ```
 
 At this point it's already possible to check files
-type the followin into the previous command to check the
+type the following into the previous command to check the
 file.
 
 `/var/lib/peekaboo/vboxmanage.conf`
