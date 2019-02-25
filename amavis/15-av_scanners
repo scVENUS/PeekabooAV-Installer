@@ -8,8 +8,8 @@ use strict;
 
  ['Peekaboo-Analysis',
    \&ask_peekaboo, ["{}\n", "/var/run/peekaboo/peekaboo.sock"],
-   qr/wurde als "(unknown|checked|good|ignored)" eingestuft/m,
-   qr/wurde als "bad" eingestuft/m ],
+   qr/has been categorized "(unknown|checked|good|ignored)"$/m,
+   qr/has been categorized "bad"$/m ],
 
 );
 

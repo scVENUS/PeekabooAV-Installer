@@ -176,7 +176,8 @@
 
     - name: Install Peekaboo
       pip:
-        name: PeekabooAV
+        chdir: PeekabooAV
+        name: .
         state: latest
         virtualenv: /opt/peekaboo
         virtualenv_python: python2.7
