@@ -13,7 +13,9 @@ use strict;
 # the directives you can use in this file
 #
 
-$max_requests = 1;
+# Let child die after each request because historically Peekaboo had a problem
+# correlating samples to amavis connections. Should not be necessary any more.
+#$max_requests = 1;
 
 $myhostname = '{{ peekabooav_server_fqdn }}';
 $mydomain = '{{ peekabooav_server_fqdn }}';
