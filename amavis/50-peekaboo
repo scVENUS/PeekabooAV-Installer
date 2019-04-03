@@ -21,7 +21,9 @@ $myhostname = '{{ peekabooav_server_fqdn }}';
 $mydomain = '{{ peekabooav_server_fqdn }}';
 $virus_admin = 'root@{{ peekabooav_server_fqdn }}';
 
-$warnvirussender = 1;
+# Variable $warnvirussender was retired, changing its value has no effect. See
+# release notes.
+#$warnvirussender = 1;
 $warnvirusrecip = 1;
 
 # Change the default mail digest from MD5 and SHA-1 to SHA-256.
