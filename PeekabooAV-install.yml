@@ -363,32 +363,36 @@
 - name: Setting up Cuckoo
   hosts: cuckoo_server
   gather_facts: no
-  become_user: peekaboo
   become: true
   tasks:
-    - name: Initial run of Cuckoo to create directory structure in peekaboo $HOME
-      command: /opt/cuckoo/bin/cuckoo
-      args:
-        chdir: /var/lib/peekaboo
-        creates: /var/lib/peekaboo/.cuckoo
+    - name: Create Cuckoo configuration directory /opt/cuckoo/etc
+      tags: cuckooconf
+      file:
+        dest: /opt/cuckoo/etc
+        state: directory
 
-    - name: Install cuckoo community signatures
-      command: /opt/cuckoo/bin/cuckoo community
-      args:
-        chdir: /var/lib/peekaboo
-
-    - name: Copy config files for cuckoo
+    - name: Instantiate and install custom config overlay for cuckoo
+      tags: cuckooconf
       template:
-        src: cuckoo/{{ item }}
-        dest: /var/lib/peekaboo/.cuckoo/conf/
+        src: cuckoo/custom.kv.conf
+        dest: /opt/cuckoo/etc/custom.kv.conf
         owner: peekaboo
         group: peekaboo
         mode: 0600
         backup: true
-      with_items:
-        - cuckoo.conf    
-        - virtualbox.conf
-        - reporting.conf 
+
+    - name: Initial run of Cuckoo to create default configuration in peekaboo $HOME
+      tags: cuckooconf
+      become_user: peekaboo
+      command: /opt/cuckoo/bin/cuckoo init --conf=/opt/cuckoo/etc/custom.kv.conf
+      args:
+        chdir: /var/lib/peekaboo
+
+    - name: Install cuckoo community signatures
+      command: /opt/cuckoo/bin/cuckoo community
+      become_user: peekaboo
+      args:
+        chdir: /var/lib/peekaboo
 
 
 - name: Install amavis and dependencies
