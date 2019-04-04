@@ -275,6 +275,49 @@
         mode: 0755
         backup: true
 
+    - name: Secure storage directory
+      file:
+        path: /var/lib/peekaboo
+        mode: 0700
+
+
+- name: Install Cuckoo
+  hosts: cuckoo_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Install Cuckoo packages
+      pip:
+        name:
+          - pip
+          - setuptools
+          - cuckoo
+          - mysql
+        virtualenv: /opt/cuckoo
+        virtualenv_python: python2.7
+
+    - name: Copy Cuckoo systemd unit files to /etc
+      copy:
+        src: systemd/{{ item }}
+        dest: /etc/systemd/system/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+      with_items:
+        - cuckoohttpd.service
+        - cuckooapi.service
+        - cuckoosandbox.service
+
+    - name: Enable Cuckcoo services to run on startup
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - cuckoohttpd
+        - cuckooapi.service
+        - cuckoosandbox
+
     - name: Now place wrapper to run vboxmanage command on remote host
       # This is necessary to control vm start, stop and snapshot
       # restore on the host from within the Peekaboo-VM.
@@ -322,43 +365,6 @@
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.ssh/id_ed25519
 
-
-- name: Install Peekaboo
-  hosts: cuckoo_server
-  gather_facts: no
-  become: true
-  tasks:
-    - name: Install Cuckoo packages
-      pip:
-        name:
-          - pip
-          - setuptools
-          - cuckoo
-          - mysql
-        virtualenv: /opt/cuckoo
-        virtualenv_python: python2.7
-
-    - name: Copy Cuckoo systemd unit files to /etc
-      copy:
-        src: systemd/{{ item }}
-        dest: /etc/systemd/system/
-        owner: root
-        group: root
-        mode: 0644
-        backup: true
-      with_items:
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
-
-    - name: Enable Cuckcoo services to run on startup
-      systemd:
-        name: "{{ item }}"
-        enabled: yes
-      with_items:
-        - cuckoohttpd
-        - cuckooapi.service
-        - cuckoosandbox
 
 - name: Setting up Cuckoo
   hosts: cuckoo_server
