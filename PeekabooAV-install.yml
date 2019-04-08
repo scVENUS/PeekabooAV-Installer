@@ -418,6 +418,9 @@
           - gzip
           - lhasa
           - nomarch
+          # p7zip-full (7za) needed to correctly identify AES-encrypted ZIPs
+          # (zip: unsupported compression method 99)
+          - p7zip-full
           - pax
           - rar
           - unrar
