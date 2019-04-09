@@ -230,14 +230,16 @@
         - cuckooapi.service
         - cuckoosandbox.service
 
-    - name: Enable Cuckcoo services to run on startup
+    - name: Enable Cuckcoo services to run on startup but leave stopped for now
       systemd:
         name: "{{ item }}"
         enabled: yes
+        state: stopped
+        daemon_reload: yes
       with_items:
-        - cuckoohttpd
+        - cuckoohttpd.service
         - cuckooapi.service
-        - cuckoosandbox
+        - cuckoosandbox.service
 
     - name: Now place wrapper to run vboxmanage command on remote host
       # This is necessary to control vm start, stop and snapshot
@@ -308,6 +310,24 @@
         mode: 0600
         backup: true
 
+    # chicken'n'egg problem here: Cuckoo init connects to the database using
+    # the old config (if it exists), creates the schema, initializes the cwd
+    # (if it didn't exist) and then finally writes out the config merged with
+    # stuff from the key-value config file, including the new database password.
+    # There does not seem a way to first update the config and then the
+    # database. Throwing away the whole old cwd seems too drastic a solution.
+    - name: Check if cuckoo config exists
+      stat: path=/var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
+      register: cuckoo_conf
+
+    - name: Potentially hack new DB password into old config
+      tags: cuckooconf
+      replace:
+        path: /var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
+        regexp: '^connection = .*'
+        replace: "connection = mysql://cuckoo:{{ cuckoo_db_password }}@{{ mariadb_server }}/cuckoo"
+      when: cuckoo_conf.stat.exists == True
+
     - name: Initial run of Cuckoo to create default configuration in peekaboo $HOME
       tags: cuckooconf
       become_user: peekaboo
@@ -320,6 +340,15 @@
       become_user: peekaboo
       args:
         chdir: /var/lib/peekaboo
+
+    - name: Start Cuckcoo services
+      systemd:
+        name: "{{ item }}"
+        state: started
+      with_items:
+        - cuckoohttpd.service
+        - cuckooapi.service
+        - cuckoosandbox.service
 
 
 - name: Install Peekaboo
@@ -355,12 +384,12 @@
         - mysql-proxy.service
         - mysql-proxy.socket
 
-    - name: Enable Peekaboo services to run on startup
+    - name: Enable Peekaboo services to run on startup but leave stopped for now
       systemd:
-        name: "{{ item }}"
+        name: peekaboo
         enabled: yes
-      with_items:
-        - peekaboo
+        state: stopped
+        daemon_reload: yes
 
     - name: Create Peekaboo configuration directory /opt/peekaboo/etc
       tags: peekabooconf
@@ -439,6 +468,11 @@
       file:
         path: /var/lib/peekaboo
         mode: 0700
+
+    - name: Start Peekaboo
+      systemd:
+        name: peekaboo
+        state: started
 
 
 - name: Install amavis and dependencies
