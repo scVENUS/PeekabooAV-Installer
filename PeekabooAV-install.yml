@@ -145,6 +145,45 @@
         capability: cap_net_raw,cap_net_admin=eip
         state: present
 
+- name: Install mysql database and setup users and databases
+  hosts: peekabooav_server
+  gather_facts: no
+  become: true
+  tags: mysql
+  tasks:
+    - name: Installing Software
+      apt:
+        name:
+          - mariadb-server
+          # required to be installed globally by our system-installed ansible
+          # to be able to connect to the database in the next step
+          - python-mysqldb
+
+    - name: Create databases
+      mysql_db:
+        name: "{{ item }}"
+        state: present
+        encoding: utf8
+      with_items:
+        - cuckoo
+        - peekaboo
+
+    - name: Create database user cuckoo
+      mysql_user:
+        name: cuckoo
+        password: "{{ cuckoo_db_password }}"
+        host: localhost
+        priv: 'cuckoo.*:ALL,GRANT'
+        state: present
+
+    - name: Create database user peekaboo
+      mysql_user:
+        name: peekaboo
+        password: "{{ peekaboo_db_password }}"
+        host: localhost
+        priv: 'peekaboo.*:ALL,GRANT'
+        state: present
+
 - name: Create a new peekaboo user and group 
   hosts: peekabooav_server
   gather_facts: no
@@ -465,51 +504,6 @@
         name: peekaboo
         groups: amavis
 
-
-- name: Install mysql database and setup users and databases
-  hosts: peekabooav_server
-  gather_facts: no
-  become: true
-  tags: mysql
-  tasks:
-    - name: Installing Software
-      apt:
-        name:
-          - mariadb-server
-          # required to be installed globally by our system-installed ansible
-          # to be able to connect to the database in the next step
-          - python-mysqldb
-
-    - name: Create databases
-      mysql_db:
-        name: "{{ item }}"
-        state: present
-        encoding: utf8
-      with_items:
-        - cuckoo
-        - peekaboo
-
-    - name: Create database user cuckoo
-      mysql_user:
-        name: cuckoo
-        password: "{{ cuckoo_db_password }}"
-        host: localhost
-        priv: 'cuckoo.*:ALL,GRANT'
-        state: present
-
-    - name: Create database user peekaboo
-      mysql_user:
-        name: peekaboo
-        password: "{{ peekaboo_db_password }}"
-        host: localhost
-        priv: 'peekaboo.*:ALL,GRANT'
-        state: present
-
-
-#    - name: Restart services
-#      service:
-#        name: peekaboo
-#        state: restarted
 
 - name: Clean up installer directory
   hosts: localhost
