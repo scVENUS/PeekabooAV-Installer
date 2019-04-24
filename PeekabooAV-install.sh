@@ -93,20 +93,40 @@ we will:
 - install Cuckoo and Peekaboo with their python dependencies into virtualenvs in /opt
 "
 
-if [[ "$1" == "--help" || "$1" == "-h" ]]
-then
-	echo "$0 [-h|--help] [--quiet]"
+usage() {
+	echo "$0 [-h|--help] [-q|--quiet]"
 	echo
-	echo "Automates the standard installation of"
-	echo "PeekabooAV."
+	echo "Automates the standard installation of PeekabooAV."
+	echo
+	echo "--quiet, -q	be less verbose and noninteractive, most notably"
+	echo "		do not print the logo"
+	echo "--help, -h	show this help message"
 	echo
 	echo "$note"
-	exit
-fi
+}
 
-if [[ "$1" != "--quiet" ]]
-then
+quiet=
+while [ -n "$1" ] ; do
+	case "$1" in
+		--quiet|-q)
+			quiet=1
+			;;
+
+		--help|-h)
+			usage
+			exit 0
+			;;
+
+		*)
+			echo "Unknown argument"
+			usage
+			exit 1
+			;;
+	esac
 	shift
+done
+
+if [ "$quiet" != 1 ] ; then
 	# The following code is just to have the owl and info scroll by slowly.
 	( echo "$owl"; echo "$note" ) | while IFS= read -r line; do
 		printf '%s\n' "$line"
