@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # this script will cause an error if no MTA listens on 10025
 # run the following command to have one (this is also a valid bash script)

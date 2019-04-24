@@ -376,7 +376,6 @@
         name:
           - mysql
         virtualenv: /opt/peekaboo
-        virtualenv_python: python2.7
 
     - name: Install Peekaboo
       pip:
@@ -384,7 +383,6 @@
         name: .
         state: latest
         virtualenv: /opt/peekaboo
-        virtualenv_python: python2.7
 
     - name: Copy Peekaboo systemd unit files to /etc
       copy:
