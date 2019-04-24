@@ -28,12 +28,12 @@
 # The following function will clear all buffered stdin.  (See
 # http://compgroups.net/comp.unix.shell/clear-stdin-before-place-read-a/507380)
 fflush_stdin() {
-    local dummy=""
-    local originalSettings=""
-    originalSettings=`stty -g`
-    stty -icanon min 0 time 0
-    while read dummy ; do : ; done
-    stty "$originalSettings"
+	local dummy=""
+	local originalSettings=""
+	originalSettings=`stty -g`
+	stty -icanon min 0 time 0
+	while read dummy ; do : ; done
+	stty "$originalSettings"
 }
 
 owl="
@@ -95,76 +95,76 @@ we will:
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]
 then
-    echo "$0 [-h|--help] [--quiet]"
-    echo
-    echo "Autoamtes the standard installation of"
-    echo "PeekabooAV."
-    echo
-    echo "$note"
-    exit
+	echo "$0 [-h|--help] [--quiet]"
+	echo
+	echo "Automates the standard installation of"
+	echo "PeekabooAV."
+	echo
+	echo "$note"
+	exit
 fi
 
 if [[ "$1" != "--quiet" ]]
 then
-    shift
-    # The following code is just to have the owl and info scroll bye slowly.
-    ( echo "$owl"; echo "$note" ) | while IFS= read -r line; do
-      printf '%s\n' "$line"
-      sleep .1
-    done
+	shift
+	# The following code is just to have the owl and info scroll by slowly.
+	( echo "$owl"; echo "$note" ) | while IFS= read -r line; do
+		printf '%s\n' "$line"
+		sleep .1
+	done
 
-    echo "If any of these is not the case or not acceptable please hit Ctrl+c"
-    echo 
-    echo "Press enter to continue"
+	echo "If any of these is not the case or not acceptable please hit Ctrl+c"
+	echo
+	echo "Press enter to continue"
 
 
-    # Discard all input in buffer.
-    fflush_stdin
+	# Discard all input in buffer.
+	fflush_stdin
 
-    # Read 'Press enter ..'
-    read
+	# Read 'Press enter ..'
+	read
 fi
 
 
 if [ $(id -u) != 0 ]; then
-   echo "ERROR: $(basename $0) needs to be run as root" >&2
-   exit 1
+	echo "ERROR: $(basename $0) needs to be run as root" >&2
+	exit 1
 fi
 
 # Check if hostname fqdn is properly set and resolves
 if ! hostname --fqdn | grep -q "\." > /dev/null 2>&1
 then
-   echo "ERROR: hostname FQDN not explicitly assigned" >&2
-   exit 1
+	echo "ERROR: hostname FQDN not explicitly assigned" >&2
+	exit 1
 fi
 
 # Refresh package repositories.
 if ! apt-get update ; then
-   echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
-   exit 1
+	echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
+	exit 1
 fi
 
 if ! apt-get install -y software-properties-common ; then
-   echo "ERROR: apt source management helpers cannot be installed" >&2
-   exit 1
+	echo "ERROR: apt source management helpers cannot be installed" >&2
+	exit 1
 fi
 
 # multiverse also adds universe and script does an apt-get update as well
 if ! apt-add-repository multiverse ; then
-   echo "ERROR: universe/multiverse repositories cannot be added" >&2
-   exit 1
+	echo "ERROR: universe/multiverse repositories cannot be added" >&2
+	exit 1
 fi
 
 # Upgrade system
 if ! apt-get dist-upgrade -y ; then
-   echo "ERROR: the command 'apt-get dist-upgrade' failed. Please fix manually" >&2
-   exit 1
+	echo "ERROR: the command 'apt-get dist-upgrade' failed. Please fix manually" >&2
+	exit 1
 fi
 
 # Install ansible
 if ! apt-get install -y ansible ; then
-   echo "ERROR: ansible cannot be installed" >&2
-   exit 1
+	echo "ERROR: ansible cannot be installed" >&2
+	exit 1
 fi
 
 ansibleversion=$(ansible --version | head -n 1 | grep -o "[0-9\.]*")
@@ -172,30 +172,30 @@ IFS='.' read -r -a ansibleversionarray <<< "$ansibleversion"
 # check major version
 if [[ ${ansibleversionarray[0]} -eq 2 ]]
 then
-  # check minor version
-  if [[ ${ansibleversionarray[1]} -lt 5 ]]
-  then
-     echo "ERROR: ansible version (${ansibleversion}) too old, at least version 2.5 required"
-     exit 1
-  fi
+	# check minor version
+	if [[ ${ansibleversionarray[1]} -lt 5 ]]
+	then
+		echo "ERROR: ansible version (${ansibleversion}) too old, at least version 2.5 required"
+		exit 1
+	fi
 else
-  echo "ERROR: ansible version likely not compatible, at least version 2.5 required"
-  exit 1
+	echo "ERROR: ansible version likely not compatible, at least version 2.5 required"
+	exit 1
 fi
 
 # Check for SYSTEMD module
 if ! ansible-doc systemd 2>/dev/null | grep -q SYSTEMD
 then
-   echo "ERROR: ansible version maybe too old, SYSTEMD module missing"
-   exit 1
+	echo "ERROR: ansible version maybe too old, SYSTEMD module missing"
+	exit 1
 fi
 
 # PeekabooAV/.git can be a file or directory
 if [ ! -e PeekabooAV/.git ]
 then
-    echo "ERROR: no local copy of PeekabooAV found"
-    echo "run 'git submodule init' and 'git submodule update' or place files in directory 'PeekabooAV'"
-    exit 1
+	echo "ERROR: no local copy of PeekabooAV found"
+	echo "run 'git submodule init' and 'git submodule update' or place files in directory 'PeekabooAV'"
+	exit 1
 fi
 
 
@@ -203,25 +203,25 @@ ANSIBLE_INVENTORY=$(dirname $0)/ansible-inventory
 ANSIBLE_PLAYBOOK=$(basename $0 .sh).yml
 
 if [ ! -r "$ANSIBLE_INVENTORY" ]; then
-    echo "ERROR: ansible inventory file "$ANSIBLE_INVENTORY" not found" >&2
-    exit 1
+	echo "ERROR: ansible inventory file "$ANSIBLE_INVENTORY" not found" >&2
+	exit 1
 fi
 
 if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
-    echo "ERROR: ansible playbook "$ANSIBLE_PLAYBOOK" not found" >&2
-    exit 1
+	echo "ERROR: ansible playbook "$ANSIBLE_PLAYBOOK" not found" >&2
+	exit 1
 fi
 
 if [ -z ${NOANSIBLE+x} ]
 then
-    ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+	ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
 else
-    echo "WARNING: ansible not run, override by NOANSIBLE env setting" >&2
+	echo "WARNING: ansible not run, override by NOANSIBLE env setting" >&2
 fi
 
 if [ $? != 0 ];then
-   echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
-   exit 1
+	echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
+	exit 1
 fi
 # Clear screen.
 clear
