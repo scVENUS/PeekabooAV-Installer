@@ -94,10 +94,11 @@ we will:
 "
 
 usage() {
-	echo "$0 [-h|--help] [-q|--quiet]"
+	echo "$0 [-h|--help] [-q|--quiet] [-p 2|3] [--python=2|3]"
 	echo
 	echo "Automates the standard installation of PeekabooAV."
 	echo
+	echo "--python, -p	override the python major version to use for Peekaboo"
 	echo "--quiet, -q	be less verbose and noninteractive, most notably"
 	echo "		do not print the logo"
 	echo "--help, -h	show this help message"
@@ -105,9 +106,33 @@ usage() {
 	echo "$note"
 }
 
+bail_arg_required() {
+	echo "Argument required for $1"
+	usage
+	exit 1
+}
+
+bail_unknown_argument() {
+	echo "Unknown argument: $1"
+	usage
+	exit 1
+}
+
 quiet=
+pyver=2
 while [ -n "$1" ] ; do
 	case "$1" in
+		--python=*)
+			pyver=${1#*=}
+			[ -n "$pyver" ] || bail_arg_required
+			;;
+
+		-p)
+			[ -n "$2" ] || bail_arg_required
+			shift
+			pyver="$1"
+			;;
+
 		--quiet|-q)
 			quiet=1
 			;;
@@ -118,9 +143,7 @@ while [ -n "$1" ] ; do
 			;;
 
 		*)
-			echo "Unknown argument"
-			usage
-			exit 1
+			bail_unknown_argument
 			;;
 	esac
 	shift
@@ -145,6 +168,13 @@ if [ "$quiet" != 1 ] ; then
 	read
 fi
 
+case "$pyver" in
+	2|3) ;;
+	*)
+		echo "Invalid value for python version, only 2 or 3 allowed currently"
+		usage
+		exit 1
+esac
 
 if [ $(id -u) != 0 ]; then
 	echo "ERROR: $(basename $0) needs to be run as root" >&2
@@ -234,7 +264,7 @@ fi
 
 if [ -z ${NOANSIBLE+x} ]
 then
-	ansible-playbook -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+	ansible-playbook -e "{pyver: $pyver}" -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
 else
 	echo "WARNING: ansible not run, override by NOANSIBLE env setting" >&2
 fi

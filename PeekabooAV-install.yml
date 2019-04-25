@@ -129,6 +129,15 @@
           - mongodb
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
+    - name: Install Peekaboo python 3 system dependencies
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-dev
+          - python3-virtualenv
+          - python3-setuptools
+      when: pyver == 3
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -370,12 +379,33 @@
   hosts: peekabooav_server
   gather_facts: no
   become: true
+  vars:
+    python_exe: "python{{ pyver }}"
   tasks:
+    - name: Check if Peekaboo is switching python versions
+      stat: path=/opt/peekaboo/bin/python
+      register: peekaboo_python
+
+    - name: Force python version switch in Peekaboo virtualenv
+      file:
+        path: /opt/peekaboo/bin/activate
+        state: absent
+      when: peekaboo_python.stat.lnk_target != python_exe
+
+    # the pip module will fall back to pip2 when ansible is run with python2
+    # even if we forced python3 for the venv. Workaround is to make sure that
+    # pip2 does not exist in the venv.
+    - name: Prevent fallback to pip2
+      file:
+        path: /opt/peekaboo/bin/pip2
+        state: absent
+
     - name: Install Peekaboo optional components
       pip:
         name:
           - mysql
         virtualenv: /opt/peekaboo
+        virtualenv_python: "{{ python_exe }}"
 
     - name: Install Peekaboo
       pip:
