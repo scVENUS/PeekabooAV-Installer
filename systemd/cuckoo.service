@@ -1,0 +1,13 @@
+[Unit]
+Description=Cuckoo Sandbox Service
+After=network.target
+
+[Service]
+ExecStart=/opt/cuckoo/bin/cuckoo
+Restart=on-failure
+User=peekaboo
+Group=peekaboo
+WorkingDirectory=/var/lib/peekaboo
+
+[Install]
+WantedBy=multi-user.target

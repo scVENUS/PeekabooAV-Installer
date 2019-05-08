@@ -1,0 +1,13 @@
+[Unit]
+Description=Cuckoo Web Service
+After=network.target
+
+[Service]
+ExecStart=/opt/cuckoo/bin/cuckoo web
+Restart=on-failure
+User=peekaboo
+Group=peekaboo
+WorkingDirectory=/var/lib/peekaboo
+
+[Install]
+WantedBy=multi-user.target

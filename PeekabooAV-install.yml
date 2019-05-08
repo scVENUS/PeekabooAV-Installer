@@ -217,6 +217,33 @@
         virtualenv: /opt/cuckoo
         virtualenv_python: python2.7
 
+    - name: Stop Cuckoo services
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+      with_items:
+        - cuckoo-web.service
+        - cuckoo-api.service
+        - cuckoo.service
+        # legacy
+        - cuckoohttpd.service
+        - cuckooapi.service
+        - cuckoosandbox.service
+      register: stop_result
+      failed_when: stop_result is failed and not 'Could not find the requested service' in stop_result.msg
+
+    - name: Remove legacy systemd unit files
+      file:
+        dest: "/etc/systemd/system/{{ item }}"
+        state: absent
+      with_items:
+        - cuckoohttpd.service
+        - cuckoo-http.service
+        - cuckooapi.service
+        - cuckoo-api.service
+        - cuckoosandbox.service
+        - cuckoo-sandbox.service
+
     - name: Copy Cuckoo systemd unit files to /etc
       copy:
         src: systemd/{{ item }}
@@ -226,20 +253,9 @@
         mode: 0644
         backup: true
       with_items:
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
-
-    - name: Enable Cuckcoo services to run on startup but leave stopped for now
-      systemd:
-        name: "{{ item }}"
-        enabled: yes
-        state: stopped
-        daemon_reload: yes
-      with_items:
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
+        - cuckoo-web.service
+        - cuckoo-api.service
+        - cuckoo.service
 
     - name: Now place wrapper to run vboxmanage command on remote host
       # This is necessary to control vm start, stop and snapshot
@@ -341,14 +357,16 @@
       args:
         chdir: /var/lib/peekaboo
 
-    - name: Start Cuckcoo services
+    - name: Start and enable Cuckoo services
       systemd:
         name: "{{ item }}"
+        enabled: yes
         state: started
+        daemon_reload: yes
       with_items:
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
+        - cuckoo-web.service
+        - cuckoo-api.service
+        - cuckoo.service
 
 
 - name: Install Peekaboo
