@@ -211,6 +211,14 @@
       - cuckoo-web.service
       - cuckoo-api.service
       - cuckoo.service
+    processor_unit:
+      - cuckoo-process@.service
+    processor_services:
+      # generate list of service instances from template:
+      # - cuckoo-process@1.service
+      # - cuckoo-process@2.service
+      # - ...
+      "{{ range(1, cuckoo_processors + 1) | map('regex_replace', '^(.*)$', 'cuckoo-process@\\1.service') | list }}"
     legacy_services:
       - cuckoohttpd.service
       - cuckooapi.service
@@ -234,7 +242,7 @@
       systemd:
         name: "{{ item }}"
         state: stopped
-      with_items: "{{ services + legacy_services }}"
+      with_items: "{{ services + processor_services + legacy_services }}"
       register: stop_result
       failed_when: stop_result is failed and not 'Could not find the requested service' in stop_result.msg
 
@@ -252,7 +260,7 @@
         group: root
         mode: 0644
         backup: true
-      with_items: "{{ services }}"
+      with_items: "{{ services + processor_unit }}"
 
     - name: Now place wrapper to run vboxmanage command on remote host
       # This is necessary to control vm start, stop and snapshot
@@ -354,7 +362,7 @@
         enabled: yes
         state: started
         daemon_reload: yes
-      with_items: "{{ services }}"
+      with_items: "{{ services + processor_services }}"
 
 
 - name: Install Peekaboo
