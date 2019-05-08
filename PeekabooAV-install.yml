@@ -206,6 +206,19 @@
   hosts: cuckoo_server
   gather_facts: no
   become: true
+  vars:
+    services:
+      - cuckoo-web.service
+      - cuckoo-api.service
+      - cuckoo.service
+    legacy_services:
+      - cuckoohttpd.service
+      - cuckooapi.service
+      - cuckoosandbox.service
+    legacy_service_aliases:
+      - cuckoo-http.service
+      - cuckoo-api.service
+      - cuckoo-sandbox.service
   tasks:
     - name: Install Cuckoo packages
       pip:
@@ -221,14 +234,7 @@
       systemd:
         name: "{{ item }}"
         state: stopped
-      with_items:
-        - cuckoo-web.service
-        - cuckoo-api.service
-        - cuckoo.service
-        # legacy
-        - cuckoohttpd.service
-        - cuckooapi.service
-        - cuckoosandbox.service
+      with_items: "{{ services + legacy_services }}"
       register: stop_result
       failed_when: stop_result is failed and not 'Could not find the requested service' in stop_result.msg
 
@@ -236,13 +242,7 @@
       file:
         dest: "/etc/systemd/system/{{ item }}"
         state: absent
-      with_items:
-        - cuckoohttpd.service
-        - cuckoo-http.service
-        - cuckooapi.service
-        - cuckoo-api.service
-        - cuckoosandbox.service
-        - cuckoo-sandbox.service
+      with_items: "{{ legacy_services + legacy_service_aliases }}"
 
     - name: Copy Cuckoo systemd unit files to /etc
       copy:
@@ -252,10 +252,7 @@
         group: root
         mode: 0644
         backup: true
-      with_items:
-        - cuckoo-web.service
-        - cuckoo-api.service
-        - cuckoo.service
+      with_items: "{{ services }}"
 
     - name: Now place wrapper to run vboxmanage command on remote host
       # This is necessary to control vm start, stop and snapshot
@@ -304,12 +301,6 @@
         chdir: /var/lib/peekaboo
         creates: /var/lib/peekaboo/.ssh/id_ed25519
 
-
-- name: Setting up Cuckoo
-  hosts: cuckoo_server
-  gather_facts: no
-  become: true
-  tasks:
     - name: Create Cuckoo configuration directory /opt/cuckoo/etc
       tags: cuckooconf
       file:
@@ -363,10 +354,7 @@
         enabled: yes
         state: started
         daemon_reload: yes
-      with_items:
-        - cuckoo-web.service
-        - cuckoo-api.service
-        - cuckoo.service
+      with_items: "{{ services }}"
 
 
 - name: Install Peekaboo
