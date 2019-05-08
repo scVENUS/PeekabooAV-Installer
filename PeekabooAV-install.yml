@@ -208,6 +208,7 @@
   become: true
   vars:
     services:
+      - cuckoo-rooter.service
       - cuckoo-web.service
       - cuckoo-api.service
       - cuckoo.service
