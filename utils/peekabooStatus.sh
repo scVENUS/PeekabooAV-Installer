@@ -39,6 +39,7 @@ echo "select count(*) as Number_of_unique_samples from sample_info_v6;" | mysql 
 echo "select sample_info_v6.result,count(sample_info_v6.result) from analysis_jobs_v6 join sample_info_v6 on sample_id=sample_info_v6.id group by sample_info_v6.result" | mysql peekaboo
 
 echo
+unit=$(systemctl status peekaboo | grep "Loaded: " | sed 's/.*(\([^;]*\);.*).*/\1/')
 user=$(grep User $unit | sed 's/.*=\(.*\)/\1/')
 home=$(grep $user /etc/passwd | cut -d : -f 6)
 blue "Malware Reports:"
