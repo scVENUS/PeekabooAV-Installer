@@ -18,11 +18,11 @@ RUN apt-get -y update && \
 		zlib1g-dev
 
 RUN [ "${MODE}" != "embed" ] || \
-	( virtualenv --python=/usr/bin/python2.7 /opt/cuckoo && \
+	( virtualenv /opt/cuckoo && \
 		/opt/cuckoo/bin/pip install cuckoo )
 
 COPY PeekabooAV .
-RUN virtualenv --python=/usr/bin/python2.7 /opt/peekaboo && \
+RUN virtualenv /opt/peekaboo && \
 	/opt/peekaboo/bin/pip install PeekabooAV
 
 RUN groupadd -g 150 peekaboo

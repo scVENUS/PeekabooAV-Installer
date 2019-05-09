@@ -8,3 +8,6 @@ cuckoo_db_password: "{{ lookup('password', 'cuckoo_db_password length=15 chars=a
 peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 chars=ascii_letters') }}"
 
 cuckoo_processors: 5
+
+# default for the python interpreter version to use
+pyver: 2
