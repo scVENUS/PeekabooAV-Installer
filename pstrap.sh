@@ -13,6 +13,6 @@
 cd $(mktemp -d --suffix "-PeekabooAV-Installer")
 pwd
 
-git clone https://github.com/scvenus/peekabooav-installer
+git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer
 ./PeekabooAV-install.sh --quiet
