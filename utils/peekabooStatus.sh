@@ -27,19 +27,19 @@ done
 echo
 
 blue "Cuckoo Version: "
-/opt/cuckoo/bin/python -c "import cuckoo; print cuckoo.__version__"
+/opt/cuckoo/bin/python -c "import cuckoo; print(cuckoo.__version__)"
 blue "PeekabooAV Version: "
-/opt/peekaboo/bin/python -c "import peekaboo; print peekaboo.__version__"
+/opt/peekaboo/bin/python -c "import peekaboo; print(peekaboo.__version__)"
 echo
 blue "Peekaboo DB:"
 echo "show tables" | mysql peekaboo
 
-# select analyses_time,job_hash,sample_id,sha256sum,analysis_result_v2.name,file_extension,reason from analysis_jobs_v2 join sample_info_v2 on sample_id=sample_info_v2.id join analysis_result_v2 on result_id=analysis_result_v2.id;
-echo "select count(*) as Number_of_analysed_samples from analysis_jobs_v3 join sample_info_v3 on sample_id=sample_info_v3.id join analysis_result_v3 on result_id=analysis_result_v3.id;" | mysql peekaboo
-echo "select count(*) as Number_of_unique_samples from sample_info_v3;" | mysql peekaboo
-echo "select analysis_result_v3.name,count(analysis_result_v3.name) from analysis_jobs_v3 join sample_info_v3 on sample_id=sample_info_v3.id join analysis_result_v3 on result_id=analysis_result_v3.id group by analysis_result_v3.name" | mysql peekaboo
+echo "select count(*) as Number_of_analyses_run from analysis_jobs_v6;" | mysql peekaboo
+echo "select count(*) as Number_of_unique_samples from sample_info_v6;" | mysql peekaboo
+echo "select sample_info_v6.result,count(sample_info_v6.result) from analysis_jobs_v6 join sample_info_v6 on sample_id=sample_info_v6.id group by sample_info_v6.result" | mysql peekaboo
 
 echo
+unit=$(systemctl status peekaboo | grep "Loaded: " | sed 's/.*(\([^;]*\);.*).*/\1/')
 user=$(grep User $unit | sed 's/.*=\(.*\)/\1/')
 home=$(grep $user /etc/passwd | cut -d : -f 6)
 blue "Malware Reports:"
