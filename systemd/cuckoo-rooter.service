@@ -1,0 +1,11 @@
+[Unit]
+Description=Cuckoo Rooter Service
+After=network.target
+
+[Service]
+ExecStart=/opt/cuckoo/bin/cuckoo rooter -g peekaboo
+Restart=on-failure
+WorkingDirectory=/var/lib/peekaboo
+
+[Install]
+WantedBy=multi-user.target

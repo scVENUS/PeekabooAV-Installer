@@ -13,13 +13,17 @@ use strict;
 # the directives you can use in this file
 #
 
-$max_requests = 1;
+# Let child die after each request because historically Peekaboo had a problem
+# correlating samples to amavis connections. Should not be necessary any more.
+#$max_requests = 1;
 
 $myhostname = '{{ peekabooav_server_fqdn }}';
 $mydomain = '{{ peekabooav_server_fqdn }}';
 $virus_admin = 'root@{{ peekabooav_server_fqdn }}';
 
-$warnvirussender = 1;
+# Variable $warnvirussender was retired, changing its value has no effect. See
+# release notes.
+#$warnvirussender = 1;
 $warnvirusrecip = 1;
 
 # Change the default mail digest from MD5 and SHA-1 to SHA-256.
@@ -38,6 +42,55 @@ $mail_part_digest_algorithm = 'SHA-256';
 #$notify_method  = 'smtp:[127.0.0.1]:10025';
 #$forward_method = 'smtp:[127.0.0.1]:10025';
 
+# The following section configures two things relating to encrypted,
+# uncheckable content such as password-protected zip archives:
+#
+# 1. Introduce a new setting final_unchecked_encrypted_destiny to allow passing
+# them on while still rejecting other content that could not be checked (e.g.
+# due to failures in the Peekaboo/Cuckoo pipe). Below defaults return temporary
+# failure for all uncheckable content to the delivering MTA while passing on
+# uncheckable content which AMaViS has determined to be encrypted.
+#
+# 2. Add a new setting unchecked_admin_maps which allows to configure
+# notification targets for uncheckable content independently of found viruses,
+# as is the default. If desired, this could also distinguish between encrypted
+# and other uncheckables using a logic similar to the other setting. The
+# use-case here simply is not to report unchecked content at all because it is
+# handled gracefully and no attention to it by an admin or end user is needed
+# in either case.
+
+# monkey patch our custom settings into the default policy bank just to make
+# them known
+$policy_bank{''}{final_unchecked_encrypted_destiny} = undef;
+$policy_bank{''}{unchecked_admin_maps} = undef;
+
+$policy_bank{'OVERLAY'} = {
+  final_unchecked_destiny => D_TEMPFAIL,
+  final_unchecked_encrypted_destiny => D_PASS,
+  unchecked_admin_maps => [ undef ],
+
+  # monkey patch our custom settings handling logic into content category maps
+  # by having the policy bank merge algorithm overlay just the one definition for
+  # CC_UNCHECKED over the default policy bank
+  final_destiny_maps_by_ccat => {
+    # has to be , not => to get CC_UNCHECKED treated as identifier not string
+    CC_UNCHECKED, sub {
+      # content category CC_UNCHECKED, 1 (, 1 being the minor category) means
+      # encrypted
+      if ($Amavis::MSGINFO->is_in_contents_category(CC_UNCHECKED, 1)) {
+        return c('final_unchecked_encrypted_destiny');
+      }
+
+      c('final_unchecked_destiny');
+    },
+  },
+
+  admin_maps_by_ccat => {
+    CC_UNCHECKED, sub { ca('unchecked_admin_maps') },
+  },
+};
+
+$interface_policy{'10024'} = 'OVERLAY';
 
 #------------ Do not modify anything below this line -------------
 1; # ensure a defined return
