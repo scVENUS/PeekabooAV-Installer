@@ -240,15 +240,6 @@ then
 	exit 1
 fi
 
-# PeekabooAV/.git can be a file or directory
-if [ ! -e PeekabooAV/.git ]
-then
-	echo "ERROR: no local copy of PeekabooAV found"
-	echo "run 'git submodule init' and 'git submodule update' or place files in directory 'PeekabooAV'"
-	exit 1
-fi
-
-
 ANSIBLE_INVENTORY=$(dirname $0)/ansible-inventory
 ANSIBLE_PLAYBOOK=$(basename $0 .sh).yml
 
