@@ -32,6 +32,7 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 ```
 git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
+git checkout --recurse-submodules v1.7
 ./PeekabooAV-install.sh
 ```
 
