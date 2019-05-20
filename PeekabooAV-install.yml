@@ -390,7 +390,7 @@
       file:
         path: /opt/peekaboo/bin/activate
         state: absent
-      when: peekaboo_python.stat.lnk_target != python_exe
+      when: peekaboo_python.stat.exists and peekaboo_python.stat.lnk_target != python_exe
 
     # the pip module will fall back to pip2 when ansible is run with python2
     # even if we forced python3 for the venv. Workaround is to make sure that
