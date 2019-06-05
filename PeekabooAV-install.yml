@@ -390,7 +390,7 @@
       file:
         path: /opt/peekaboo/bin/activate
         state: absent
-      when: peekaboo_python.stat.lnk_target != python_exe
+      when: peekaboo_python.stat.exists and peekaboo_python.stat.lnk_target != python_exe
 
     # the pip module will fall back to pip2 when ansible is run with python2
     # even if we forced python3 for the venv. Workaround is to make sure that
@@ -407,14 +407,41 @@
         virtualenv: /opt/peekaboo
         virtualenv_python: "{{ python_exe }}"
 
-    - name: Install Peekaboo
+    - name: Check if we are to install a manually supplied Peekaboo version
+      stat:
+        path: PeekabooAV
+      register: manually_supplied_peekaboo
+
+    - name: Potentially warn about usage of manually supplied Peekaboo version
+      debug:
+        msg: "CAUTION: Using manually supplied Peekaboo version from PeekabooAV subdirectory"
+      when: manually_supplied_peekaboo.stat.exists
+
+    - name: Install manually supplied Peekaboo
       pip:
         chdir: PeekabooAV
         name: .
         state: latest
         virtualenv: /opt/peekaboo
+      when: manually_supplied_peekaboo.stat.exists
 
-    - name: Copy Peekaboo systemd unit files to /etc
+    - name: Install latest Peekaboo release from PyPI
+      pip:
+        name: peekabooav
+        state: latest
+        virtualenv: /opt/peekaboo
+      when: not manually_supplied_peekaboo.stat.exists
+
+    - name: Copy Peekaboo systemd unit to /etc
+      copy:
+        src: /opt/peekaboo/share/doc/peekaboo/systemd/peekaboo.service
+        dest: /etc/systemd/system/
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+
+    - name: Copy mysql proxy systemd unit files to /etc
       copy:
         src: systemd/{{ item }}
         dest: /etc/systemd/system/
@@ -423,7 +450,6 @@
         mode: 0644
         backup: true
       with_items:
-        - peekaboo.service
         - mysql-proxy.service
         - mysql-proxy.socket
 
@@ -491,7 +517,7 @@
     - name: Place Peekaboo ruleset.conf in /opt/peekaboo/etc
       tags: peekabooconf
       copy:
-        src: PeekabooAV/ruleset.conf.sample
+        src: /opt/peekaboo/share/doc/peekaboo/ruleset.conf.sample
         dest: /opt/peekaboo/etc/ruleset.conf
         owner: root
         group: root
@@ -559,7 +585,9 @@
 
     - name: Copy amavis plugin to conf.d
       copy:
-        src: PeekabooAV/amavis/10-ask_peekaboo
+        # assumes that peekaboo and amavis are on the same box, needs a rethink
+        # once those roles are separated
+        src: /opt/peekaboo/share/doc/peekaboo/amavis/10-ask_peekaboo
         dest: /etc/amavis/conf.d/
         owner: root
         group: root
