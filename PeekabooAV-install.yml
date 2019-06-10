@@ -600,6 +600,42 @@
         daemon_reload: yes
         name: amavis
 
+- name: Install INetSim
+  hosts: inetsim_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Installing software
+      apt:
+        name:
+          - inetsim
+          - iptables
+
+    - name: DNAT to INetSim
+      iptables:
+        table: nat
+        chain: PREROUTING
+        in_interface: enp0s3
+        jump: DNAT
+        to_destination: 192.168.56.5
+        comment: Redirect all traffic to 192.168.56.5
+      become: yes
+
+    - name: Restart inetsim
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: inetsim
+
+    - name: Copy /etc/inetsim/inetsim.conf
+      copy:
+        src: net/inetsim.conf
+        dest: /etc/inetsim/inetsim.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+
 - name: Allow access to files and sockets for amavis and peekaboo
   hosts: peekabooav_server
   gather_facts: no
