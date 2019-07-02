@@ -621,12 +621,6 @@
         comment: Redirect all traffic to 192.168.56.5
       become: yes
 
-    - name: Restart inetsim
-      systemd:
-        state: restarted
-        daemon_reload: yes
-        name: inetsim
-
     - name: Copy /etc/inetsim/inetsim.conf
       copy:
         src: net/inetsim.conf
@@ -635,6 +629,12 @@
         group: root
         mode: 0644
         backup: true
+
+    - name: Restart inetsim
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: inetsim
 
 - name: Allow access to files and sockets for amavis and peekaboo
   hosts: peekabooav_server
