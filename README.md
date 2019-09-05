@@ -29,10 +29,18 @@ replaces updated files and performes an installation of the latest PeekabooAV re
 
 
 ### This is what you type (copy - paste)
+For a released version, e.g. 1.7
 ```
-git clone --recurse-submodules https://github.com/scvenus/peekabooav-installer
+git clone -b v1.7 --recurse-submodules https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
-git checkout --recurse-submodules v1.7
+./PeekabooAV-install.sh
+```
+
+Or for testing most resent changes of the repository
+```
+git clone https://github.com/scvenus/peekabooav-installer
+cd peekabooav-installer/
+git clone https://github.com/scvenus/peekabooav PeekabooAV
 ./PeekabooAV-install.sh
 ```
 
