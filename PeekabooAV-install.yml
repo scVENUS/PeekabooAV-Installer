@@ -538,11 +538,6 @@
         path: /var/lib/peekaboo
         mode: 0700
 
-    - name: Start Peekaboo
-      systemd:
-        name: peekaboo
-        state: started
-
 
 - name: Install amavis and dependencies
   hosts: peekabooav_server
@@ -599,6 +594,20 @@
         state: restarted
         daemon_reload: yes
         name: amavis
+
+# As long as we still need access to files created by amavis. Once we receive
+# them via a rest api between amavis and peekaboo we no longer need to be in
+# group amavis and this section can be moved back to the peekaboo play.
+- name: Restart Peekaboo
+  hosts: peekabooav_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Start Peekaboo
+      systemd:
+        name: peekaboo
+        state: started
+
 
 - name: Install INetSim
   hosts: inetsim_server
@@ -663,6 +672,7 @@
         group: root
         mode: 0755
         backup: true
+
 
 - name: Allow access to files and sockets for amavis and peekaboo
   hosts: peekabooav_server
