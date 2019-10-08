@@ -9,3 +9,6 @@ localhost ansible_connection=local
 
 [inetsim_server]
 localhost ansible_connection=local
+
+[dnsmasq_server]
+localhost ansible_connection=local

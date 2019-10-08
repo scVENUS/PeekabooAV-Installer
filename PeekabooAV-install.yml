@@ -636,6 +636,34 @@
         daemon_reload: yes
         name: inetsim
 
+- name: Install dnsmasq
+  hosts: dnsmasq_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Installing software
+      apt:
+        name:
+          - dnsmasq
+
+    - name: Copy /etc/dnsmasq.conf
+      copy:
+        src: vm/dnsmasq.conf
+        dest: /etc/dnsmasq.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+
+    - name: Copy /opt/dnsmasqVmConfGenerator.sh
+      copy:
+        src: vm/dnsmasqVmConfGenerator.sh
+        dest: /opt/dnsmasqVmConfGenerator.sh
+        owner: root
+        group: root
+        mode: 0755
+        backup: true
+
 - name: Allow access to files and sockets for amavis and peekaboo
   hosts: peekabooav_server
   gather_facts: no
