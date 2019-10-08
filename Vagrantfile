@@ -13,12 +13,23 @@ Vagrant.configure("2") do |config|
 
     peekaboo.vm.network "private_network", ip: "192.168.56.5"
     #peekaboo.vm.network "public_network", type: "dhcp"
+
+    # port forward to cuckoo web
     peekaboo.vm.network "forwarded_port", guest: 8000, host: 8000, host_ip: "127.0.0.1"
+    # port forward to cuckoo api
+    peekaboo.vm.network "forwarded_port", guest: 8090, host: 8090, host_ip: "127.0.0.1"
+    # port forward to amavis
+    peekaboo.vm.network "forwarded_port", guest: 10024, host: 10024, host_ip: "127.0.0.1"
 
     peekaboo.vm.provider "virtualbox" do |vb|
       vb.name   = "PeekabooAV"
-      vb.memory = 2048
+      vb.memory = 3072
       vb.cpus   = 2
+      # if you need more disk space use
+      # vagrant plugin install vagrant-disksize
+      if Vagrant.has_plugin?("vagrant-disksize")
+        config.disksize.size  = '50GB'
+      end
     end
   end
 
