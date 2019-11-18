@@ -8,10 +8,14 @@ source ~/vboxmanage.conf
 # cd /usr/local/bin
 # ln -s this.sh vboxmanage
 
+# ssh connects stdin to stdin of the remote command thereby consuming all stdin.
+# -n doesn't forward stdin to the remote command. Potentially breaking
+# "modifyvm [--teleporterpasswordfile <file>|stdin]" and
+# "convertfromraw stdin <outputfile> <bytes>"
 if [[ "$method" == "ssh" ]]
 then
-  echo ssh ${username}@${host} $(basename $0) $@
-  ssh ${username}@${host} $(basename $0) $@
+  echo ssh -n ${username}@${host} $(basename $0) $@
+  ssh -n ${username}@${host} $(basename $0) $@
 fi
 
 #for use with bindshell
