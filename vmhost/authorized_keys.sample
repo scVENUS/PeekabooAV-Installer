@@ -1,1 +1,1 @@
-command="/home/security/.ssh/remote-command.sh",from="192.168.56.0/24",no-agent-forwarding,no-X11-forwarding,no-port-forwarding,no-pty ssh-ed25519 AAAA...uqod97G9 peekaboo@hostname
+command="/home/security/.ssh/remote-command.sh",from="127.0.0.1,192.168.56.0/24",no-agent-forwarding,no-X11-forwarding,no-port-forwarding,no-pty ssh-ed25519 AAAA...uqod97G9 peekaboo@hostname
