@@ -14,7 +14,7 @@ Param(
      [Switch] $Admin=$true
      )
 
-	 # by Andreas Nick https://www.software-virtualisierung.de/powershell/powershell-enable-and-disable-windows-autologon-with-automatic-generated-password.html
+     # by Andreas Nick https://www.software-virtualisierung.de/powershell/powershell-enable-and-disable-windows-autologon-with-automatic-generated-password.html
      $AutoLogonUser = "AutoLogonUser"
      $Autologon = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
      $RunKey = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
@@ -128,6 +128,20 @@ function setResolution {
 	Set-DisplayResolution -Width 1280 -Height 1024 -Force
 }
 
+function startKillIexplore {
+      $ie = New-Object -ComObject InternetExplorer.Application
+      $ie.Visible = $true
+      $ie.Navigate('about:blank')
+      # sleep
+      $ie.Quit()
+}
+
+function startKillApplication {
+      $process = Start-Process "C:\Program Files (x86)\Internet Explorer\iexplore.exe" http://127.0.0.1 -PassThru
+      # sleep
+      $process.Kill()
+}
+
 function reboot {
 	# reboot
 	echo "reboot"
@@ -144,7 +158,7 @@ disableUAC
 disableFW
 leaveDom
 #getAgent
-#autoLogin
+#autoLogin # or manually via win+r autoplwiz
 Enable-Autologon -LogonCount 99999 -AutostartScript "C:\startagent.bat"
 #autorunAgent
 #setResolution
