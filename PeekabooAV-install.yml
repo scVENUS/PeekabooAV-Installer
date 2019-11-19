@@ -665,10 +665,10 @@
         mode: 0644
         backup: true
 
-    - name: Copy /opt/dnsmasqVmConfGenerator.sh
+    - name: Copy /opt/confgenerator.sh
       copy:
-        src: vm/dnsmasqVmConfGenerator.sh
-        dest: /opt/dnsmasqVmConfGenerator.sh
+        src: vm/confgenerator.sh
+        dest: /opt/confgenerator.sh
         owner: root
         group: root
         mode: 0755
