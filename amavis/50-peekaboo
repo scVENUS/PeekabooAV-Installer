@@ -92,24 +92,37 @@ $policy_bank{'OVERLAY'} = {
 
 $interface_policy{'10024'} = 'OVERLAY';
 
+
 $banned_filename_re = new_RE(
 
-   # block certain double extensions anywhere in the base name
-  qr'\.[^./]*\.(exe|vbs|pif|scr|bat|cmd|com|cpl|dll|chm|msi|jar|hta|scf|job|ps1|hlp)\.?$'i,
+  ## The following config is to be seen as an example. Amavis is already providing a default config with some file blocking
+  ## This example would block files on a more strict basis
+  ## Please do not use them as a default in your setup unless you know what you are doing!
+  ## Always check those against your internal policies.
   
-  qr'^application/x-msdownload$'i,                  # block these MIME types
-  qr'^application/x-msdos-program$'i,
-  qr'^application/hta$'i,
-  qr'^application/mshelp$'i,
-  qr'^application/java-archive$'i,
-  qr'^application/vnd.microsoft.portable-executable$'i,
-  qr'^application/x-dosexec$'i,
+
+  ## This blocks certain double extensions anywhere in the base name
+  ## E.g. INVOICE.txt.docx
+  ## This could lead to foul the recipient to think that this is a .txt but in fact, it's a .docx
+  ## More info: https://www.pcmag.com/encyclopedia/term/41929/double-extension
+  #qr'\.[^./]*\.(exe|vbs|pif|scr|bat|cmd|com|cpl|dll|chm|msi|jar|hta|scf|job|ps1|hlp)\.?$'i,
   
-  [ qr'^\.(rpm|cpio|tar)$'       => 0 ],  # allow any type in Unix archives (default)
+  ## Blocks specific MIME types
+  #qr'^application/x-msdownload$'i,                  # block these MIME types
+  #qr'^application/x-msdos-program$'i,
+  #qr'^application/hta$'i,
+  #qr'^application/mshelp$'i,
+  #qr'^application/java-archive$'i,
+  #qr'^application/vnd.microsoft.portable-executable$'i,
+  #qr'^application/x-dosexec$'i,
   
-  qr'.\.(exe|vbs|pif|scr|bat|cmd|com|cpl|chm|msi|jar|hta|scf|hlp)$'i, # banned extension - basic
   
-    qr'^\.(exe-ms)$',                       # banned file(1) types (default)
+  #[ qr'^\.(rpm|cpio|tar)$'       => 0 ],  # allow any type in Unix archives (default)
+  
+  ## Blocks file extensions like .exe, .vbs and .hta
+  #qr'.\.(exe|vbs|pif|scr|bat|cmd|com|cpl|chm|msi|jar|hta|scf|hlp)$'i, # banned extension - basic
+  
+  #qr'^\.(exe-ms)$',                       # banned file(1) types (default)
  
 );
 
