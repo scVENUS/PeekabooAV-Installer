@@ -12,23 +12,27 @@ become peekaboo user to configure cuckoo and vbox control
 vboxmanage is a wrapper script that connect either over SSH
  to the virtualisation host (linux) or vboxmanageAPI.py (windows)
  
-`vim vboxmanage.conf`
+`vim ~/vboxmanage.conf`
 
 depending on the chosen method it is necessary to either run
 the vboxmanageAPI.py or configure ssh-key authentication on
 the virtualisation host
+
+### Windows Host
 ```
 smbclient ... vbox/vboxmanageAPI.py ...
  PS> $env:Path += ";C:\Program Files\Oracle\VirtualBox\"
  PS> C:\Python27\python.exe .\vboxmanageAPI.py
 ```
-or
+
+### Linux Host
 ```
 scp vmhost/remote-command.sh ...
 scp vmhost/authorized_keys.sample ...
 scp /var/lib/peekaboo/.ssh/id_ec25519.pub ...
 ```
 
+### Later
 try running vboxmanage it should display its help
 
 `vboxmanage`
@@ -43,8 +47,9 @@ connect back to `resultserver_ip`
 
 `vim virtualbox.conf`
 
-Depending on the size of your installation you might want to
-adjust the number of cuckoo processors (`$n`)
+If you use embed mode and depending on the size of your
+installation you might want to adjust the number of cuckoo
+processors (`$n`)
 
 `vim /opt/peekaboo/bin/cuckooprocessor.sh`
 
@@ -60,11 +65,11 @@ su -s /bin/bash amavis
 socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock
 ```
 
-At this point it's already possible to check files
+cd tmopAt this point it's already possible to check files
 type the following into the previous command to check the
 file.
 
-`/var/lib/peekaboo/vboxmanage.conf`
+`[ { "full_name": "/var/lib/peekaboo/vboxmanage.conf" } ]`
 
 ## Amavis configuration
 Set `$myhostname, $mydomain, $virus_admin, $notify_method`
@@ -75,6 +80,9 @@ have to be adjusted.
 `vim /etc/amavis/conf.d/50-user`
 
 ## Configure MDA (here described for the stand alone - demo setup)
+You are free to ommit everything postfix related and talk smtp to
+amavis directly.
+
 ```
 cp main.cf /etc/postfix/
 cp master.cf /etc/postfix/
@@ -114,7 +122,7 @@ su peekaboo
 The following command will return an ID, spinn up a VM and
 ultimately produce a report
 
-`cuckoo submit /usr/share/icons/cab_view.png`
+`/opt/cuckoo/bin/cuckoo submit /usr/share/icons/cab_view.png`
 
 ## Configure and start Cuckoo Web UI
 Adjust the IP address it binds to
