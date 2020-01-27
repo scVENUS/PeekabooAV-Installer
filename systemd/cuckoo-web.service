@@ -5,9 +5,9 @@ After=network.target
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo web
 Restart=on-failure
-User=peekaboo
-Group=peekaboo
-WorkingDirectory=/var/lib/peekaboo
+User=cuckoo
+Group=cuckoo
+WorkingDirectory=/var/lib/cuckoo
 
 [Install]
 WantedBy=multi-user.target

@@ -193,22 +193,22 @@
         priv: 'peekaboo.*:ALL,GRANT'
         state: present
 
-- name: Create a new peekaboo user and group 
-  hosts: peekabooav_server
+- name: Create a new cuckoo user and group
+  hosts: cuckoo_server
   gather_facts: no
   become: true
   tasks:
-    - name: Create a new group peekaboo
+    - name: Create a new group cuckoo
       group:
-        name: peekaboo
+        name: cuckoo
         state: present
-        gid: 150
-    - name: Create a new user peekaboo
+        gid: 151
+    - name: Create a new user cuckoo
       user:
-        name: peekaboo
-        group: peekaboo
-        uid: 150
-        home: /var/lib/peekaboo
+        name: cuckoo
+        group: cuckoo
+        uid: 151
+        home: /var/lib/cuckoo
 
 
 - name: Install Cuckoo
@@ -285,17 +285,17 @@
 
     - name: Secure storage directory
       file:
-        path: /var/lib/peekaboo
+        path: /var/lib/cuckoo
         mode: 0700
 
-    - name: Copy /var/lib/peekaboo/vboxmanage.conf
+    - name: Copy /var/lib/cuckoo/vboxmanage.conf
       # The configuration contains IP address and username of the
       # target user on the host that owns all virtual box vms.
       copy:
         src: vbox/vboxmanage.conf
-        dest: /var/lib/peekaboo/vboxmanage.conf
-        owner: peekaboo
-        group: peekaboo
+        dest: /var/lib/cuckoo/vboxmanage.conf
+        owner: cuckoo
+        group: cuckoo
         mode: 0644
         backup: true
 
@@ -304,20 +304,20 @@
         name: ssh
         state: latest
 
-    - name: Setup ssh key for peekaboo user
+    - name: Setup ssh key for cuckoo user
       file:
-        path: /var/lib/peekaboo/.ssh
+        path: /var/lib/cuckoo/.ssh
         state: directory
         mode: 0700
-        owner: peekaboo
-        group: peekaboo
+        owner: cuckoo
+        group: cuckoo
 
     - name: This key will have to be allowed on the host to authenticate the vm user
-      become_user: peekaboo
-      command: ssh-keygen -t ed25519 -f /var/lib/peekaboo/.ssh/id_ed25519 -P ''
+      become_user: cuckoo
+      command: ssh-keygen -t ed25519 -f /var/lib/cuckoo/.ssh/id_ed25519 -P ''
       args:
-        chdir: /var/lib/peekaboo
-        creates: /var/lib/peekaboo/.ssh/id_ed25519
+        chdir: /var/lib/cuckoo
+        creates: /var/lib/cuckoo/.ssh/id_ed25519
 
     - name: Create Cuckoo configuration directory /opt/cuckoo/etc
       tags: cuckooconf
@@ -330,8 +330,8 @@
       template:
         src: cuckoo/custom.kv.conf
         dest: /opt/cuckoo/etc/custom.kv.conf
-        owner: peekaboo
-        group: peekaboo
+        owner: cuckoo
+        group: cuckoo
         mode: 0600
         backup: true
 
@@ -342,29 +342,29 @@
     # There does not seem a way to first update the config and then the
     # database. Throwing away the whole old cwd seems too drastic a solution.
     - name: Check if cuckoo config exists
-      stat: path=/var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
+      stat: path=/var/lib/cuckoo/.cuckoo/conf/cuckoo.conf
       register: cuckoo_conf
 
     - name: Potentially hack new DB password into old config
       tags: cuckooconf
       replace:
-        path: /var/lib/peekaboo/.cuckoo/conf/cuckoo.conf
+        path: /var/lib/cuckoo/.cuckoo/conf/cuckoo.conf
         regexp: '^connection = .*'
         replace: "connection = mysql://cuckoo:{{ cuckoo_db_password }}@{{ mariadb_server }}/cuckoo"
       when: cuckoo_conf.stat.exists == True
 
-    - name: Initial run of Cuckoo to create default configuration in peekaboo $HOME
+    - name: Initial run of Cuckoo to create default configuration in cuckoo $HOME
       tags: cuckooconf
-      become_user: peekaboo
+      become_user: cuckoo
       command: /opt/cuckoo/bin/cuckoo init --conf=/opt/cuckoo/etc/custom.kv.conf
       args:
-        chdir: /var/lib/peekaboo
+        chdir: /var/lib/cuckoo
 
     - name: Install cuckoo community signatures
       command: /opt/cuckoo/bin/cuckoo community
-      become_user: peekaboo
+      become_user: cuckoo
       args:
-        chdir: /var/lib/peekaboo
+        chdir: /var/lib/cuckoo
 
     - name: Start and enable Cuckoo services
       systemd:
@@ -373,6 +373,24 @@
         state: started
         daemon_reload: yes
       with_items: "{{ services + processor_services }}"
+
+
+- name: Create a new peekaboo user and group
+  hosts: peekabooav_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Create a new group peekaboo
+      group:
+        name: peekaboo
+        state: present
+        gid: 150
+    - name: Create a new user peekaboo
+      user:
+        name: peekaboo
+        group: peekaboo
+        uid: 150
+        home: /var/lib/peekaboo
 
 
 - name: Install Peekaboo

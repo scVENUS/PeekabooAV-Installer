@@ -3,9 +3,9 @@ Description=Cuckoo Rooter Service
 After=network.target
 
 [Service]
-ExecStart=/opt/cuckoo/bin/cuckoo rooter -g peekaboo
+ExecStart=/opt/cuckoo/bin/cuckoo rooter -g cuckoo
 Restart=on-failure
-WorkingDirectory=/var/lib/peekaboo
+WorkingDirectory=/var/lib/cuckoo
 
 [Install]
 WantedBy=multi-user.target
