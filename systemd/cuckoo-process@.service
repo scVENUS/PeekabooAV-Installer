@@ -1,6 +1,6 @@
 [Unit]
 Description=Cuckoo Sandbox Processing Service %i
-After=network.target cuckoo.service
+After=network.target cuckoo.service mysql.service
 
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo process instance%i
