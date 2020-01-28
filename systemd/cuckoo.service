@@ -8,6 +8,7 @@ Restart=on-failure
 User=cuckoo
 Group=cuckoo
 WorkingDirectory=/var/lib/cuckoo
+LimitNOFILE=32768
 
 [Install]
 WantedBy=multi-user.target
