@@ -1,6 +1,7 @@
 [Unit]
 Description=Cuckoo Sandbox Service
 After=network.target cuckoo-rooter.service mysql.service
+Requires=mysql.service
 
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo

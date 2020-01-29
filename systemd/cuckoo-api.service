@@ -1,6 +1,7 @@
 [Unit]
 Description=Cuckoo REST API
 After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo api

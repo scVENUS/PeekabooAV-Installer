@@ -1,6 +1,7 @@
 [Unit]
 Description=Cuckoo Web Service
 After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo web
