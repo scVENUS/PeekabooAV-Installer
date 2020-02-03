@@ -39,3 +39,6 @@ Configuration-> Actions...-> Command like described in the screenshot: python /p
 To use the script set up a mail server, the easiest way is to use the script "run_dev_mailserver.sh"
 For script execution select the mail you want to check-> Tools -> Actions -> the name of you're script
 
+# sendRandomCleanFile.sh #
+This script generates random clean files like doc, docx, pdf, zip (with docx inside) or rar (with docx inside) to submit it to peekaboo via email. It can be used to test the configuration of your environment or load testing
+Look into the file for setup instructions.
