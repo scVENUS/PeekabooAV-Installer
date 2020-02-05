@@ -112,21 +112,6 @@
           - curl
           - socat
 
-- name: Install tcpdump and set capability
-  hosts: peekabooav_server
-  gather_facts: no
-  become: true
-  tasks:
-    - name: Install tcpdump
-      apt:
-        name: tcpdump
-        state: latest
-    - name: Set capability
-      capabilities:
-        path: /usr/sbin/tcpdump
-        capability: cap_net_raw,cap_net_admin=eip
-        state: present
-
 - name: Install mysql database and setup users and databases
   hosts: peekabooav_server
   gather_facts: no
@@ -183,6 +168,26 @@
         uid: 151
         home: /var/lib/cuckoo
 
+- name: Install tcpdump and set capability
+  hosts: cuckoo_server
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Install tcpdump
+      apt:
+        name: tcpdump
+        state: latest
+    - name: Restrict access to tcpdump
+      file:
+        path: /usr/sbin/tcpdump
+        mode: 0710
+        owner: root
+        group: cuckoo
+    - name: Set capability
+      capabilities:
+        path: /usr/sbin/tcpdump
+        capability: cap_net_raw,cap_net_admin=eip
+        state: present
 
 - name: Install Cuckoo
   hosts: cuckoo_server
