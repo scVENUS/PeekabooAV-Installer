@@ -111,33 +111,6 @@
           - git
           - curl
           - socat
-    - name: Install Cuckoo and Peekaboo system dependencies
-      apt:
-        name:
-          - python
-          - python-pip
-          - python-dev
-          - libffi-dev
-          - libssl-dev
-          - python-virtualenv
-          - python-setuptools
-          - libjpeg-dev
-          - zlib1g-dev
-          - swig
-          - sqlite3
-          - swig
-          - mongodb
-          # required to install mysql python module in venv using pip
-          - libmysqlclient-dev
-    - name: Install Peekaboo python 3 system dependencies
-      apt:
-        name:
-          - python3
-          - python3-pip
-          - python3-dev
-          - python3-virtualenv
-          - python3-setuptools
-      when: pyver == 3
 
 - name: Install tcpdump and set capability
   hosts: peekabooav_server
@@ -238,6 +211,23 @@
       - cuckoo-api.service
       - cuckoo-sandbox.service
   tasks:
+    - name: Install Cuckoo system dependencies
+      apt:
+        name:
+          - python
+          - python-pip
+          - python-dev
+          - python-virtualenv
+          - python-setuptools
+          - mongodb
+          - libffi-dev
+          - libssl-dev
+          - libjpeg-dev
+          - zlib1g-dev
+          - sqlite3
+          - swig
+          # required to install mysql python module in venv using pip
+          - libmysqlclient-dev
     - name: Install Cuckoo packages
       pip:
         name:
@@ -400,6 +390,29 @@
   vars:
     python_exe: "python{{ pyver }}"
   tasks:
+    - name: Install Peekaboo system dependencies
+      apt:
+        name:
+          # required to install mysql python module in venv using pip
+          - libmysqlclient-dev
+    - name: Install Peekaboo python 2 system dependencies
+      apt:
+        name:
+          - python
+          - python-pip
+          - python-dev
+          - python-virtualenv
+          - python-setuptools
+      when: pyver == 2
+    - name: Install Peekaboo python 3 system dependencies
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-dev
+          - python3-virtualenv
+          - python3-setuptools
+      when: pyver == 3
     - name: Check if Peekaboo is switching python versions
       stat: path=/opt/peekaboo/bin/python
       register: peekaboo_python
