@@ -119,7 +119,7 @@ bail_unknown_argument() {
 }
 
 quiet=
-pyver=2
+pyver=3
 while [ -n "$1" ] ; do
 	case "$1" in
 		--python=*)
