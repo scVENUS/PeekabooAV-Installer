@@ -228,6 +228,7 @@
           - libjpeg-dev
           - zlib1g-dev
           - swig
+          - build-essential
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
     - name: Install Cuckoo packages
@@ -395,6 +396,7 @@
     - name: Install Peekaboo system dependencies
       apt:
         name:
+          - build-essential
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
     - name: Install Peekaboo python 2 system dependencies
