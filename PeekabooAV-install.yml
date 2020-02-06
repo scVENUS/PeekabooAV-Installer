@@ -180,7 +180,9 @@
     - name: Restrict access to tcpdump
       file:
         path: /usr/sbin/tcpdump
-        mode: 0710
+        # cuckoo stats the sniffer during configuration initialisation so we
+        # need r+x for group cuckoo here
+        mode: 0750
         owner: root
         group: cuckoo
     - name: Set capability
