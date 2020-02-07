@@ -126,6 +126,11 @@
           # to be able to connect to the database in the next step
           - python-mysqldb
 
+    - name: Start database service
+      systemd:
+        name: mysql
+        state: started
+
     - name: Create databases
       mysql_db:
         name: "{{ item }}"
