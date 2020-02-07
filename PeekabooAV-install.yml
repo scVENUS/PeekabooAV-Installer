@@ -355,6 +355,14 @@
       args:
         chdir: /var/lib/cuckoo
 
+    # cuckoo ignores the api token in custom.kv.conf :(
+    - name: Hack api token into config
+      tags: cuckooconf
+      replace:
+        path: /var/lib/cuckoo/.cuckoo/conf/cuckoo.conf
+        regexp: '^api_token = .*'
+        replace: "api_token = {{ cuckoo_api_token }}"
+
     - name: Install cuckoo community signatures
       command: /opt/cuckoo/bin/cuckoo community
       become_user: cuckoo
