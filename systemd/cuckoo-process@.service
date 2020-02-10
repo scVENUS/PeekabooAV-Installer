@@ -1,13 +1,14 @@
 [Unit]
 Description=Cuckoo Sandbox Processing Service %i
-After=network.target cuckoo.service
+After=network.target cuckoo.service mysql.service
+Requires=mysql.service
 
 [Service]
 ExecStart=/opt/cuckoo/bin/cuckoo process instance%i
 Restart=on-failure
-User=peekaboo
-Group=peekaboo
-WorkingDirectory=/var/lib/peekaboo
+User=cuckoo
+Group=cuckoo
+WorkingDirectory=/var/lib/cuckoo
 
 [Install]
 WantedBy=multi-user.target
