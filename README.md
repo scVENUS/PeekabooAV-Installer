@@ -92,9 +92,9 @@ have a nice day
 #### Check the components:
 
 ```
-su -c "vboxmanage list vms" peekaboo
-su -c "cuckoo" peekaboo
-su -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf" peekaboo
+su - cuckoo -c "vboxmanage list vms"
+su - cuckoo -c "cuckoo"
+su - peekaboo -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf"
 # if you upgrade from an earlier version you might have to delete the _meta table first
 # should crash with "No such file or directory: '/var/run/peekaboo/peekaboo.pid'"
 systemctl start peekaboo

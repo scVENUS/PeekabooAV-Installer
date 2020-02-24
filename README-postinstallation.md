@@ -5,9 +5,9 @@ Things to do after the installer finishes
 Run the installer or mimic its actions. 
 
 ## Configure Cuckoo and VBox control
-become peekaboo user to configure cuckoo and vbox control
+become cuckoo user to configure cuckoo and vbox control
 
-`su - peekaboo`
+`su - cuckoo`
 
 vboxmanage is a wrapper script that connect either over SSH
  to the virtualisation host (linux) or vboxmanageAPI.py (windows)
@@ -34,7 +34,7 @@ add the new ip to the list of hosts in the script.
 ```
 scp vmhost/remote-command.sh ...
 scp vmhost/authorized_keys.sample ...
-scp /var/lib/peekaboo/.ssh/id_ec25519.pub ...
+scp /var/lib/cuckoo/.ssh/id\_ed25519.pub ...
 ```
 
 ### Later
@@ -46,7 +46,7 @@ It should display its help.
 
 ## Configuration of Cuckoo
 
-`cd /var/lib/peekaboo/.cuckoo/conf`
+`cd /var/lib/cuckoo/.cuckoo/conf`
 
 configure the available machines.
 Make sure to set the correct IP address for cuckoo agent to
@@ -86,7 +86,7 @@ At this point it's already possible to check files
 type the following into the previous command to check the
 file.
 
-`[ { "full_name": "/var/lib/peekaboo/vboxmanage.conf" } ]`
+`[ { "full_name": "/var/lib/cuckoo/vboxmanage.conf" } ]`
 
 ## Amavis configuration
 Set `$myhostname, $mydomain, $virus_admin, $notify_method`
@@ -144,9 +144,9 @@ Manually start the first virtual machine and check if its available
 
 `ping 192.168.56.101`
 
-Now start analysing with behaviour analysis
+Now to start with behavioural analysis, switch to the cuckoo user:
 ```
-su - peekaboo
+su - cuckoo
 ```
 
 The following command will return an ID, spinn up a VM and
