@@ -96,7 +96,7 @@ su - cuckoo -c "vboxmanage list vms"
 su - cuckoo -c "cuckoo"
 su - peekaboo -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf"
 # if you upgrade from an earlier version you might have to delete the _meta table first
-# should crash with "No such file or directory: '/var/run/peekaboo/peekaboo.pid'"
+# should crash with "No such file or directory: '/run/peekaboo/peekaboo.pid'"
 systemctl start peekaboo
 ss -np | grep peekaboo
 socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock

@@ -1,6 +1,9 @@
 Things to do after the installer finishes
 =========================================
 
+If not stated explicitly, all the paths below are relative to the installer
+directory, e.g. `~/peekabooav-installer`.
+
 ## Installer
 Run the installer or mimic its actions. 
 
@@ -46,13 +49,10 @@ It should display its help.
 
 ## Configuration of Cuckoo
 
-`cd /var/lib/cuckoo/.cuckoo/conf`
-
-configure the available machines.
 Make sure to set the correct IP address for cuckoo agent to
 connect back to `resultserver_ip`
 
-`vim virtualbox.conf`
+`vim /var/lib/cuckoo/.cuckoo/conf/virtualbox.conf`
 
 If you use embed mode and depending on the size of your
 installation you might want to adjust the number of cuckoo
@@ -79,7 +79,7 @@ systemctl status peekaboo
 Use socat to connect to peekaboo and expect the greeting
 ```
 su -s /bin/bash amavis
-socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock
+socat STDIN UNIX-CONNECT:/run/peekaboo/peekaboo.sock
 ```
 
 At this point it's already possible to check files
@@ -114,8 +114,8 @@ apt install postfix
 
 Then copy over the configuration files:
 ```
-cp main.cf /etc/postfix/
-cp master.cf /etc/postfix/
+cp postfix/main.cf /etc/postfix/
+cp postfix/master.cf /etc/postfix/
 vim /etc/postfix/main.cf
 vim /etc/postfix/master.cf
 echo "peekabooav-demo.int" > /etc/mailname
@@ -129,14 +129,14 @@ systemctl status postifx
 
 It's time to analyse the first email
 ```
-./peekabooav-installer/utils/checkFileWithPeekaboo.py README.md
+utils/checkFileWithPeekaboo.py README.md
 systemctl status peekaboo
 ```
 
 For the exact Demo / stand alone setup run the following commands
 ```
-cp hosts /etc/hosts
-cp interfaces /etc/network/interfaces
+cp ubuntu/hosts /etc/hosts
+cp ubuntu/interfaces /etc/network/interfaces
 systemctl restart networking
 ```
 
