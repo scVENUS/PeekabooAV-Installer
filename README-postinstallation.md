@@ -96,10 +96,23 @@ have to be adjusted.
 
 `vim /etc/amavis/conf.d/50-user`
 
-## Configure MDA (here described for the stand alone - demo setup)
-You are free to omit everything postfix related and talk smtp to
+## Configure MTA (here described for the stand alone - demo setup)
+
+To be able to more natively send emails into the system,
+an MTA can be added in front of AMaViS.
+It has to be configured to forward mails to AMaViS
+for which some config file template exist in the installer's `postfix` directory.
+
+**Note**: You are free to omit everything postfix related and talk smtp to
 amavis directly.
 
+You have to install and configure Postfix manually, it's not part of the
+standard installation:
+```
+apt install postfix
+```
+
+Then copy over the configuration files:
 ```
 cp main.cf /etc/postfix/
 cp master.cf /etc/postfix/
@@ -157,9 +170,15 @@ check "Recent" for your analysis.
 
 ## Add Dovecot and Thunderbird
 
+Dovecot and Thunderbird can be added as MDAs and MUAs, respectively to get a
+feel from the end-user perspective:
+```
+apt install dovecot-imapd
+```
+
 For quick demo results change
 `disable_plaintext_auth to no` in
-`vim /etc/dovecot/confg.d/10-auth.conf`
+`vim /etc/dovecot/conf.d/10-auth.conf`
 
 Add user to group mail
 
