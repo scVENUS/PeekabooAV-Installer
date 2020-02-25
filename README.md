@@ -17,6 +17,9 @@ Certainly it is possible to run the installer again if e.g. network timeouts hav
 its execution. This installer can also be used as an updater, it implements tests and
 replaces updated files and performes an installation of the latest PeekabooAV release.
 
+A [video tutorial](https://www.youtube.com/watch?v=RO-P4kJEqLU) of the setup
+process of a testing environment is also available.
+
 
 ## Prerequisites ##
 
