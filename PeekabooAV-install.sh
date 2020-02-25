@@ -188,6 +188,11 @@ then
 	exit 1
 fi
 
+# prevent apt-get from asking questions because we want to be an automated
+# installer, particularly because we do want to work when run from a Dockerfile
+# or Vagrantfile
+export DEBIAN_FRONTEND=noninteractive
+
 # Refresh package repositories.
 if ! apt-get update ; then
 	echo "ERROR: the command 'apt-get update' failed. Please fix manually" >&2
