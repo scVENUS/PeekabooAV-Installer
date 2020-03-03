@@ -238,6 +238,18 @@
           - build-essential
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
+    # work around flask not pinning its dependency versions, pulling in a
+    # werkzeug that is too new for itself. We rely on pip's laziness in
+    # upgrading leave to this version alone as long as it suffices for flask.
+    # Should become irrelevant as cuckoo switches to a newer flask which
+    # supports and pulls in a newer werkzeug. We do this in a separate step to
+    # avoid conflicts within a single transaction.
+    - name: Work around flask werkzeug version mismatch
+      pip:
+        name:
+          - werkzeug==0.16.1
+        virtualenv: /opt/cuckoo
+        virtualenv_python: python2.7
     - name: Install Cuckoo packages
       pip:
         name:

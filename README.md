@@ -17,6 +17,9 @@ Certainly it is possible to run the installer again if e.g. network timeouts hav
 its execution. This installer can also be used as an updater, it implements tests and
 replaces updated files and performes an installation of the latest PeekabooAV release.
 
+A [video tutorial](https://www.youtube.com/watch?v=RO-P4kJEqLU) of the setup
+process of a testing environment is also available.
+
 
 ## Prerequisites ##
 
@@ -92,11 +95,11 @@ have a nice day
 #### Check the components:
 
 ```
-su -c "vboxmanage list vms" peekaboo
-su -c "cuckoo" peekaboo
-su -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf" peekaboo
+su - cuckoo -c "vboxmanage list vms"
+su - cuckoo -c "cuckoo"
+su - peekaboo -c "peekaboo -d -c /opt/peekaboo/etc/peekaboo.conf"
 # if you upgrade from an earlier version you might have to delete the _meta table first
-# should crash with "No such file or directory: '/var/run/peekaboo/peekaboo.pid'"
+# should crash with "No such file or directory: '/run/peekaboo/peekaboo.pid'"
 systemctl start peekaboo
 ss -np | grep peekaboo
 socat STDIN UNIX-CONNECT:/var/run/peekaboo/peekaboo.sock

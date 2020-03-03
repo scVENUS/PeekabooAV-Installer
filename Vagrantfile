@@ -2,7 +2,9 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.synced_folder '.', '/vagrant'
+  # libvirt provider defaults to NFS which throws up new dependencies and
+  # problems. So we force rsync here.
+  config.vm.synced_folder '.', '/vagrant', type: 'rsync'
 
   config.vm.define "peekaboo" do |peekaboo|
     peekaboo.vm.box       = "generic/ubuntu1804"
@@ -22,6 +24,8 @@ Vagrant.configure("2") do |config|
     peekaboo.vm.network "forwarded_port", guest: 10024, host: 10024, host_ip: "127.0.0.1"
 
     peekaboo.vm.provider "virtualbox" do |vb|
+    # ... or libvirt - needs vb.name commented below
+    #peekaboo.vm.provider "libvirt" do |vb|
       vb.name   = "PeekabooAV"
       vb.memory = 3072
       vb.cpus   = 2
@@ -32,6 +36,12 @@ Vagrant.configure("2") do |config|
       end
     end
   end
+
+  # if apt-get is having problems finding the mirror servers, we can try
+  # disabling DNSSEC
+  #config.vm.provision "shell" do |install|
+  #  install.inline = "sed -i '/^DNSSEC=/s,.*,DNSSEC=no,' /etc/systemd/resolved.conf && systemctl restart systemd-resolved"
+  #end
 
   config.vm.provision "shell" do |install|
     # change directory first (args + env not suitable)
