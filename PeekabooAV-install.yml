@@ -655,12 +655,17 @@
 
 # As long as we still need access to files created by amavis. Once we receive
 # them via a rest api between amavis and peekaboo we no longer need to be in
-# group amavis and this section can be moved back to the peekaboo play.
-- name: Restart Peekaboo
+# group amavis and peekaboo service start can be moved back to the peekaboo
+# play.
+- name: Allow access to files and sockets for amavis and peekaboo
   hosts: peekabooav_server
   gather_facts: no
   become: true
   tasks:
+    - name: Add secondary group amavis to user peekaboo
+      user:
+        name: peekaboo
+        groups: amavis
     - name: Start Peekaboo
       systemd:
         name: peekaboo
@@ -731,17 +736,6 @@
         group: root
         mode: 0755
         backup: true
-
-
-- name: Allow access to files and sockets for amavis and peekaboo
-  hosts: peekabooav_server
-  gather_facts: no
-  become: true
-  tasks:
-    - name: Add secondary group amavis to user peekaboo
-      user:
-        name: peekaboo
-        groups: amavis
 
 
 - name: Clean up installer directory
