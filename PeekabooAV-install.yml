@@ -666,6 +666,7 @@
       user:
         name: peekaboo
         groups: amavis
+        append: true
     - name: Start Peekaboo
       systemd:
         name: peekaboo
