@@ -7,7 +7,6 @@ Requires=mysql.service
 ExecStart=/opt/cuckoo/bin/cuckoo
 Restart=on-failure
 User=cuckoo
-Group=cuckoo
 WorkingDirectory=/var/lib/cuckoo
 LimitNOFILE=32768
 
