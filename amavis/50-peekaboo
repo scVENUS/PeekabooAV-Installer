@@ -126,6 +126,65 @@ $banned_filename_re = new_RE(
  
 );
 
+# The following is an example how to write a wrapper for an attachment decoder
+# that treats certain files differently. Here we want to prevent unpacking of
+# file formats which are detected as ZIPs because they are indeed ZIPs but
+# actually constitute a higher-level format such as Apple office documents.
+# There are also some Microsoft Office documents around which seem to be
+# missing the certain something used by libmagic to detect them as MSO XML
+# documents so they also come back as ZIP.
+# This allows us to pass the original to Peekaboo for analysis instead of its
+# individual components which do no longer function as a potentially malicious
+# document.
+#
+# Deactivated by default to prevent fallout - activate by uncommenting decoder
+# prepending code below and adjust the regexes here to suit
+
+# do not unpack certain files even though by their filetype they are archives
+my $non_decompose_filename_re = new_RE(
+  #qr'\.(numbers|key|pages)$',
+);
+
+# do unpack but keep the original and submit that as well
+my $keep_original_filename_re = new_RE(
+  #qr'\.docx$',
+);
+
+sub do_7zip_filtered($$$;$) {
+  my($part, $tempdir, $archiver, $testing_for_sfx) = @_;
+
+  if (defined($part->name_declared)) {
+    if (Amavis::Lookup::lookup(0, $part->name_declared,
+                               $non_decompose_filename_re)) {
+      Amavis::Util::do_log(4, "filter_decompose_parts: not unpacking %s (%s)",
+                           $part->base_name, $part->name_declared);
+      # report part being atomic
+      return 0;
+    }
+
+
+    if (Amavis::Lookup::lookup(0, $part->name_declared,
+                               $keep_original_filename_re)) {
+      Amavis::Util::do_log(4, "filter_decompose_parts: unpacking but keeping %s (%s)",
+                           $part->base_name, $part->name_declared);
+      # unpack
+      Amavis::Unpackers::do_7zip($part, $tempdir, $archiver,
+                                        $testing_for_sfx);
+
+      # report part as original needing to be kept
+      return 2;
+    }
+  }
+
+  return Amavis::Unpackers::do_7zip($part, $tempdir, $archiver,
+                                    $testing_for_sfx);
+}
+
+# prepend our filtering decoder to the list of decoders to give it higher
+# priority than the standard one
+#unshift @decoders, (
+#  ['zip', \&do_7zip_filtered, ['7za', '7z']],
+#);
 
 #------------ Do not modify anything below this line -------------
 1; # ensure a defined return
