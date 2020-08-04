@@ -555,6 +555,16 @@
         mode: 0640
         backup: true
 
+    - name: Place analyzers config in /opt/peekaboo/etc
+      tags: peekabooconf
+      template:
+        src: peekaboo/analyzers.conf
+        dest: /opt/peekaboo/etc/analyzers.conf
+        owner: root
+        group: peekaboo
+        mode: 0640
+        backup: true
+
     - name: Check if an old Peekaboo ruleset.conf exists in /opt/peekaboo
       stat: path=/opt/peekaboo/ruleset.conf
       register: ruleset_conf_old_stat
