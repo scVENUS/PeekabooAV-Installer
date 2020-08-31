@@ -9,6 +9,3 @@ cuckoo_api_token: "{{ lookup('password', 'cuckoo_api_token length=22 chars=ascii
 peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 chars=ascii_letters') }}"
 
 cuckoo_processors: 5
-
-# default for the python interpreter version to use
-pyver: 3

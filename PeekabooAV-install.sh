@@ -94,11 +94,10 @@ we will:
 "
 
 usage() {
-	echo "$0 [-h|--help] [-q|--quiet] [-p 2|3] [--python=2|3]"
+	echo "$0 [-h|--help] [-q|--quiet]"
 	echo
 	echo "Automates the standard installation of PeekabooAV."
 	echo
-	echo "--python, -p	override the python major version to use for Peekaboo"
 	echo "--quiet, -q	be less verbose and noninteractive, most notably"
 	echo "		do not print the logo"
 	echo "--help, -h	show this help message"
@@ -119,20 +118,8 @@ bail_unknown_argument() {
 }
 
 quiet=
-pyver=3
 while [ -n "$1" ] ; do
 	case "$1" in
-		--python=*)
-			pyver=${1#*=}
-			[ -n "$pyver" ] || bail_arg_required
-			;;
-
-		-p)
-			[ -n "$2" ] || bail_arg_required
-			shift
-			pyver="$1"
-			;;
-
 		--quiet|-q)
 			quiet=1
 			;;
@@ -167,14 +154,6 @@ if [ "$quiet" != 1 ] ; then
 	# Read 'Press enter ..'
 	read
 fi
-
-case "$pyver" in
-	2|3) ;;
-	*)
-		echo "Invalid value for python version, only 2 or 3 allowed currently"
-		usage
-		exit 1
-esac
 
 if [ $(id -u) != 0 ]; then
 	echo "ERROR: $(basename $0) needs to be run as root" >&2
@@ -258,7 +237,7 @@ if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
 	exit 1
 fi
 
-ansible-playbook -e "{pyver: $pyver}" -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
+ansible-playbook -e 'ansible_python_interpreter=/usr/bin/python3' -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
 if [ $? != 0 ];then
 	echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
 	exit 1
