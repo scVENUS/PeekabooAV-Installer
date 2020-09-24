@@ -1,0 +1,47 @@
+version: "2"
+
+# run using e.g.:
+# job_directory=$PWD/jobs elastic_data=$PWD/elastic mysql_data=$PWD/mysql docker-compose up
+services:
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    environment:
+      - http.host=0.0.0.0
+      - discovery.type=single-node
+      - script.allowed_types=inline
+      - thread_pool.search.queue_size=100000
+      - thread_pool.write.queue_size=10000
+    volumes:
+      - ${elastic_data}:/usr/share/elasticsearch/data
+  cortex:
+    image: thehiveproject/cortex:3.1.0-0.2RC1
+    environment:
+      - job_directory=${job_directory}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${job_directory}:${job_directory}
+    depends_on:
+      - elasticsearch
+    ports:
+      - "0.0.0.0:9001:9001"
+  mariadb:
+    image: mariadb/server
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD=true
+      - MARIADB_DATABASE=peekaboo
+      - MARIADB_USER=peekaboo
+      - MARIADB_PASSWORD=peekaboo
+    volumes:
+      - ${mysql_data}:/var/lib/mysql
+  peekabooav:
+    image: peekabooav
+    environment:
+      - PEEKABOO_DB_PASSWORD=peekaboo
+      - PEEKABOO_CORTEX_API_TOKEN=Kv8a+20IwlFnxrDVTVjS9tshlUe2498a
+#    volumes:
+#      - ./ruleset.conf:/opt/peekaboo/etc/ruleset.conf
+    depends_on:
+      - mariadb
+      - cortex
+#    ports:
+#      - "0.0.0.0:10024:10024"
