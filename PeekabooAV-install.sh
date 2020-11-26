@@ -258,13 +258,7 @@ if [ ! -r "$ANSIBLE_PLAYBOOK" ]; then
 	exit 1
 fi
 
-if [ -z ${NOANSIBLE+x} ]
-then
-	ansible-playbook -e "{pyver: $pyver}" -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
-else
-	echo "WARNING: ansible not run, override by NOANSIBLE env setting" >&2
-fi
-
+ansible-playbook -e "{pyver: $pyver}" -i "$ANSIBLE_INVENTORY" "$ANSIBLE_PLAYBOOK"
 if [ $? != 0 ];then
 	echo "ERROR: 'ansible-playbook' failed. Please fix manually" >&2
 	exit 1
