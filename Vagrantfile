@@ -8,6 +8,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "peekaboo" do |peekaboo|
     peekaboo.vm.box       = "generic/ubuntu1804"
+    #peekaboo.vm.box       = "generic/ubuntu2004"
     peekaboo.vm.hostname  = "peekabooav.int"
     config.ssh.username   = 'vagrant'
     config.ssh.password   = 'vagrant'
@@ -45,14 +46,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell" do |install|
     # change directory first (args + env not suitable)
-    install.inline = "cd /vagrant && NOANSIBLE=yes ./PeekabooAV-install.sh --quiet"
-  end
-
-  config.vm.provision "ansible_local" do |ansible|
-    ansible.become         = true
-    ansible.playbook       = "PeekabooAV-install.yml"
-    ansible.inventory_path = "ansible-inventory"
-    ansible.limit          = "all"
+    install.inline = "cd /vagrant && ./PeekabooAV-install.sh --quiet"
   end
 
   config.vm.provision 'shell', inline: 'passwd --delete vagrant'
