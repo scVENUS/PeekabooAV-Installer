@@ -634,6 +634,8 @@
           - unrar
           - unzip
           - zip
+          # not for amavis but our plugin
+          - libwww-perl
 
     - name: Copy amavis configs to conf.d
       template:
