@@ -1,6 +1,9 @@
 [peekabooav_server]
 localhost ansible_connection=local
 
+[amavis_server]
+localhost ansible_connection=local
+
 [cuckoo_server]
 localhost ansible_connection=local
 
