@@ -467,6 +467,22 @@
         virtualenv: /opt/peekaboo
         virtualenv_python: "python3"
 
+    - name: Install virtualenv command for Ubuntu < 20
+      pip:
+        name:
+          - aiomysql
+        virtualenv: /opt/peekaboo
+        virtualenv_python: "python3"
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int < 20
+
+    - name: Install virtualenv command for Ubuntu >= 20
+      pip:
+        name:
+          - asyncmy
+        virtualenv: /opt/peekaboo
+        virtualenv_python: "python3"
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 20
+
     - name: Check if we are to install a manually supplied Peekaboo version
       stat:
         path: PeekabooAV
@@ -608,9 +624,13 @@
         path: /var/lib/peekaboo
         mode: 0700
 
+    - name: Start Peekaboo
+      systemd:
+        name: peekaboo
+        state: started
 
 - name: Install amavis and dependencies
-  hosts: peekabooav_server
+  hosts: amavis_server
   gather_facts: no
   become: true
   tasks:
@@ -666,26 +686,6 @@
         state: restarted
         daemon_reload: yes
         name: amavis
-
-# As long as we still need access to files created by amavis. Once we receive
-# them via a rest api between amavis and peekaboo we no longer need to be in
-# group amavis and peekaboo service start can be moved back to the peekaboo
-# play.
-- name: Allow access to files and sockets for amavis and peekaboo
-  hosts: peekabooav_server
-  gather_facts: no
-  become: true
-  tasks:
-    - name: Add secondary group amavis to user peekaboo
-      user:
-        name: peekaboo
-        groups: amavis
-        append: true
-    - name: Start Peekaboo
-      systemd:
-        name: peekaboo
-        state: started
-
 
 - name: Install INetSim
   hosts: inetsim_server

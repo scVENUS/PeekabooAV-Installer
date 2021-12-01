@@ -6,10 +6,7 @@ use strict;
 
 @av_scanners = (
 
- ['Peekaboo-Analysis',
-   \&ask_peekaboo, ["{}\n", "/var/run/peekaboo/peekaboo.sock"],
-   qr/has been categorized "(unknown|checked|good|ignored)"$/m,
-   qr/has been categorized "bad"$/m ],
+ ['Peekaboo-Analysis', \&ask_peekaboo],
 
 );
 
