@@ -113,10 +113,9 @@
           - socat
 
 - name: Install mysql database and setup users and databases
-  hosts: peekabooav_server
+  hosts: mariadb_server
   gather_facts: no
   become: true
-  tags: mysql
   tasks:
     - name: Installing Software
       apt:
