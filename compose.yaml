@@ -102,10 +102,13 @@ services:
       RSPAMD_ENABLED_MODULES: "external_services force_actions"
       RSPAMD_OPTION_FILTERS: ""
     depends_on:
-      - mariadb
-      - cortex
-#    ports:
-#      - "0.0.0.0:10024:10024"
+      - peekabooav
+    healthcheck:
+      test: "/usr/bin/rspamadm control stat || exit 1"
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   postfix_rx:
     image: peekabooav_postfix
     build: ./postfix
