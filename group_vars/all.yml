@@ -10,6 +10,8 @@ cuckoo_api_token: "{{ lookup('password', 'cuckoo_api_token length=22 chars=ascii
 cortex_api_token: "{{ lookup('password', 'cortex_api_token length=22 chars=ascii_letters') }}"
 peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 chars=ascii_letters') }}"
 
+peekaboo_listen_address: "127.0.0.1"
+
 cuckoo_processors: 5
 
 cuckooapi_url: "http://{{ cuckooapi_server }}:8090"
