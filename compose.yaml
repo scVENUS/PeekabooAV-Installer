@@ -36,6 +36,20 @@ services:
       timeout: 30s
       retries: 3
       start_period: 30s
+  cortex_setup:
+    image: peekabooav_cortex_setup
+    build: ./cortex_setup
+    env_file:
+      - compose.env
+    depends_on:
+      cortex:
+        # this approach is not endorsed by docker since file version 3
+        # additionally this functionality is not stated on the docker website,
+        # but this is https://docs.docker.com/compose/startup-order/.
+        # if you want to use the 'script way' instead of 'half documented options'
+        # you can e.g. make use of this script https://gist.github.com/Sett17/665a5126e27716863c90ab09d07e7715
+        condition: service_healthy
+    restart: on-failure
   mariadb:
     image: mariadb:10.3
     env_file:
