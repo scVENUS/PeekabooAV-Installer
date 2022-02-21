@@ -1,45 +1,77 @@
-version: "2"
+version: "3"
 
-# run using e.g.:
-# job_directory=$PWD/jobs elastic_data=$PWD/elastic mysql_data=$PWD/mysql docker-compose up
 services:
   elasticsearch:
-    image: elasticsearch:7.8.1
+    image: elasticsearch:7.16.2
     environment:
       - http.host=0.0.0.0
       - discovery.type=single-node
       - script.allowed_types=inline
       - thread_pool.search.queue_size=100000
       - thread_pool.write.queue_size=10000
+      # 2g is default; 1g seems to be enough in development
+      - ES_HEAP_SIZE=1g
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.watermark.flood_stage=99%
+      - TAKE_FILE_OWNERSHIP=1
     volumes:
-      - ${elastic_data}:/usr/share/elasticsearch/data
+      - ./pipeline/data/elastic:/usr/share/elasticsearch/data
   cortex:
-    image: thehiveproject/cortex:3.1.0-0.2RC1
-    environment:
-      - job_directory=${job_directory}
+    image: thehiveproject/cortex:3.1.4
+    env_file:
+      - compose.env
     volumes:
+      - ./cortex/application.conf:/etc/cortex/application.conf
+      - ./cortex/analyzers.json:/etc/cortex/analyzers.json
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${job_directory}:${job_directory}
+      - ${PWD}/pipeline/data/jobs:${PWD}/pipeline/data/jobs
     depends_on:
       - elasticsearch
     ports:
-      - "0.0.0.0:9001:9001"
+      - "127.0.0.1:9001:9001"
+    # healthy if job list request, either errors with 520 by not being set up, or with 401 because we are not passing any credentials
+    healthcheck:
+      test: "case $$(curl -s -o /dev/null -w %{http_code} http://localhost:9001/api/job) in 401|520) exit 0 ;; *) exit 1;;  esac"
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 30s
   mariadb:
-    image: mariadb/server
-    environment:
-      - MARIADB_RANDOM_ROOT_PASSWORD=true
-      - MARIADB_DATABASE=peekaboo
-      - MARIADB_USER=peekaboo
-      - MARIADB_PASSWORD=peekaboo
+    image: mariadb:10.3
+    env_file:
+      - compose.env
     volumes:
-      - ${mysql_data}:/var/lib/mysql
+      - ./pipeline/data/mysql:/var/lib/mysql
+    healthcheck:
+      test: "/usr/bin/mysql --user=peekaboo --password=peekaboo --execute \"SHOW DATABASES;\""
+      interval: 20s
+      timeout: 2s
+      retries: 5
   peekabooav:
     image: peekabooav
+    build: ./
+    env_file:
+      - compose.env
+    volumes:
+      - ./pipeline/ruleset.conf:/opt/peekaboo/etc/ruleset.conf
+    depends_on:
+      cortex_setup:
+        condition: service_completed_successfully
+      mariadb:
+        condition: service_healthy
+    stop_grace_period: 1m15s
+    ports:
+      - "127.0.0.1:8100:8100"
+  # ordinarily, rspamd uses redis, but this is only needed tofor some functionality
+  # as we only want/need peekabooav to work redis is not needed
+  # although if it is present, the peekaboo module does use it to cache data
+  # for anything more than a showcase, please run a redis alongside rspamd
+  rspamd:
+    image: peekabooav_rspamd
+    build: ./rspamd
     environment:
-      - PEEKABOO_DB_PASSWORD=peekaboo
-      - PEEKABOO_CORTEX_API_TOKEN=Kv8a+20IwlFnxrDVTVjS9tshlUe2498a
-#    volumes:
-#      - ./ruleset.conf:/opt/peekaboo/etc/ruleset.conf
+      RSPAMD_ENABLED_MODULES: "external_services force_actions"
+      RSPAMD_OPTION_FILTERS: ""
     depends_on:
       - mariadb
       - cortex
