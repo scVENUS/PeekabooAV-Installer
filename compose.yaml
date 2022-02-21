@@ -1,6 +1,21 @@
 version: "3"
 
 services:
+  postfix_tx:
+    image: peekabooav_postfix
+    build: ./postfix
+    hostname: postfix_tx
+    environment:
+      - POSTFIX_MAIN_CF_MAILLOG_FILE=/dev/stdout
+      - POSTFIX_MAIN_CF_DEBUG_PEER_LIST=0.0.0.0/32
+      - POSTFIX_MAIN_CF_INET_INTERFACES=all
+      - POSTFIX_MAIN_CF_MYHOSTNAME=postfix_tx
+      - POSTFIX_MAIN_CF_QUEUE_RUN_DELAY=90s
+      - POSTFIX_MAIN_CF_VIRTUAL_ALIAS_DOMAINS=localhost
+      - POSTFIX_MAIN_CF_VIRTUAL_ALIAS_MAPS=pcre:/etc/postfix/virtual
+      - POSTFIX_VIRTUAL=/.*/   root@postfix_rx
+    ports:
+      - "127.0.0.1:8025:25"
   elasticsearch:
     image: elasticsearch:7.16.2
     environment:
@@ -91,3 +106,19 @@ services:
       - cortex
 #    ports:
 #      - "0.0.0.0:10024:10024"
+  postfix_rx:
+    image: peekabooav_postfix
+    build: ./postfix
+    hostname: postfix_rx
+    environment:
+      - POSTFIX_MAIN_CF_MAILLOG_FILE=/dev/stdout
+      - POSTFIX_MAIN_CF_DEBUG_PEER_LIST=0.0.0.0/32
+      - POSTFIX_MAIN_CF_MYNETWORKS=0.0.0.0/32, 127.0.0.0/8, 192.168.1.0/24, 172.24.0.0/16
+      - POSTFIX_MAIN_CF_INET_INTERFACES=all
+      - POSTFIX_MAIN_CF_MYDOMAIN=postfix_rx
+      - POSTFIX_MAIN_CF_MYORIGIN=postfix_rx
+      - POSTFIX_MAIN_CF_MYHOSTNAME=postfix_rx
+      - POSTFIX_MAIN_CF_SMTPD_RECIPIENT_RESTRICTIONS=permit_mynetworks
+      - POSTFIX_MAIN_CF_MYDESTINATION=postfix_rx localhost. localhost postfix_rx.localdomain localdomain
+      - POSTFIX_MAIN_CF_VIRTUAL_ALIAS_MAPS=pcre:/etc/postfix/virtual
+      - POSTFIX_VIRTUAL=/root@postfix_rx/   root@localhost
