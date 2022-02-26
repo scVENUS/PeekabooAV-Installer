@@ -125,3 +125,9 @@ services:
       - POSTFIX_MAIN_CF_MYDESTINATION=postfix_rx localhost. localhost postfix_rx.localdomain localdomain
       - POSTFIX_MAIN_CF_VIRTUAL_ALIAS_MAPS=pcre:/etc/postfix/virtual
       - POSTFIX_VIRTUAL=/root@postfix_rx/   root@localhost
+      - POSTFIX_MAIN_CF_MILTER_PROTOCOL=6
+      - POSTFIX_MAIN_CF_MILTER_DEFAULT_ACTION=accept
+      - POSTFIX_MAIN_CF_SMTPD_MILTERS=inet:rspamd:11332
+    depends_on:
+      rspamd:
+        condition: service_healthy
