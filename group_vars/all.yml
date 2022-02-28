@@ -12,4 +12,5 @@ peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 cha
 
 cuckoo_processors: 5
 
+cuckooapi_url: "http://{{ cuckooapi_server }}:8090"
 cortex_url: "http://{{ cortex_server }}:9001"
