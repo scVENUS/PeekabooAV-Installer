@@ -2,10 +2,14 @@
 peekabooav_server: localhost
 peekabooav_server_fqdn: "{{ ansible_fqdn }}"
 cuckooapi_server: localhost
+cortex_server: localhost
 mariadb_server: localhost
 
 cuckoo_db_password: "{{ lookup('password', 'cuckoo_db_password length=15 chars=ascii_letters') }}"
 cuckoo_api_token: "{{ lookup('password', 'cuckoo_api_token length=22 chars=ascii_letters') }}"
+cortex_api_token: "{{ lookup('password', 'cortex_api_token length=22 chars=ascii_letters') }}"
 peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 chars=ascii_letters') }}"
 
 cuckoo_processors: 5
+
+cortex_url: "http://{{ cortex_server }}:9001"
