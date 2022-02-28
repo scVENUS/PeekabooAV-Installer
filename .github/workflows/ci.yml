@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+    steps:
+      # Checks-out PeekabooAV-Installer under $GITHUB_WORKSPACE
+      - name: Check out PeekabooAV-Installer
+        uses: actions/checkout@v2
+
+      # put PeekabooAV below that as expected by the installer
+      - name: Check out PeekabooAV
+        uses: actions/checkout@v2
+        with:
+          repository: scVENUS/PeekabooAV
+          path: PeekabooAV
+
+      - name: Clean systemd environment
+        run: |
+          cut -d= -f1 /etc/environment | sort -u | \
+            sudo xargs systemctl unset-environment
+
+      # there are a number of insecure paths in PATH which will cause AMaViS to
+      # refuse to start
+      - name: Reset PATH to sane default
+        run: |
+          sudo systemctl set-environment \
+            PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+      - name: Reset environment
+        run: |
+          ( echo PATH=/sbin:/bin:/usr/sbin:/usr/bin ; \
+            echo DEBIAN_FRONTEND=noninteractive \
+          ) | sudo tee /etc/environment
+
+      # since the default PATH is hard-coded in various places, we just fix the
+      # wrong permissions in /usr/local
+      - name: Fix default PATH permissions
+        run: sudo chmod 755 /usr/local/bin /usr/local/sbin
+
+      - name: Remove preinstalled MySQL
+        run: |
+          # ubuntu 18.04 and 20.04 have different packages installed. apt-get
+          # purge gives exit code 100 on all errors, including non-installed
+          # packages on purge. So we select the installed ones from the
+          # superset here.
+          mysql_dpkg=""
+          for pkg in  mysql-common mysql-community-client-plugins \
+            mysql-community-client-core mysql-community-client mysql-client \
+            mysql-community-server-core mysql-community-server mysql-server \
+            libmysqlclient21 libmysqlclient-dev ; do
+            dpkg -s $pkg >/dev/null 2>&1 && mysql_dpkg="$mysql_dpkg $pkg"
+          done
+          sudo apt-get purge $mysql_dpkg
+
+          sudo rm -rf /var/lib/mysql /etc/init.d/mysql
+
+      - name: Remove mysqld apparmor profile
+        run: |
+          # https://bugs.launchpad.net/ubuntu/+source/mariadb-10.1/+bug/1806263
+          # still happens with 10.3 :(
+          echo "/usr/sbin/mysqld { }" | sudo tee /etc/apparmor.d/usr.sbin.mysqld
+          sudo apparmor_parser -v -R /etc/apparmor.d/usr.sbin.mysqld
+
+      - name: Remove preinstalled MongoDB
+        run: sudo apt-get purge mongodb-org
+
+      - name: Remove unneeded dependencies
+        run: sudo apt-get autoremove --purge
+
+      - name: Run the installer
+        run: sudo ./PeekabooAV-install.sh --quiet

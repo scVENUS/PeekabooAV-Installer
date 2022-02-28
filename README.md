@@ -1,5 +1,7 @@
 # PeekabooAV Installer #
 
+[![CI](https://github.com/scVENUS/PeekabooAV-Installer/actions/workflows/ci.yml/badge.svg)](https://github.com/scVENUS/PeekabooAV-Installer/actions/workflows/ci.yml)
+
 This repository provides scripts and configuration files to install/update and test a
 Peekaboo installation.
 
