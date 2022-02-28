@@ -763,4 +763,5 @@
       with_items:
         - cuckoo_db_password
         - cuckoo_api_token
+        - cortex_api_token
         - peekaboo_db_password
