@@ -1,5 +1,7 @@
 PeekabooAV/
 PeekabooAV-install.retry
+cortex_api_token
+cuckoo_api_token
 cuckoo_db_password
 peekaboo_db_password
 .vagrant/
