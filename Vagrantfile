@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   # libvirt provider defaults to NFS which throws up new dependencies and
   # problems. So we force rsync here.
-  config.vm.synced_folder '.', '/vagrant', type: 'rsync'
+  config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: ['pipeline/data/*']
 
   config.vm.define "peekaboo" do |peekaboo|
     peekaboo.vm.box       = "generic/ubuntu1804"
