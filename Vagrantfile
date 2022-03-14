@@ -38,6 +38,10 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # re-enable IPv6 because AMaViS wants to bind to ::1
+  config.vm.provision "shell", inline: "sysctl net.ipv6.conf.all.disable_ipv6=0"
+  config.vm.provision "shell", inline: "sed -i '/^net.ipv6.conf.all.disable_ipv6 =/d' /etc/sysctl.conf"
+
   # if apt-get is having problems finding the mirror servers, we can try
   # disabling DNSSEC
   #config.vm.provision "shell" do |install|
