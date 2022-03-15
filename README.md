@@ -110,6 +110,24 @@ python -m smtpd -n -c DebuggingServer 0.0.0.0:10025 &
 utils/checkFileWithPeekaboo.py grafana/Screenshot-2018-1-17\ Grafana\ -\ PeekabooAV.png
 ```
 
+## Showcase Pipeline
+
+### Prerequisites ###
+
+* you want to have an email pipeline to showcase or test PeekabooAV
+* you can install and run [docker](https://docs[[.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/)
+
+### This is what you type (copy - paste)
+
+```
+git clone https://github.com/scvenus/peekabooav-installer
+cd peekabooav-installer/
+git clone https://github.com/scvenus/peekabooav PeekabooAV
+```
+
+Then carry on reading [pipeline/README.md](pipeline/README.md)
+
+
 ## Contributing ##
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us. 
 
