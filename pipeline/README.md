@@ -1,5 +1,8 @@
 ## Usage
-Once the pipeline is up and running, there are multiple ways to test it.
+To boot up the pipeline, you can simply use
+```bash
+docker-compose up -d
+```
 
 ### Logs
 First of all, it's a good idea to keep an eye on the logs. If you started the pipeline detached, you can execute
