@@ -21,9 +21,20 @@ The postfix_tx conainer is set up to relay emails to the rx container.
 
 To use it that way, you can use a tool like [SWAKS](https://jetmore.org/john/code/swaks/)
 ```bash
-swaks --server localhost:8025 --to root@localhost --attach @DemoMalware/downloadexe.bat
+cat DemoMalware/downloadexe.bat | swaks --server localhost:8025 --to root@localhost --attach -
 ```
-Above command sends and email, with the supplied `downloadexe.bat` file as an attachment, to the postfix_tx container. Which then relays this email to the postfix_rx container and takes care of Soft Rejects, etc.
+Above command sends and email, with the supplied `downloadexe.bat` file as an
+attachment[^attachfileat], to the postfix\_tx container.
+Which then relays this email to the postfix\_rx container and takes care of Soft
+Rejects, etc.
+
+[^attachfileat]: `--attach` can take the file name directly as well but has
+  recently switched to supporting and will later switch to requiring an `@` in
+  front of the file name to indicate that case similar to curl.
+  Because of missing support for the notation, earlier versions will attach the
+  file name as a string including the `@` instead.
+  Make sure you get the behaviour you want from your version of swaks, e.g. by
+  verifying what's attached using `--dump-mail`.
 
 If you are unable to use a tool like SWAKS, you can send an email from inside of the postfix_tx container directly. To get a shell inside the postfix_tx container use:
 ```bash
@@ -33,6 +44,14 @@ Inside you can send emails the same way by sending them to `localhost:25`
 ```bash
 swaks --server localhost -t root@postfix_tx --attach @PATH/TO/FILE
 ```
+(swaks in the `postfix_tx` container is current enough to support the new `@` syntax.)
+
+Combining both commands, content can also be supplied from the outside to swaks
+running inside the container:
+```bash
+cat PATH/TO/OUTSIDE/FILE | docker-compose exec -T postfix_tx swaks --server localhost -t root@postfix_tx --attach -
+```
+(Note the `-T` to `docker-compose exec`.)
 
 ### Post-Send
 
