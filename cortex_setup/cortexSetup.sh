@@ -94,7 +94,6 @@ if [ $CODE -eq "520" ]; then
 		-d '{ "name": "Peekaboo org Admin","password":"'"$CORTEX_ADMIN_PASSWORD"'","roles": ["read","analyze","orgadmin"], "organization": "PeekabooAV", "login": "peekaboo-admin" }'
 	check_last_command
 	ORG_ADMIN_KEY=$(curl -s -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" -H 'Content-Type: application/json' "$CORTEX_URL/api/user/peekaboo-admin/key/renew")
-	echo -e "\t\t\033[38;5;242mAPI key: $ORG_ADMIN_KEY"
 
 	echo -e "\t\033[38;5;226mCreate normal user... \033[38;5;242m"
 	curl -f -s -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
@@ -118,7 +117,6 @@ if [ $CODE -eq "520" ]; then
 	curl -f -s -XPOST -H 'Content-Type: application/json' \
 	-d '{"doc": {"key": "'"$PEEKABOO_CORTEX_API_TOKEN"'"}}' "$ELASTIC_URL/$ELASTIC_INDEX/_update/peekaboo-analyze"
 	check_last_command
-	echo -e "$PEEKABOO_CORTEX_API_TOKEN"
 
 	echo -e "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
 	curl -f -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
