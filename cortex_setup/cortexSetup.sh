@@ -67,7 +67,7 @@ if [ $CODE -eq "520" ]; then
 	echo -e "\nCortex needs to be set-up"
 
 	if [ -z $CORTEX_ADMIN_PASSWORD ]; then
-		CORTEX_ADMIN_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16 ; echo '' )
+		CORTEX_ADMIN_PASSWORD=$(pwgen -s1 16)
 		echo "auto-generated cortex admin password: $CORTEX_ADMIN_PASSWORD"
 	fi
 
