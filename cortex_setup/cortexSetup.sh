@@ -7,11 +7,6 @@ POSITIONAL_ARGS=()
 REGEX_INDEX='"_index":"([^"]*)"'
 REGEX_ALPHANUM='^[a-zA-Z0-9+/]*$'
 
-if [ -z $CORTEX_ADMIN_PASSWORD ]; then
-	CORTEX_ADMIN_PASSWORD=$( tr -dc A-Za-z0-9 </dev/urandom | head -c 16 ; echo '' )
-fi
-echo "$CORTEX_ADMIN_PASSWORD"
-
 check_last_command () {
 	if [ $? -eq 0 ]; then
 		echo -e " \033[38;5;118mo\033[0m"
@@ -70,6 +65,11 @@ echo -e "\033[38;5;242m$CODE\033[0m"
 
 if [ $CODE -eq "520" ]; then
 	echo -e "\nCortex needs to be set-up"
+
+	if [ -z $CORTEX_ADMIN_PASSWORD ]; then
+		CORTEX_ADMIN_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16 ; echo '' )
+		echo "auto-generated cortex admin password: $CORTEX_ADMIN_PASSWORD"
+	fi
 
 	echo -ne "\t\033[38;5;226mMigrate Database... \033[0m"
 	curl -f -s -XPOST -H 'Content-Type: application/json' \
@@ -130,7 +130,6 @@ elif [ $CODE -eq "401" ]; then
 	echo "Cortex does not need to be set-up"
 fi
 
-CORTEX_ADMIN_PASSWORD=""
 echo -e "\033[?25h"
 
 echo -e "\033[32mAll good!"
