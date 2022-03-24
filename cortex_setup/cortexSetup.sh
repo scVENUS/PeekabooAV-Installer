@@ -119,7 +119,7 @@ if [ $CODE -eq "520" ]; then
 	check_last_command
 
 	echo -e "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
-	curl -f -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
+	curl -f -s -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
 	-H 'Content-Type: application/json' "$CORTEX_URL/api/organization/analyzer/FileInfo_8_0" \
 	-d '{"name": "FileInfo_8_0", "configuration": {}}'
 	check_last_command
