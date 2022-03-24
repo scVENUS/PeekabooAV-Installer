@@ -1,6 +1,7 @@
-FROM bash:5.1
-RUN apk add --no-cache curl pwgen
+FROM alpine:latest
+RUN apk add --no-cache curl pwgen jq
 
 COPY cortexSetup.sh /
+RUN chmod 755 /cortexSetup.sh
 
-CMD ["bash", "/cortexSetup.sh"]
+ENTRYPOINT ["/cortexSetup.sh"]

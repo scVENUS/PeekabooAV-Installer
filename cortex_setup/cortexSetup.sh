@@ -1,11 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # tested with thehiveproject/cortex:3.1.4
 # `auth.method.basic=true` is needed in the application.conf of Cortex
-
-POSITIONAL_ARGS=()
-REGEX_INDEX='"_index":"([^"]*)"'
-REGEX_ALPHANUM='^[a-zA-Z0-9+/]*$'
 
 check_last_command () {
 	if [ $? -eq 0 ]; then
@@ -53,9 +49,13 @@ if [ -z "$ELASTIC_URL" ]; then
 	echo "Or set ELASTIC_URL as an environment variable"
 	exit 1
 fi
-if [ -z "$PEEKABOO_CORTEX_API_TOKEN" ] || ! [[ $PEEKABOO_CORTEX_API_TOKEN =~ $REGEX_ALPHANUM ]]; then
-	echo -e "must specify an arbitrary, but secure;), API key with -k / --api-key (only use alphanumeric characters)"
-	echo "Or set PEEKABOO_CORTEX_API_TOKEN as an environment variable"
+if [ -z "$PEEKABOO_CORTEX_API_TOKEN" ] ; then \
+	echo "Specify an arbitrary, but secure;), API key with -k / --api-key"
+	echo "or set PEEKABOO_CORTEX_API_TOKEN as an environment variable"
+	exit 1
+fi
+if [ -n "$(echo "$PEEKABOO_CORTEX_API_TOKEN" | tr -d "[a-zA-Z0-9+/]")" ]; then
+	echo -e "The Cortex API key must only use alphanumeric characters."
 	exit 1
 fi
 echo -e "\033[?25l"
@@ -102,10 +102,9 @@ if [ $CODE -eq "520" ]; then
 	check_last_command
 
 	echo -e "\t\033[38;5;226mGet cortex elasticsearch index... \033[38;5;242m"
-	ELASTIC_SEARCH=$(curl -s "$ELASTIC_URL/_search?q=_id:peekaboo-analyze")
-	if [[ $ELASTIC_SEARCH =~ $REGEX_INDEX ]] ;then
-		ELASTIC_INDEX=${BASH_REMATCH[1]}
-	else
+	ELASTIC_INDEX=$(curl -s "$ELASTIC_URL/_search?q=_id:peekaboo-analyze" | \
+		jq -r ".hits.hits[]._index // empty")
+	if [ -z "$ELASTIC_INDEX" ] ;then
 		echo -e "\033[38;5;197mThere was no _index found in Elastiscsearch response\033[0m"
 		echo -e "\033[?25h"
 		exit 1
