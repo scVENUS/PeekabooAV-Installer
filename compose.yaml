@@ -46,7 +46,10 @@ services:
       - "127.0.0.1:9001:9001"
     # healthy if job list request, either errors with 520 by not being set up, or with 401 because we are not passing any credentials
     healthcheck:
-      test: "case $$(curl -s -o /dev/null -w %{http_code} http://localhost:9001/api/job) in 401|520) exit 0 ;; *) exit 1;;  esac"
+      test: |
+        curl -s -H "Authorization: Bearer $$PEEKABOO_CORTEX_API_TOKEN" \
+            -o /dev/null -w %{http_code} http://localhost:9001/api/job | \
+          grep -e '^200$$' -e '^520$$'
       interval: 30s
       timeout: 30s
       retries: 3
