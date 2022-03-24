@@ -72,36 +72,38 @@ if [ $CODE -eq "520" ]; then
 	fi
 
 	echo -ne "\t\033[38;5;226mMigrate Database... \033[0m"
-	curl -f -s -XPOST -H 'Content-Type: application/json' \
+	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
 		"$CORTEX_URL/api/maintenance/migrate" -d '{}'
 	sleep 3
 	check_last_command
 
-	echo -e "\t\033[38;5;226mMake admin user... \033[38;5;242m"
-	curl -f -s -XPOST -H 'Content-Type: application/json' "$CORTEX_URL/api/user" \
+	echo -ne "\t\033[38;5;226mMake admin user... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
+		"$CORTEX_URL/api/user" \
 		-d '{"login":"admin","name":"admin","password":"'"$CORTEX_ADMIN_PASSWORD"'","roles":["superadmin"],"organization":"cortex"}'
 	check_last_command
 
-	echo -e "\t\033[38;5;226mCreate organization 'PeekabooAV'... \033[38;5;242m"
-	curl -f -s -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
+	echo -ne "\t\033[38;5;226mCreate organization 'PeekabooAV'... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/organization" \
 		-d '{ "name": "PeekabooAV", "description": "PeekabooAV organization", "status": "Active"}' 
 	check_last_command
 
-	echo -e "\t\033[38;5;226mCreate orgAdmin user... \033[38;5;242m"
-	curl -f -s -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
+	echo -ne "\t\033[38;5;226mCreate orgAdmin user... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/user" \
 		-d '{ "name": "Peekaboo org Admin","password":"'"$CORTEX_ADMIN_PASSWORD"'","roles": ["read","analyze","orgadmin"], "organization": "PeekabooAV", "login": "peekaboo-admin" }'
 	check_last_command
 	ORG_ADMIN_KEY=$(curl -s -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" -H 'Content-Type: application/json' "$CORTEX_URL/api/user/peekaboo-admin/key/renew")
 
-	echo -e "\t\033[38;5;226mCreate normal user... \033[38;5;242m"
-	curl -f -s -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
+	echo -ne "\t\033[38;5;226mCreate normal user... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST \
+		-H "Authorization: Bearer $ORG_ADMIN_KEY" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/user" \
 		-d '{ "name": "Peekaboo", "roles": ["read","analyze"], "organization": "PeekabooAV", "login": "peekaboo-analyze" }'
 	check_last_command
 
-	echo -e "\t\033[38;5;226mGet cortex elasticsearch index... \033[38;5;242m"
+	echo -ne "\t\033[38;5;226mGet cortex elasticsearch index... \033[38;5;242m"
 	ELASTIC_INDEX=$(curl -s "$ELASTIC_URL/_search?q=_id:peekaboo-analyze" | \
 		jq -r ".hits.hits[]._index // empty")
 	if [ -z "$ELASTIC_INDEX" ] ;then
@@ -109,16 +111,17 @@ if [ $CODE -eq "520" ]; then
 		echo -e "\033[?25h"
 		exit 1
 	fi
-	echo -ne "\t\t\033[38;5;242mIndex: $ELASTIC_INDEX"
 	check_last_command
+	echo -e "\t\t\033[38;5;242mIndex: $ELASTIC_INDEX"
 
-	echo -e "\t\033[38;5;226mPlace own API key in the database... \033[38;5;242m"
-	curl -f -s -XPOST -H 'Content-Type: application/json' \
+	echo -ne "\t\033[38;5;226mPlace own API key in the database... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
 		-d '{"doc": {"key": "'"$PEEKABOO_CORTEX_API_TOKEN"'"}}' "$ELASTIC_URL/$ELASTIC_INDEX/_update/peekaboo-analyze"
 	check_last_command
 
-	echo -e "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
-	curl -f -s -XPOST -H "Authorization: Bearer $ORG_ADMIN_KEY" \
+	echo -ne "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
+	curl -f -s -o /dev/null -XPOST \
+		-H "Authorization: Bearer $ORG_ADMIN_KEY" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/organization/analyzer/FileInfo_8_0" \
 		-d '{"name": "FileInfo_8_0", "configuration": {}}'
 	check_last_command
