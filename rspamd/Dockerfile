@@ -7,7 +7,7 @@ RUN apk add rspamd \
 COPY peekaboo-integration/* /etc/rspamd/local.d/
 
 RUN patch -t -p1 < /etc/rspamd/local.d/integration.patch && \
-	sed -i 's/bind_socket = "localhost:11332";/bind_socket = "0.0.0.0:11332";/' /etc/rspamd/worker-proxy.conf && \
+	echo 'bind_socket = "0.0.0.0:11332";' >> /etc/rspamd/local.d/worker-proxy.inc && \
 	mkdir -p /run/rspamd
 
 COPY entrypoint.sh /
