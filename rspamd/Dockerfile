@@ -8,6 +8,7 @@ COPY peekaboo-integration/* /etc/rspamd/local.d/
 
 RUN patch -t -p1 < /etc/rspamd/local.d/integration.patch && \
 	echo 'bind_socket = "0.0.0.0:11332";' >> /etc/rspamd/local.d/worker-proxy.inc && \
+	echo 'type = "console";' >> /etc/rspamd/local.d/logging.inc && \
 	mkdir -p /run/rspamd
 
 COPY entrypoint.sh /
