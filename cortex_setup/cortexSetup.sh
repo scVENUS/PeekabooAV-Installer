@@ -12,22 +12,31 @@ check_last_command () {
 	fi
 }
 
-while [[ $# -gt 0 ]]; do
-	case $1 in
+while [ "$#" -gt 0 ]; do
+	case "$1" in
 		-cu|--cortex-url)
-			CORTEX_URL="$2"
-			shift # past argument
-			shift # past value
+			shift
+			if [ -z "$1" ] ; then
+			       echo "Cortex URL argument missing"
+			       exit 1
+			fi
+			CORTEX_URL="$1"
 			;;
 		-eu|--elasticsearch-url)
-			ELASTIC_URL="$2"
-			shift # past argument
-			shift # past value
+			shift
+			if [ -z "$1" ] ; then
+			       echo "Elastic URL argument missing"
+			       exit 1
+			fi
+			ELASTIC_URL="$1"
 			;;
 		-k|--api-key)
-			PEEKABOO_CORTEX_API_TOKEN="$2"
-			shift # past argument
-			shift # past value
+			shift
+			if [ -z "$1" ] ; then
+			       echo "Cortex API key argument missing"
+			       exit 1
+			fi
+			PEEKABOO_CORTEX_API_TOKEN="$1"
 			;;
 		-*|--*)
 			echo "Unknown option $1"
@@ -36,8 +45,8 @@ while [[ $# -gt 0 ]]; do
 		*)
 			;;
 	esac
+	shift
 done
-shift # past argument
 
 if [ -z "$CORTEX_URL" ]; then
 	echo "must specify a URL with -cu / --cortex-url (without path or trailing /, e.g. http://cortex:9001)"
