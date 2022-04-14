@@ -73,9 +73,15 @@ fi
 printf "\033[?25l"
 
 CODE=$(curl -s -o /dev/null -w "%{http_code}" "$CORTEX_URL/api/job")
+RC="$?"
 printf "\033[38;5;242m$CODE\033[0m\n"
 
-if [ $CODE -eq "520" ]; then
+if [ "$RC" -ne "0" ] ; then
+	echo
+	echo "Cortex unreachable: $RC, $CODE"
+	printf "\033[?25h\033[0m"
+	exit 1
+elif [ "$CODE" -eq "520" ]; then
 	echo
 	echo "Cortex needs to be set-up"
 
@@ -139,7 +145,7 @@ if [ $CODE -eq "520" ]; then
 		-d '{"name": "FileInfo_8_0", "configuration": {}}'
 	check_last_command
 
-elif [ $CODE -eq "401" ]; then
+elif [ "$CODE" -eq "401" ]; then
 	echo "Cortex does not need to be set-up"
 fi
 
