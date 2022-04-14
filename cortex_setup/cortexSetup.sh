@@ -7,7 +7,7 @@ check_last_command () {
 	if [ $? -eq 0 ]; then
 		echo -e " \033[38;5;118mo\033[0m"
 	else
-		echo -e "\033[?25h"
+		echo -e "\033[?25h\033[0m"
 		exit 1
 	fi
 }
@@ -141,6 +141,6 @@ fi
 
 echo -e "\033[?25h"
 
-echo -e "\033[32mAll good!"
+echo -e "\033[32mAll good!\033[0m"
 
 exit 0
