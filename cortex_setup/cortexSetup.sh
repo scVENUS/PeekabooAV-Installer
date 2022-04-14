@@ -5,9 +5,10 @@
 
 check_last_command () {
 	if [ $? -eq 0 ]; then
-		echo -e " \033[38;5;118mo\033[0m"
+		printf " \033[38;5;118mo\033[0m\n"
 	else
-		echo -e "\033[?25h\033[0m"
+		# switch cursor back on and reset colours before exiting
+		printf "\033[?25h\033[0m\n"
 		exit 1
 	fi
 }
@@ -64,71 +65,74 @@ if [ -z "$PEEKABOO_CORTEX_API_TOKEN" ] ; then \
 	exit 1
 fi
 if [ -n "$(echo "$PEEKABOO_CORTEX_API_TOKEN" | tr -d "[a-zA-Z0-9+/]")" ]; then
-	echo -e "The Cortex API key must only use alphanumeric characters."
+	echo "The Cortex API key must only use alphanumeric characters."
 	exit 1
 fi
-echo -e "\033[?25l"
+
+# switch off cursor
+printf "\033[?25l"
 
 CODE=$(curl -s -o /dev/null -w "%{http_code}" "$CORTEX_URL/api/job")
-echo -e "\033[38;5;242m$CODE\033[0m"
+printf "\033[38;5;242m$CODE\033[0m\n"
 
 if [ $CODE -eq "520" ]; then
-	echo -e "\nCortex needs to be set-up"
+	echo
+	echo "Cortex needs to be set-up"
 
 	if [ -z $CORTEX_ADMIN_PASSWORD ]; then
 		CORTEX_ADMIN_PASSWORD=$(pwgen -s1 16)
 		echo "auto-generated cortex admin password: $CORTEX_ADMIN_PASSWORD"
 	fi
 
-	echo -ne "\t\033[38;5;226mMigrate Database... \033[0m"
+	printf "\t\033[38;5;226mMigrate Database... \033[0m"
 	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
 		"$CORTEX_URL/api/maintenance/migrate" -d '{}'
 	sleep 3
 	check_last_command
 
-	echo -ne "\t\033[38;5;226mMake admin user... \033[38;5;242m"
+	printf "\t\033[38;5;226mMake admin user... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
 		"$CORTEX_URL/api/user" \
 		-d '{"login":"admin","name":"admin","password":"'"$CORTEX_ADMIN_PASSWORD"'","roles":["superadmin"],"organization":"cortex"}'
 	check_last_command
 
-	echo -ne "\t\033[38;5;226mCreate organization 'PeekabooAV'... \033[38;5;242m"
+	printf "\t\033[38;5;226mCreate organization 'PeekabooAV'... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/organization" \
 		-d '{ "name": "PeekabooAV", "description": "PeekabooAV organization", "status": "Active"}' 
 	check_last_command
 
-	echo -ne "\t\033[38;5;226mCreate orgAdmin user... \033[38;5;242m"
+	printf "\t\033[38;5;226mCreate orgAdmin user... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/user" \
 		-d '{ "name": "Peekaboo org Admin","password":"'"$CORTEX_ADMIN_PASSWORD"'","roles": ["read","analyze","orgadmin"], "organization": "PeekabooAV", "login": "peekaboo-admin" }'
 	check_last_command
 	ORG_ADMIN_KEY=$(curl -s -XPOST -u "admin:$CORTEX_ADMIN_PASSWORD" -H 'Content-Type: application/json' "$CORTEX_URL/api/user/peekaboo-admin/key/renew")
 
-	echo -ne "\t\033[38;5;226mCreate normal user... \033[38;5;242m"
+	printf "\t\033[38;5;226mCreate normal user... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST \
 		-H "Authorization: Bearer $ORG_ADMIN_KEY" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/user" \
 		-d '{ "name": "Peekaboo", "roles": ["read","analyze"], "organization": "PeekabooAV", "login": "peekaboo-analyze" }'
 	check_last_command
 
-	echo -ne "\t\033[38;5;226mGet cortex elasticsearch index... \033[38;5;242m"
+	printf "\t\033[38;5;226mGet cortex elasticsearch index... \033[38;5;242m"
 	ELASTIC_INDEX=$(curl -s "$ELASTIC_URL/_search?q=_id:peekaboo-analyze" | \
 		jq -r ".hits.hits[]._index // empty")
 	if [ -z "$ELASTIC_INDEX" ] ;then
-		echo -e "\033[38;5;197mThere was no _index found in Elastiscsearch response\033[0m"
-		echo -e "\033[?25h"
+		printf "\033[38;5;197mThere was no _index found in Elastiscsearch response\033[0m\033[?25h\n"
 		exit 1
 	fi
 	check_last_command
-	echo -e "\t\t\033[38;5;242mIndex: $ELASTIC_INDEX"
+	printf "\t\t\033[38;5;242m"
+	echo "Index: $ELASTIC_INDEX"
 
-	echo -ne "\t\033[38;5;226mPlace own API key in the database... \033[38;5;242m"
+	printf "\t\033[38;5;226mPlace own API key in the database... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST -H 'Content-Type: application/json' \
 		-d '{"doc": {"key": "'"$PEEKABOO_CORTEX_API_TOKEN"'"}}' "$ELASTIC_URL/$ELASTIC_INDEX/_update/peekaboo-analyze"
 	check_last_command
 
-	echo -ne "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
+	printf "\t\033[38;5;226mEnable FileInfo 8.0 Analyzer... \033[38;5;242m"
 	curl -f -s -o /dev/null -XPOST \
 		-H "Authorization: Bearer $ORG_ADMIN_KEY" \
 		-H 'Content-Type: application/json' "$CORTEX_URL/api/organization/analyzer/FileInfo_8_0" \
@@ -139,8 +143,6 @@ elif [ $CODE -eq "401" ]; then
 	echo "Cortex does not need to be set-up"
 fi
 
-echo -e "\033[?25h"
-
-echo -e "\033[32mAll good!\033[0m"
+printf "\033[32mAll good!\033[0m\033[?25h\n"
 
 exit 0
