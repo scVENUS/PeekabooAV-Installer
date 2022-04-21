@@ -20,7 +20,6 @@ RUN virtualenv /opt/peekaboo && \
 	/opt/peekaboo/bin/pip3 install . && \
 	/opt/peekaboo/bin/pip3 install mysqlclient aiomysql && \
 	find /opt/peekaboo/lib -name "*.so" | xargs strip
-RUN rm -rf /peekaboo
 
 RUN groupadd -g 150 peekaboo
 RUN useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
@@ -43,7 +42,7 @@ COPY --from=build /opt/peekaboo/ /opt/peekaboo/
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN groupadd -g 150 peekaboo
-RUN	useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
+RUN useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
 
 RUN apt-get update -y && \
 	apt-get install -y --no-install-suggests \
