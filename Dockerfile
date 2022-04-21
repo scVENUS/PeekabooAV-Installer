@@ -14,11 +14,24 @@ RUN apt-get -y update && \
 		git \
 		libmariadb-dev
 
-COPY PeekabooAV /peekaboo/PeekabooAV/
-RUN virtualenv /opt/peekaboo && \
-	cd PeekabooAV && \
-	/opt/peekaboo/bin/pip3 install . && \
-	/opt/peekaboo/bin/pip3 install mysqlclient aiomysql && \
+# *optionally* pick up a local, potentially modified version of Peekaboo.
+# Explicitly copy README.md so list of source files cannot become empty by
+# non-matchin glob which would cause COPY to fail.
+COPY README.md PeekabooAV* /peekaboo/PeekabooAV/
+RUN virtualenv /opt/peekaboo
+
+ARG VERSION=
+
+RUN if [ -d /peekaboo/PeekabooAV/peekaboo ] ; then \
+		echo "NOTE: Installing locally-supplied PeekabooAV" && \
+		cd PeekabooAV && \
+		/opt/peekaboo/bin/pip3 install . ; \
+	else \
+		echo "NOTE: Installing PeekabooAV release ${VERSION:-latest}" && \
+		/opt/peekaboo/bin/pip3 install peekabooav${VERSION:+==${VERSION}} ; \
+	fi
+
+RUN /opt/peekaboo/bin/pip3 install mysqlclient aiomysql && \
 	find /opt/peekaboo/lib -name "*.so" | xargs strip
 
 RUN groupadd -g 150 peekaboo
