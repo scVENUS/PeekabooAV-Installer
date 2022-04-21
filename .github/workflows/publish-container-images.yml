@@ -1,0 +1,47 @@
+name: Build and publish container images
+
+on:
+  push:
+    branches: [ master, '[0-9]+.[0-9]+' ]
+    # Publish semver tags as releases.
+    tags: [ 'v[0-9]+.[0-9]+*', 'v[0-9]+.[0-9]+.[0-9]+*' ]
+  pull_request:
+    branches: [ master, '[0-9]+.[0-9]+' ]
+
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # PeekabooAV image is built by the PeekabooAV repository CI/CD
+
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [rspamd, postfix, cortex-setup]
+        include:
+        - image: rspamd
+          dir: rspamd
+        - image: postfix
+          dir: postfix
+        - image: cortex-setup
+          dir: cortex_setup
+
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
+    steps:
+      # required for access to the local publish action
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - uses: ./.github/actions/container-image-publish
+        with:
+          image_name: michaelweiser/peekabooav-${{ matrix.image }}
+          builddir: ${{ matrix.dir }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
