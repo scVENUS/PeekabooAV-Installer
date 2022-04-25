@@ -566,23 +566,57 @@
     # between preserving admin changes and getting new options rolled out
     - name: Place Peekaboo config in /opt/peekaboo/etc
       tags: peekabooconf
-      template:
-        src: peekaboo/peekaboo.conf
+      copy:
+        src: /opt/peekaboo/share/doc/peekaboo/peekaboo.conf.sample
         dest: /opt/peekaboo/etc/peekaboo.conf
         owner: root
         group: peekaboo
         mode: 0640
         backup: true
 
-    - name: Place analyzers config in /opt/peekaboo/etc
+    - name: Create Peekaboo drop file directory /opt/peekaboo/etc/peekaboo.conf.d
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/etc/peekaboo.conf.d
+        state: directory
+
+    - name: Place Peekaboo config additions in /opt/peekaboo/etc/peekaboo.conf.d
       tags: peekabooconf
       template:
-        src: peekaboo/analyzers.conf
+        src: "{{ item }}"
+        dest: /opt/peekaboo/etc/peekaboo.conf.d/
+        owner: root
+        group: peekaboo
+        mode: 0640
+        backup: false
+      with_fileglob: "peekaboo/peekaboo.conf.d/[0-9][0-9]-*.conf"
+
+    - name: Place Peekaboo analyzers.conf in /opt/peekaboo/etc
+      tags: peekabooconf
+      copy:
+        src: /opt/peekaboo/share/doc/peekaboo/analyzers.conf.sample
         dest: /opt/peekaboo/etc/analyzers.conf
         owner: root
         group: peekaboo
         mode: 0640
-        backup: true
+        backup: false
+
+    - name: Create Peekaboo drop file directory /opt/peekaboo/etc/analyzers.conf.d
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/etc/analyzers.conf.d
+        state: directory
+
+    - name: Place analyzers config additions in /opt/peekaboo/etc/analyzers.conf.d
+      tags: peekabooconf
+      template:
+        src: "{{ item }}"
+        dest: /opt/peekaboo/etc/analyzers.conf.d/
+        owner: root
+        group: peekaboo
+        mode: 0640
+        backup: false
+      with_fileglob: "peekaboo/analyzers.conf.d/[0-9][0-9]-*.conf"
 
     - name: Check if an old Peekaboo ruleset.conf exists in /opt/peekaboo
       stat: path=/opt/peekaboo/ruleset.conf
@@ -610,6 +644,23 @@
         group: root
         mode: 0644
         backup: true
+
+    - name: Create Peekaboo drop file directory /opt/peekaboo/etc/ruleset.conf.d
+      tags: peekabooconf
+      file:
+        dest: /opt/peekaboo/etc/ruleset.conf.d
+        state: directory
+
+    - name: Place ruleset config additions in /opt/peekaboo/etc/ruleset.conf.d
+      tags: peekabooconf
+      template:
+        src: "{{ item }}"
+        dest: /opt/peekaboo/etc/ruleset.conf.d/
+        owner: root
+        group: root
+        mode: 0644
+        backup: false
+      with_fileglob: "peekaboo/ruleset.conf.d/[0-9][0-9]-*.conf"
 
     - name: Place cuckoo processor wrapper in /opt/peekaboo/bin
       copy:

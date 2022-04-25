@@ -25,17 +25,25 @@ RUN groupadd -g 150 peekaboo
 RUN useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
 
 RUN mkdir -p /opt/peekaboo/etc
-COPY peekaboo/peekaboo.conf /opt/peekaboo/etc/peekaboo.conf.template
-RUN touch /opt/peekaboo/etc/peekaboo.conf && \
-	chmod 600 /opt/peekaboo/etc/peekaboo.conf && \
-	chown peekaboo:root /opt/peekaboo/etc/peekaboo.conf
 
-COPY peekaboo/analyzers.conf /opt/peekaboo/etc/analyzers.conf.template
-RUN touch /opt/peekaboo/etc/analyzers.conf && \
-	chmod 600 /opt/peekaboo/etc/analyzers.conf && \
-	chown peekaboo:root /opt/peekaboo/etc/analyzers.conf
-
-RUN cp /opt/peekaboo/share/doc/peekaboo/ruleset.conf.sample /opt/peekaboo/etc/ruleset.conf
+# provide default config from distributed samples - these do not contain
+# sensitive data
+# prepare for overrides by the entrypoint or directly via volume mounts from
+# the outside. Since the entrypoint runs without privileges, these need to be
+# set up beforehand and be writeable by the runtime user.
+RUN etcdir=/opt/peekaboo/etc ; \
+	sampledir=/opt/peekaboo/share/doc/peekaboo ; \
+	set -e ; \
+	for conf in peekaboo analyzers ruleset ; do \
+		cp "$sampledir"/"$conf".conf.sample "$etcdir"/"$conf".conf ; \
+		\
+		dropdir="$etcdir"/"$conf".conf.d ; \
+		entryconfig="$dropdir"/05-entrypoint.conf ; \
+		mkdir -p "$dropdir" ; \
+		touch "$entryconfig" ; \
+		chmod 0600 "$entryconfig" ; \
+		chown peekaboo:root "$entryconfig" ; \
+	done
 
 FROM debian:bullseye-slim
 COPY --from=build /opt/peekaboo/ /opt/peekaboo/

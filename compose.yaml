@@ -85,7 +85,7 @@ services:
     env_file:
       - compose.env
     volumes:
-      - ./pipeline/ruleset.conf:/opt/peekaboo/etc/ruleset.conf
+      - ./pipeline/peekaboo/ruleset.conf.d/10-compose.conf:/opt/peekaboo/etc/ruleset.conf.d/10-compose.conf
     depends_on:
       cortex_setup:
         condition: service_completed_successfully
