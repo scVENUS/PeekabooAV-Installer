@@ -103,7 +103,47 @@ services:
     build: ./rspamd
     environment:
       RSPAMD_ENABLED_MODULES: "external_services force_actions"
-      RSPAMD_OPTION_FILTERS: ""
+
+      RSPAMD_CONFIG_options__filters_: ""
+
+      RSPAMD_CONFIG_external_services__peekaboo__servers: "peekabooav"
+      RSPAMD_CONFIG_external_services__peekaboo__min_size: 50
+      # Timeout call for some delay at main stage
+      RSPAMD_CONFIG_external_services__dcc__servers: "240.0.0.1"
+      RSPAMD_CONFIG_external_services__dcc__min_size: 50
+      RSPAMD_CONFIG_external_services__dcc__timeout: 2
+
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO__weight: "4.0"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO__description_: "The Peekaboo analysis found a threat"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO__01_groups_: "peekaboo"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO__02_groups_: "av_virus_reject"
+      # booleans need to be strings here in YAML but unquoted in the config
+      # file (so no trailing underscore to mark it as a string here)
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO__one_shot: "true"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_FAIL__weight: 0
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_FAIL__description_: "The Peekaboo analysis failed"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_FAIL__01_groups_: "peekaboo"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_FAIL__02_groups_: "av_scanner_failed"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_FAIL__one_shot: "true"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_IN_PROCESS__weight: 0
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_IN_PROCESS__description_: "The Peekaboo analysis was not finished"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_IN_PROCESS__01_groups_: "peekaboo"
+      RSPAMD_CONFIG_group__antivirus__symbols__PEEKABOO_IN_PROCESS__one_shot: "true"
+
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO_IN_PROCESS__action_: "soft reject"
+      # dollar signs are escaped here
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO_IN_PROCESS__message_: "SOFT REJECT - try again later #412 (support-id: $${queueid}-$${uid.substring(1, 6)}"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO_IN_PROCESS__expression_: "PEEKABOO_IN_PROCESS"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO_IN_PROCESS__01_honor_action_: "reject"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__action_: "reject"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__message_: "REJECT - Peekaboo said it's bad (support-id: $${queueid}-$${uid.substring(1, 6)})"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__expression_: "PEEKABOO"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__01_require_action_: "no action"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__02_require_action_: "greylist"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__03_require_action_: "reject"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__04_require_action_: "add header"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__05_require_action_: "soft reject"
+      RSPAMD_CONFIG_force_actions__rules__PEEKABOO__06_require_action_: "rewrite subject"
     depends_on:
       - peekabooav
     healthcheck:
