@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: peekabooav-pipeline
+spec:
+  selector:
+    app: elasticsearch
+  sessionAffinity: None
+  type: NodePort
+  ports:
+  - name: elasticsearch
+    port: 9200
+    protocol: TCP
+    targetPort: 9200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: peekabooav-pipeline
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:7.16.2
+        env:
+        - name: http.host
+          value: "0.0.0.0"
+        - name: discovery.type
+          value: single-node
+        - name: script.allowed_types
+          value: inline
+        - name: thread_pool.search.queue_size
+          value: "100000"
+        - name: thread_pool.write.queue_size
+          value: "10000"
+        - name: ES_HEAP_SIZE
+          value: 1g
+        - name: xpack.security.enabled
+          value: "false"
+        - name: cluster.routing.allocation.disk.watermark.flood_stage
+          value: 99%
+        - name: TAKE_FILE_OWNERSHIP
+          value: "1"
+      dnsPolicy: ClusterFirst

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: peekabooav-pipeline
+spec:
+  selector:
+    app: mariadb
+  sessionAffinity: None
+  type: NodePort
+  ports:
+  - name: mariadb
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: peekabooav-pipeline
+  labels:
+    app: mariadb
+    type: database
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        type: database
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:10.3
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/mysql
+              - --user=peekaboo
+              - --password=peekaboo
+              - --execute
+              - "SHOW DATABASES;"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+            - name: MARIADB_RANDOM_ROOT_PASSWORD
+              value: "true"
+            - name: MARIADB_DATABASE
+              value: peekaboo
+            - name: MARIADB_USER
+              value: peekaboo
+            - name: MARIADB_PASSWORD
+              value: peekaboo

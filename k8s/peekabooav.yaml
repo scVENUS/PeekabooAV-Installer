@@ -1,0 +1,284 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: peekabooav
+  namespace: peekabooav-pipeline
+spec:
+  selector:
+    app: peekabooav
+  sessionAffinity: None
+  type: NodePort
+  ports:
+  - name: peekabooav
+    port: 8100
+    protocol: TCP
+    targetPort: 8100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peekabooav
+  namespace: peekabooav-pipeline
+  labels:
+    app: peekabooav
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: peekabooav
+  template:
+    metadata:
+      labels:
+        app: peekabooav
+    spec:
+      containers:
+      - name: peekabooav
+        image: peekabooav:local
+        volumeMounts:
+        - name: ruleset
+          mountPath: /opt/peekaboo/etc/ruleset.conf
+          subPath: ruleset.conf
+        env:
+        - name: PEEKABOO_CORTEX_API_TOKEN
+          value: dikka
+        - name: PEEKABOO_DB_PASSWORD
+          value: peekaboo
+        - name: PEEKABOO_DB_SERVER
+          value: mariadb
+        - name: PEEKABOO_CORTEX_URL
+          value: cortex:9001
+        ports:
+        - containerPort: 8100
+          name: peekabooav
+          protocol: TCP
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 75
+      volumes:
+      - name: ruleset
+        configMap:
+          name: peekabooav-ruleset-conf
+---
+## WITHOUT CORTEX
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: peekabooav-ruleset-conf
+  namespace: peekabooav-pipeline
+  selfLink: /api/v1/namespaces/peekabooav-pipeline/configmaps/peekabooav-ruleset-conf
+data:
+  ruleset.conf: |
+    #
+    # Peekaboo ruleset configuration file
+    # Copyright (C) 2016-2020 science + computing ag
+    #
+
+    # list of rules to run on samples
+    [rules]
+    rule.1  : known
+    rule.2  : file_larger_than
+    rule.3  : file_type_on_whitelist
+    rule.4  : file_type_on_greylist
+    #rule.5  : office_macro
+    #rule.6 : office_macro_with_suspicious_keyword
+    rule.7  : expressions
+    #rule.8  : cuckoo_evil_sig
+    #rule.9  : cuckoo_score
+    #rule.10  : requests_evil_domain
+    #rule.11  : cuckoo_analysis_failed
+    #rule.12 : contains_peekabooyar
+    rule.12 : final_rule
+
+    # rule specific configuration options
+    # the section name equals the name of the rule
+    #[file_larger_than]
+    # defaults:
+    #bytes : 5
+
+    [file_type_on_whitelist]
+    whitelist.1 : text/plain
+    whitelist.2 : message/rfc822
+    whitelist.3 : inode/x-empty
+    whitelist.4 : application/pkcs7-signature
+    whitelist.5 : application/x-pkcs7-signature
+    whitelist.6 : application/pkcs7-mime
+    whitelist.7 : application/x-pkcs7-mime
+    whitelist.8 : text/html
+
+    [file_type_on_greylist]
+    greylist.1  : application/octet-stream
+    greylist.2  : application/vnd.ms-excel
+    greylist.3  : application/pdf
+    greylist.4  : application/javascript
+    greylist.5  : application/vnd.ms-excel
+    greylist.6  : application/vnd.ms-excel.sheet.macroEnabled.12
+    greylist.7  : application/vnd.ms-word.document.macroEnabled.12
+    greylist.8  : application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    greylist.9  : application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    greylist.10 : application/x-7z-compressed
+    greylist.11 : application/x-ms-dos-executable
+    greylist.12 : application/x-dosexec
+    greylist.13 : application/x-vbscript
+    greylist.14 : application/zip
+    greylist.15 : application/x-rar
+    greylist.16 : application/msword
+    greylist.17 : text/x-msdos-batch
+    greylist.18 : text/x-sh
+    greylist.19 : text/x-python
+    greylist.20 : image/png
+    greylist.21 : image/jpeg
+    greylist.22 : application/zip
+    greylist.23 : application/x-silverlight
+    greylist.24 : application/x-python-code
+    greylist.25 : application/x-msdos-program
+    greylist.26 : application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    greylist.27 : application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    greylist.28 : application/vnd.openxmlformats-officedocument.presentationml.presentation
+    greylist.29 : application/vnd.oasis.opendocument.text
+    greylist.30 : application/vnd.oasis.opendocument.spreadsheet
+    greylist.31 : application/vnd.oasis.opendocument.presentation
+    greylist.32 : application/vnd.ms-word.template.macroEnabled.12
+    greylist.33 : application/vnd.ms-powerpoint
+    greylist.34 : application/vnd.ms-excel.template.macroEnabled.12
+    greylist.35 : application/vnd.ms-excel
+    greylist.36 : application/msword
+    greylist.37 : application/x-bat
+    greylist.38 : application/bat
+
+    [office_macro_with_suspicious_keyword]
+    keyword.1 : AutoOpen
+    keyword.2 : AutoClose
+
+    [expressions]
+    # Optionally additional debug logging from the expression parser can be
+    # enabled:
+    #log_level : INFO
+
+    # expression.0  : knownreport.known -> knownreport.result
+    # expression.0  : knownreport.known and knownreport.first < 14 -> knownreport.result
+    # expression.0  : cortexreport.FileInfoReport.full -> bad # in FileInfoReport wird nix gefunden, hab mit dir() auch nix gefunden
+    # expression.0  : cortexreport.FileInfoReport -> bad
+    expression.0  : sample -> bad
+    expression.1  : {sample.type_declared}|filereport.mime_types <= {
+                        'text/plain', 'inode/x-empty'} -> ignore
+    expression.2  : sample.name_declared == /smime.p7[mcs]/
+                        and sample.type_declared in {
+                            'application/pkcs7-signature',
+                            'application/x-pkcs7-signature',
+                            'application/pkcs7-mime',
+                            'application/x-pkcs7-mime'
+                        } -> ignore
+    expression.3  : sample.name_declared == 'signature.asc'
+                        and sample.type_declared in {
+                            'application/pgp-signature'
+                        } -> ignore
+    expression.4  : sample.file_extension in {
+                            'doc', 'docm', 'dotm', 'docx', 'rtf', 'rtx',
+                            'ppt', 'pptm', 'pptx', 'potm', 'ppam', 'ppsm',
+                            'xls', 'xlsm', 'xlsx' }
+                        and olereport.has_office_macros == True -> bad
+                      # and cuckooreport.score > 4 -> bad
+    #expression.5  : cortexreport.VirusTotalQueryReport.n_of_all == 0
+    #                    and cortexreport.VirusTotalQueryReport.level == 'safe'
+    #                    ->  unknown
+    # cortex way to access CuckooSandbox and Malscore
+    #expression.6  : cortexreport.CuckooSandboxFileReport.malscore > 6 -> bad
+    # inline content will normally be rendered by the mail client and not presented
+    # as an attachment for the user to open -> no need to scan (if exploiting the
+    # mail client is not a concern)
+    expression.7  : sample.content_disposition == 'inline'
+                        and sample.type_declared in {
+                            'image/png', 'image/jpeg', 'image/gif', 'image/bmp'
+                        } -> ignore
+
+    [cuckoo_evil_sig]
+    signature.1  : A potential heapspray has been detected. .*
+    signature.2  : A process attempted to delay the analysis task.
+    signature.3  : Attempts to detect Cuckoo Sandbox through the presence of a file
+    signature.4  : Attempts to modify desktop wallpaper
+    signature.5  : Checks amount of memory in system, this can be used to detect virtual machines that have a low amount of memory available
+    signature.6  : Checks the version of Bios, possibly for anti-virtualization
+    signature.7  : Collects information on the system (ipconfig, netstat, systeminfo)
+    signature.8  : Connects to an IRC server, possibly part of a botnet
+    signature.9  : Connects to Tor Hidden Services through Tor2Web
+    signature.10 : Creates a suspicious process
+    signature.11 : Creates a windows hook that monitors keyboard input (keylogger)
+    signature.12 : Creates executable files on the filesystem
+    signature.13 : Creates known Upatre files, registry keys and/or mutexes
+    signature.14 : Detects the presence of Wine emulator
+    signature.15 : Detects VirtualBox through the presence of a file
+    signature.16 : Detects VirtualBox through the presence of a registry key
+    signature.17 : Detects VirtualBox through the presence of a window
+    signature.18 : Detects VirtualBox using WNetGetProviderName trick
+    signature.19 : Detects VMWare through the in instruction feature
+    signature.20 : Detects VMWare through the presence of a registry key
+    signature.21 : Detects VMWare through the presence of various files
+    signature.22 : Executes javascript
+    signature.23 : Executes one or more WMI queries
+    signature.24 : File has been identified by .* AntiVirus engines on VirusTotal as malicious
+    signature.25 : Installs itself for autorun at Windows startup
+    signature.26 : Looks for known filepaths where sandboxes execute samples
+    signature.27 : Looks for the Windows Idle Time to determine the uptime
+    signature.28 : Makes SMTP requests, possibly sending spam
+    signature.29 : This sample modifies more than .* files through suspicious ways,
+    signature.30 : Network communications indicative of a potential document or script payload download was initiated by the process wscript.exe
+    signature.31 : One of the processes launched crashes
+    signature.32 : One or more of the buffers contains an embedded PE file
+    signature.33 : One or more potentially interesting buffers were extracted, these generally
+    signature.34 : Potentially malicious URL found in document
+    signature.35 : Queries for the computername
+    signature.36 : Queries the disk size.*
+    signature.37 : Raised Suricata alerts
+    signature.38 : Starts servers listening on {0}
+    signature.39 : Steals private information from local Internet browsers
+    signature.40 : Suspicious Javascript actions
+    signature.41 : Tries to detect analysis programs from within the browser
+    signature.42 : Tries to locate whether any sniffers are installed
+    signature.43 : Wscript.exe initiated network communications indicative of a script based payload download
+    signature.44 : The process powershell.exe wrote an executable file to disk
+    signature.45 : Creates a suspicious Powershell process
+    signature.46 : Appends a new file extension or content to .* files indicative of a ransomware file encryption process
+
+    #[cuckoo_score]
+    # defaults:
+    #higher_than : 4.0
+
+    [requests_evil_domain]
+    # define a list of bad domains here
+    domain.1 : canarytokens.com
+
+    #[cuckoo_analysis_failed]
+    # This rule checks whether analysis by Cuckoo failed. If so, it reports a
+    # result of "failed" for this sample and aborts rule processing. In case of
+    # success, result "unknown" is returned (because successful analysis in itself
+    # provides no indication about the sample) and rule processing is continued.
+    #
+    # The following strings are matched in the order listed against the
+    # debug/cuckoo log of the report, i.e. the server's messages about the
+    # analysis. Order of evaluation is failure -> success -> fallback: failure,
+    # which means:
+    #
+    # - if any failure string is contained in any log entry, the analysis is
+    #   considered failed and evaluation is aborted
+    # - if any success string is contained in any log entry, the analysis is
+    #   considered successfully finished and evaluation is aborted
+    # - if no string matches, the analysis is considered failed
+    #
+    # Failure strings are optional but there has to be at least one success string
+    # to prevent the rule from always reporting failure. If the rule is supposed to do
+    # nothing, it should be disabled instead of providing no or very permissive
+    # match strings.
+
+    # default:
+    #success.1: analysis completed successfully
+    # no failure
+
+    # possible more specific config: 'end of analysis reached!' shows that the
+    # analysis ran beyond the analysis timeout and into the critical timeout which
+    # is a clear indicator that it did not succeed (for whatever reason)
+    #failure.1: end of analysis reached!
+
+    # rules without configuration options:
+    # - known
+    # - contains_peekabooyar
+    # - office_macro
+    # - final_rule

@@ -1,0 +1,49 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: cortex-setup
+#   namespace: peekabooav-pipeline
+#   labels:
+#     app: cortex-setup
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: cortex-setup
+#   template:
+#     metadata:
+#       labels:
+#         app: cortex-setup
+#     spec:
+#       containers:
+#       - name: cortex-setup
+#         image: peekabooav_cortex_setup:local
+#         env:
+#         - name: ELASTIC_URL
+#           value: elasticsearch:9200
+#         - name: CORTEX_URL
+#           value: cortex:9001
+#         - name: PEEKABOO_CORTEX_API_TOKEN
+#           value: dikka
+#       dnsPolicy: ClusterFirst
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cortex-setup
+  namespace: peekabooav-pipeline
+spec:
+  template:
+    spec:
+      containers:
+      - name: cortex-setup
+        image: peekabooav_cortex_setup:local
+        env:
+          - name: ELASTIC_URL
+            value: elasticsearch:9200
+          - name: CORTEX_URL
+            value: cortex:9001
+          - name: PEEKABOO_CORTEX_API_TOKEN
+            value: dikka
+          - name: CORTEX_ADMIN_PASSWORD
+            value: dikka
+      restartPolicy: Never
