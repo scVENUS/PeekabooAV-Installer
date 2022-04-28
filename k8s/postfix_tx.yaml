@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postfix-tx
+  namespace: peekabooav-pipeline
+spec:
+  selector:
+    app: postfix-tx
+  sessionAffinity: None
+  type: NodePort
+  ports:
+  - name: postfix-tx
+    port: 25
+    protocol: TCP
+    targetPort: 25
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postfix-tx
+  namespace: peekabooav-pipeline
+  labels:
+    app: postfix-tx
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: postfix-tx
+  template:
+    metadata:
+      labels:
+        app: postfix-tx
+    spec:
+      hostname: postfix-tx
+      containers:
+      - name: postfix-tx
+        image: peekabooav_postfix:local
+        env:
+        - name: POSTFIX_MAIN_CF_MAILLOG_FILE
+          value: /dev/stdout
+        - name: POSTFIX_MAIN_CF_DEBUG_PEER_LIST
+          value: 0.0.0.0/32
+        - name: POSTFIX_MAIN_CF_INET_INTERFACES
+          value: all
+        - name: POSTFIX_MAIN_CF_MYHOSTNAME
+          value: postfix-tx
+        - name: POSTFIX_MAIN_CF_QUEUE_RUN_DELAY
+          value: 90s
+        - name: POSTFIX_MAIN_CF_VIRTUAL_ALIAS_DOMAINS
+          value: localhost
+        - name: POSTFIX_MAIN_CF_VIRTUAL_ALIAS_MAPS
+          value: pcre:/etc/postfix/virtual
+        - name: POSTFIX_VIRTUAL
+          value: '/.*/   root@postfix-rx.peekabooav-pipeline.svc.cluster.local'
+        ports:
+        - containerPort: 25
+          name: email
+          protocol: TCP
+      dnsPolicy: ClusterFirst
