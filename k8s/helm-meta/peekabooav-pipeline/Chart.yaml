@@ -1,0 +1,35 @@
+apiVersion: v2
+version: 0.1.6
+appVersion: 2.1
+name: peekabooav-pipeline
+description: |
+  A Helm chart for deploying a PeekabooAV pipeline including postfix, rspamd
+  and cortex on Kubernetes.
+
+dependencies:
+  - name: opensearch
+    version: 1.10.0
+    repository: https://opensearch-project.github.io/helm-charts/
+  - name: mariadb
+    version: 10.5.0
+    repository: https://charts.bitnami.com/bitnami
+  - name: cortex
+    version: 0.3.2
+    repository: https://michaelweiser.github.io/helm-cortex/
+  - name: cortex-setup
+    version: 0.1.4
+    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+  - name: peekabooav
+    version: 0.1.8
+    repository: https://scvenus.github.io/PeekabooAV-Installer/
+  - name: rspamd
+    version: 0.1.5
+    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+  - name: postfix
+    version: 0.1.4
+    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    alias: postfix-tx
+  - name: postfix
+    version: 0.1.4
+    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    alias: postfix-rx
