@@ -14,6 +14,60 @@ spec:
     protocol: TCP
     targetPort: 9001
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cortex-jobs
+  namespace: peekabooav-pipeline
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cortex
+  namespace: peekabooav-pipeline
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cortex
+  namespace: peekabooav-pipeline
+rules:
+- apiGroups:
+  - batch
+  # wildcards don't work: https://github.com/kubernetes/kubernetes/issues/56582
+  # A separate namespace is recommended which the cortex k8s runner doesn't
+  # support, yet. So this is left insecure for now.
+  #resourceNames:
+  #- neuron-jobs-*
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cortex
+  namespace: peekabooav-pipeline
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cortex
+subjects:
+- kind: ServiceAccount
+  name: cortex
+  namespace: peekabooav-pipeline
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,7 +87,7 @@ spec:
     spec:
       containers:
       - name: cortex
-        image: thehiveproject/cortex:3.1.4
+        image: michaelweiser/cortex:3.1.4-1-k8s
         volumeMounts:
         - name: application
           mountPath: /etc/cortex/application.conf
@@ -41,6 +95,8 @@ spec:
         - name: analyzers
           mountPath: /etc/cortex/analyzers.json
           subPath: analyzers.json
+        - mountPath: /tmp/cortex-jobs
+          name: job-directory
         env:
         - name: CORTEX_ADMIN_PASSWORD
           value: dikka
@@ -58,6 +114,10 @@ spec:
       - name: analyzers
         configMap:
           name: cortex-analyzers-json
+      - name: job-directory
+        persistentVolumeClaim:
+          claimName: cortex-jobs
+      serviceAccountName: cortex
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -68,6 +128,7 @@ metadata:
 data:
   application.conf: |
     auth.method.basic=true
+    job.kubernetes.persistentVolumeClaimName=cortex-jobs
 ---
 apiVersion: v1
 kind: ConfigMap
