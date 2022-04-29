@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cortex-setup
+description: A Helm chart for setting up Cortex using a setup job in Kubernetes
+
+type: application
+version: 0.1.4
+# Installer version
+appVersion: "2.1"
