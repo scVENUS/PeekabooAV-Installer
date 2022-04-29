@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "peekabooav.fullname" . }}
+  labels:
+    {{- include "peekabooav.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "peekabooav.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "peekabooav.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "peekabooav.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: configsecret
+            mountPath: /opt/peekaboo/etc/peekaboo.conf.d/10-helm.conf
+            # no updates because of subPath mount. But we need a restart to
+            # notice config changes anyway, so no loss for now.
+            # Also no way of changing ownership to root:peekaboo so that we
+            # would make them group-readable only. So they have to stay
+            # world-readable for now.
+            subPath: peekaboo.conf
+          - name: configsecret
+            mountPath: /opt/peekaboo/etc/analyzers.conf.d/10-helm.conf
+            subPath: analyzers.conf
+          - name: configmap
+            mountPath: /opt/peekaboo/etc/ruleset.conf.d/10-helm.conf
+            subPath: ruleset.conf
+          env:
+          - name: PEEKABOO_CORTEX_API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "peekabooav.fullname" . }}
+                key: cortex-api-token
+          - name: PEEKABOO_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "peekabooav.fullname" . }}
+                key: db-password
+          - name: PEEKABOO_DB_SERVER
+            value: {{ .Values.db.server | default (printf "%s-mariadb" .Release.Name) }}
+          - name: PEEKABOO_CORTEX_URL
+            value: {{ .Values.cortex.url | default (printf "http://%s-cortex:9001" .Release.Name) }}
+          ports:
+            - name: rest
+              containerPort: 8100
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: rest
+          readinessProbe:
+            httpGet:
+              path: /
+              port: rest
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: configmap
+        configMap:
+          name: {{ include "peekabooav.fullname" . }}
+      - name: configsecret
+        secret:
+          secretName: {{ include "peekabooav.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
