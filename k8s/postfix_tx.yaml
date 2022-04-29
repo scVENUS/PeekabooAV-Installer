@@ -34,7 +34,7 @@ spec:
       hostname: postfix-tx
       containers:
       - name: postfix-tx
-        image: peekabooav_postfix:local
+        image: michaelweiser/peekabooav-postfix:latest
         env:
         - name: POSTFIX_MAIN_CF_MAILLOG_FILE
           value: /dev/stdout

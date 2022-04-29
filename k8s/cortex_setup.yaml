@@ -32,11 +32,12 @@ metadata:
   name: cortex-setup
   namespace: peekabooav-pipeline
 spec:
+  ttlSecondsAfterFinished: 120
   template:
     spec:
       containers:
       - name: cortex-setup
-        image: peekabooav_cortex_setup:local
+        image: michaelweiser/peekabooav-cortex-setup:latest
         env:
           - name: ELASTIC_URL
             value: elasticsearch:9200

@@ -33,5 +33,5 @@ spec:
     spec:
       containers:
       - name: rspamd
-        image: peekabooav_rspamd:local
+        image: michaelweiser/peekabooav-rspamd:latest
       dnsPolicy: ClusterFirst

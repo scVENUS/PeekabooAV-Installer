@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: peekabooav
-        image: peekabooav:local
+        image: michaelweiser/peekabooav:latest
         volumeMounts:
         - name: ruleset
           mountPath: /opt/peekaboo/etc/ruleset.conf
