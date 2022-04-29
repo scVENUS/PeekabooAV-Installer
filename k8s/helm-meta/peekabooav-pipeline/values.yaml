@@ -1,0 +1,182 @@
+---
+opensearch:
+  replicas: 1
+  persistence:
+    size: 1Gi
+  extraEnvs:
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+  config:
+    opensearch.yml: |
+      cluster.name: opensearch-cluster
+      network.host: 0.0.0.0
+  securityConfig:
+    enabled: false
+
+cortex:
+  image:
+    repository: michaelweiser/cortex
+    tag: 3.1.4-1-k8s
+  extraCortexConfigurations:
+    basicauth.conf: |
+      auth.method.basic=true
+  # stable analyzers and responders config to avoid dependency on Internet
+  # connection and regressions due to sudden version or container image
+  # updates
+  analyzerURLs:
+  - /etc/cortex/extra-config-files/analyzers.json
+  responderURLs:
+  - /etc/cortex/extra-config-files/responders.json
+  # custom
+  extraConfigMaps:
+    cortex-extra-config-files:
+      analyzers.json: files/cortex/analyzers.json
+      responders.json: files/cortex/responders.json
+  extraVolumes:
+  - name: extra-config-files
+    configMap:
+      name: cortex-extra-config-files
+  extraVolumeMounts:
+  - name: extra-config-files
+    mountPath: "/etc/cortex/extra-config-files"
+    readOnly: true
+  elasticsearch:
+    url: http://opensearch-cluster-master:9200
+    tls: false
+    # username and password in secret do not matter since we disable security
+    # in ES
+    username: cortex
+    userSecret: cortex-elastic
+    external:
+      enabled: true
+  jobIOStorage:
+    pvc:
+      storageClass: "csi-driver-lvm-linear"
+      size: 1Gi
+  # enable ingress if access to web frontend is desired - not necessary for
+  # peekaboo itself
+  ingress:
+    enabled: false
+#    tls:
+#    - secretName: cortex-tls
+#      hosts:
+#      - cortex.example.org
+#    ingressClassName: nginx-2
+#    annotations:
+#      "cert-manager.io/cluster-issuer": "letsencrypt"
+#    hosts:
+#      - host: cortex.example.org
+#        paths:
+#          - path: /
+
+#cortex-setup:
+#  cortex:
+     # generate, e.g. openssl rand -hex 32
+#    apiToken: <generated>
+
+mariadb:
+  auth:
+    database: peekaboo
+    username: peekaboo
+    # generate, e.g. pwgen -snc 17
+    #password: <generated>
+    # no random passwords supported by bitnami chart and password is required
+    # by the chart on upgrades :(
+    #rootPassword: <generated>
+  primary:
+    persistence:
+      size: 1Gi
+
+peekabooav:
+#  cortex:
+#    apiToken: <cortex API token from above>
+#  db:
+#    password: <mariadb password from above>
+  ruleset:
+    rules:
+      rule:
+      - known
+      - file_larger_than
+      - file_type_on_whitelist
+      - file_type_on_greylist
+      - expressions
+      - final_rule
+
+    expressions:
+      expression:
+      - cortexreport.FileInfoReport -> bad
+
+rspamd:
+  config:
+    options:
+      filters: ""
+    external_services:
+      peekaboo:
+        servers: "pipeline-peekabooav"
+        min_size: 50
+      # Timeout call for some delay at main stage
+      dcc:
+        servers: "240.0.0.1"
+        min_size: 50
+        timeout: 2
+    group:
+      antivirus:
+        symbols:
+          PEEKABOO:
+            weight: 4.0
+            description: "The Peekaboo analysis found a threat"
+            groups:
+            - "peekaboo"
+            - "av_virus_reject"
+            one_shot: true
+          PEEKABOO_FAIL:
+            weight: 0
+            description: "The Peekaboo analysis failed"
+            groups:
+            - "peekaboo"
+            - "av_scanner_failed"
+            one_shot: true
+          PEEKABOO_IN_PROCESS:
+            weight: 0
+            description: "The Peekaboo analysis was not finished"
+            groups:
+            - "peekaboo"
+            one_shot: true
+    force_actions:
+      rules:
+        PEEKABOO_IN_PROCESS:
+          action: "soft reject"
+          message: "SOFT REJECT - try again later #412 (support-id: ${queueid}-${uid.substring(1, 6)}"
+          expression: "PEEKABOO_IN_PROCESS"
+          honor_action:
+          - "reject"
+        PEEKABOO:
+          action: "reject"
+          message: "REJECT - Peekaboo said it's bad (support-id: ${queueid}-${uid.substring(1, 6)})"
+          expression: "PEEKABOO"
+          require_action:
+          - "no action"
+          - "greylist"
+          - "reject"
+          - "add header"
+          - "soft reject"
+          - "rewrite subject"
+
+postfix-rx:
+  mainCf:
+    maillogFile: "/dev/stdout"
+    inetInterfaces: all
+    # postfix needs FQDNs for this
+    myhostname: "pipeline-postfix-rx.pipeline.svc.cluster.local"
+    milterProtocol: "6"
+    milterDefaultAction: accept
+    smtpdMilters: "inet:pipeline-rspamd:11332"
+
+postfix-tx:
+  mainCf:
+    maillogFile: "/dev/stdout"
+    inetInterfaces: all
+    myhostname: "pipeline-postfix-tx.pipeline.svc.cluster.local"
+    queueRunDelay: 90s

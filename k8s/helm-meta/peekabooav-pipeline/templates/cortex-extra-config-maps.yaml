@@ -1,0 +1,13 @@
+{{- $files := .Files }}
+{{- range $mapname, $mapkeys := .Values.cortex.extraConfigMaps }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $mapname }}
+data:
+  {{- range $key, $val := $mapkeys }}
+  {{ $key }}: |
+{{ $files.Get $val | indent 4}}
+  {{- end }}
+{{- end }}
