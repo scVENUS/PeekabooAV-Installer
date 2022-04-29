@@ -1,0 +1,7 @@
+apiVersion: v2
+name: peekabooav
+description: A Helm chart for deploying PeekabooAV to Kubernetes
+
+type: application
+version: 0.1.8
+appVersion: "2.1"
