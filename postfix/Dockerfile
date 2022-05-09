@@ -1,11 +1,8 @@
 FROM alpine:latest
 
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories  && \
-    apk update && \
-    apk add postfix \
-            postfix-pcre \
-            swaks \
-            mailutils
+RUN apk add --no-cache postfix postfix-pcre && \
+	apk --no-cache --repository='https://dl-cdn.alpinelinux.org/alpine/edge/testing' \
+		add swaks
 
 RUN mkdir -p /etc/aliases && newaliases
 

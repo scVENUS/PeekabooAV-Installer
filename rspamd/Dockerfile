@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add rspamd \
+RUN apk add --no-cache rspamd \
 	rspamd-proxy \
 	patch
 
