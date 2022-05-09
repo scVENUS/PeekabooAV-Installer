@@ -500,9 +500,11 @@
         virtualenv: /opt/peekaboo
       when: manually_supplied_peekaboo.stat.exists
 
-    - name: Install latest Peekaboo release from PyPI
+    - name: Install Peekaboo release from PyPI
       pip:
-        name: peekabooav
+        # version is constrained to latest point release of current minor
+        # release by default
+        name: peekabooav{{ peekaboo_pip_constraint }}
         state: latest
         virtualenv: /opt/peekaboo
       when: not manually_supplied_peekaboo.stat.exists

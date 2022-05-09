@@ -10,6 +10,10 @@ cuckoo_api_token: "{{ lookup('password', 'cuckoo_api_token length=22 chars=ascii
 cortex_api_token: "{{ lookup('password', 'cortex_api_token length=22 chars=ascii_letters') }}"
 peekaboo_db_password: "{{ lookup('password', 'peekaboo_db_password length=15 chars=ascii_letters') }}"
 
+# limits Peekaboo version to latest point release of current minor release by
+# default
+peekaboo_pip_constraint: "<2.2"
+
 peekaboo_listen_address: "127.0.0.1"
 
 cuckoo_processors: 5
