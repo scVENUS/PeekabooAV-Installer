@@ -36,7 +36,7 @@ process of a testing environment is also available.
 ### This is what you type (copy - paste)
 For a released version, e.g. 2.0
 ```
-git clone -b v2.0 --recurse-submodules https://github.com/scvenus/peekabooav-installer
+git clone -b v2.0 https://github.com/scvenus/peekabooav-installer
 cd peekabooav-installer/
 ./PeekabooAV-install.sh
 ```
