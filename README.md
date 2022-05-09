@@ -39,7 +39,7 @@ cd PeekabooAV-Installer/
 ./PeekabooAV-install.sh
 ```
 
-Or for testing most resent changes of the repository
+Or for testing most recent changes of the repository
 ```
 git clone https://github.com/scVENUS/PeekabooAV-Installer
 cd PeekabooAV-Installer/
