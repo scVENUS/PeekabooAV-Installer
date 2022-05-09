@@ -34,9 +34,9 @@ process of a testing environment is also available.
 
 
 ### This is what you type (copy - paste)
-For a released version, e.g. 2.0
+For a released version, e.g. 2.1
 ```
-git clone -b v2.0 https://github.com/scVENUS/PeekabooAV-Installer
+git clone -b v2.1 https://github.com/scVENUS/PeekabooAV-Installer
 cd PeekabooAV-Installer/
 ./PeekabooAV-install.sh
 ```
