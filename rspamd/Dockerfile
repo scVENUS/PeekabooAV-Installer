@@ -1,4 +1,4 @@
-FROM alpine:3.15
+FROM alpine:latest
 
 RUN apk add rspamd \
 	rspamd-proxy \
