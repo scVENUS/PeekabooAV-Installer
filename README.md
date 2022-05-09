@@ -39,6 +39,13 @@ cd PeekabooAV-Installer/
 ./PeekabooAV-install.sh
 ```
 
+**NOTE**: Point releases of the Installer and PeekabooAV are independent.
+A particular version of the Installer always installs the latest
+point release of PeekabooAV of the corresponding minor release branch.
+So Installer 2.1.2 might very well install PeekabooAV 2.1.8 if it's available.
+This behaviour can be changed by adjusting `peekaboo_pip_constraint` in
+[`group_vars/all.yml`](group_vars/all.yml#15).
+
 Or for testing most recent changes of the repository
 ```
 git clone https://github.com/scVENUS/PeekabooAV-Installer
