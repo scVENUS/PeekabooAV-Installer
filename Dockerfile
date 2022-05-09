@@ -1,24 +1,21 @@
-FROM debian:bullseye-slim AS build
-
-ENV DEBIAN_FRONTEND=noninteractive
+FROM alpine:latest AS build
 
 WORKDIR /peekaboo
 
-RUN apt-get -y update && \
-	apt-get install -y \
-		python3-virtualenv \
-		build-essential \
-		python3-dev \
-		libjpeg-dev \
-		zlib1g-dev \
-		git \
-		libmariadb-dev
+# libffi-dev required for cffi to compile from source because wheel is missing
+# vom python3 -mvenv virtual environment
+RUN apk add \
+	gcc musl-dev make \
+	python3-dev \
+	libffi-dev \
+	git \
+	mariadb-connector-c-dev
 
 # *optionally* pick up a local, potentially modified version of Peekaboo.
 # Explicitly copy README.md so list of source files cannot become empty by
 # non-matchin glob which would cause COPY to fail.
 COPY README.md PeekabooAV* /peekaboo/PeekabooAV/
-RUN virtualenv /opt/peekaboo
+RUN python3 -mvenv /opt/peekaboo
 
 ARG VERSION=
 
@@ -31,11 +28,11 @@ RUN if [ -d /peekaboo/PeekabooAV/peekaboo ] ; then \
 		/opt/peekaboo/bin/pip3 install peekabooav${VERSION:+==${VERSION}} ; \
 	fi
 
-RUN /opt/peekaboo/bin/pip3 install mysqlclient aiomysql && \
-	find /opt/peekaboo/lib -name "*.so" | xargs strip
+RUN /opt/peekaboo/bin/pip3 install mysqlclient aiomysql
+RUN find /opt/peekaboo/lib -name "*.so" | xargs strip
 
-RUN groupadd -g 150 peekaboo
-RUN useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
+RUN addgroup -g 150 peekaboo
+RUN adduser -G peekaboo -u 150 -D -h /var/lib/peekaboo peekaboo
 
 RUN mkdir -p /opt/peekaboo/etc
 
@@ -58,22 +55,16 @@ RUN etcdir=/opt/peekaboo/etc ; \
 		chown peekaboo:root "$entryconfig" ; \
 	done
 
-FROM debian:bullseye-slim
+FROM alpine:latest
 COPY --from=build /opt/peekaboo/ /opt/peekaboo/
-ENV DEBIAN_FRONTEND=noninteractive
 
-RUN groupadd -g 150 peekaboo
-RUN useradd -g 150 -u 150 -m -d /var/lib/peekaboo peekaboo
+RUN addgroup -g 150 peekaboo
+RUN adduser -G peekaboo -u 150 -D -h /var/lib/peekaboo peekaboo
 
-RUN apt-get update -y && \
-	apt-get install -y --no-install-suggests \
-		python3-minimal \
-		python3-distutils \
+RUN apk add --no-cache python3 \
 		# this is needed for the python-magic package
-		libmagic1 \
-		libmariadb3 && \
-	apt-get clean all && \
-	find /var/lib/apt/lists -type f -delete
+		libmagic \
+		mariadb-connector-c
 
 COPY entrypoint.sh /opt/
 RUN chmod +x /opt/entrypoint.sh
