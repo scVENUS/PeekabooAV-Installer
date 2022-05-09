@@ -36,16 +36,16 @@ process of a testing environment is also available.
 ### This is what you type (copy - paste)
 For a released version, e.g. 2.0
 ```
-git clone -b v2.0 https://github.com/scvenus/peekabooav-installer
-cd peekabooav-installer/
+git clone -b v2.0 https://github.com/scVENUS/PeekabooAV-Installer
+cd PeekabooAV-Installer/
 ./PeekabooAV-install.sh
 ```
 
 Or for testing most resent changes of the repository
 ```
-git clone https://github.com/scvenus/peekabooav-installer
-cd peekabooav-installer/
-git clone https://github.com/scvenus/peekabooav PeekabooAV
+git clone https://github.com/scVENUS/PeekabooAV-Installer
+cd PeekabooAV-Installer/
+git clone https://github.com/scVENUS/PeekabooAV
 ./PeekabooAV-install.sh
 ```
 
@@ -122,9 +122,9 @@ utils/checkFileWithPeekaboo.py grafana/Screenshot-2018-1-17\ Grafana\ -\ Peekabo
 ### This is what you type (copy - paste)
 
 ```
-git clone https://github.com/scvenus/peekabooav-installer
-cd peekabooav-installer/
-git clone https://github.com/scvenus/peekabooav PeekabooAV
+git clone https://github.com/scVENUS/PeekabooAV-Installer
+cd PeekabooAV-Installer/
+git clone https://github.com/scVENUS/PeekabooAV
 ```
 
 Then carry on reading [pipeline/README.md](pipeline/README.md)
