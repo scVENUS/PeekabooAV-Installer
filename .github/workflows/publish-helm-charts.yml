@@ -1,0 +1,69 @@
+name: Publish Helm charts
+
+on:
+  push:
+    branches:
+      - master
+
+  # Allows to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  charts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v2.1
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.4.0
+        with:
+          charts_dir: k8s/helm
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: true
+
+  meta-charts:
+    runs-on: ubuntu-latest
+    # pipeline needs all the other charts published. We'll need to see if this
+    # dependency races the gh-pages build and deployment workflow. It appears
+    # that his job will not do anything if the charts job created any new
+    # release, which created a tag relative to which the pipeline chart most
+    # likely did not change. Another change and push can then trigger just the
+    # pipeline chart publishing.
+    needs: charts
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v2.1
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.4.0
+        with:
+          charts_dir: k8s/helm-meta
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: true
