@@ -2,6 +2,23 @@ name: Container image publish
 description: Build and publish container image
 
 inputs:
+  ref:
+    required: true
+    description: 'ref for which to build the image'
+  base-ref:
+    required: false
+    description: 'base ref of a pull request'
+  latest:
+    required: false
+    default: false
+    description: >
+      This is the latest release overall and therefore gets the latest tag
+  latest-major:
+    required: false
+    default: false
+    description: >
+      This is the latest in a major release series and therefore gets the major
+      version tag
   builddir:
     required: true
     type: string
@@ -31,6 +48,10 @@ runs:
   steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        # for scheduled builds, github.ref/$GITHUB_REF is always latest commit
+        # on default branch
+        ref: ${{ inputs.ref }}
 
     # Install the cosign tool except on PR
     # https://github.com/sigstore/cosign-installer
@@ -52,24 +73,56 @@ runs:
         username: ${{ inputs.registry_username }}
         password: ${{ inputs.registry_password }}
 
+    - name: Select image tagging scheme
+      id: tags
+      env:
+        REF: ${{ inputs.ref }}
+        LATEST_MAJOR: ${{ inputs.latest-major }}
+      shell: bash
+      run: |
+        # use pep440/semver versioning, particularly only moving latest to
+        # release versions (no prerelease and no branches).
+        # build edge from last commit on devel branch
+        echo "::notice::Defaulting to pep440/edge/ref tagging scheme"
+        tags="type=pep440,pattern={{version}}
+          type=edge
+          type=ref,event=branch
+          type=ref,event=pr"
+
+        if [ "$LATEST_MAJOR" = "true" ] ; then
+          echo "::notice::Release is latest major version"
+          tags="$tags
+            type=pep440,pattern={{major}}"
+        fi
+
+        # build release branch edges
+        if echo "$REF" | grep \
+              -e '^refs/heads/[0-9]\+\.[0-9]\+$' \
+            > /dev/null ; then
+          echo "::notice::Switching to release edge tagging scheme"
+          tags="type=ref,event=branch,suffix=-edge"
+        fi
+
+        # preserve newlines
+        tags=${tags//$'\n'/'%0A'}
+
+        echo "::set-output name=tags::$tags"
+
     # Extract metadata (tags, labels) for Docker
     # https://github.com/docker/metadata-action
     - name: Extract Docker metadata
       id: meta
-      uses: docker/metadata-action@v4.0.1
+      uses: michaelweiser/metadata-action@ref-input
       with:
         images: ${{ inputs.registry }}/${{ inputs.image_name }}
-        # use semver versioning, particularly only moving latest to release
-        # versions (no prerelease and no branches), required peekaboo ref to
-        # be supplied from the outside since metadata action does not support
-        # custom repo paths and we'd be silently using installer repo tags.
-        # build edge from last commit on devel branch
         tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}
-          type=edge
+          ${{ steps.tags.outputs.tags }}
+        ref: ${{ inputs.ref }}
+        # tagging-triggered builds never move the latest tag. Instead we wait
+        # for the next scheduled image rebuild because it has the overview what
+        # the latest version actually is.
+        flavor: |
+          latest=${{ inputs.latest }}
 
     # Build and push Docker image with Buildx (don't push on PR)
     # https://github.com/docker/build-push-action
