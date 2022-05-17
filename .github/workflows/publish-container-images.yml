@@ -42,6 +42,8 @@ jobs:
 
       - uses: ./.github/actions/container-image-publish
         with:
+          ref: ${{ github.ref }}
+          base-ref: ${{ github.base_ref }}
           image_name: michaelweiser/peekabooav-${{ matrix.image }}
           builddir: ${{ matrix.dir }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
