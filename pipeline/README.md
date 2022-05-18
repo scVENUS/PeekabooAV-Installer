@@ -38,7 +38,7 @@ The postfix-tx conainer is set up to relay emails to the rx container.
 
 To use it that way, you can use a tool like [SWAKS](https://jetmore.org/john/code/swaks/)
 ```bash
-cat DemoMalware/downloadexe.bat | swaks --server localhost:8025 --to root@localhost --attach -
+cat DemoMalware/downloadexe.bat | swaks --server localhost:8025 --to root@postfix-rx --attach -
 ```
 Above command sends and email, with the supplied `downloadexe.bat` file as an
 attachment[^attachfileat], to the postfix-tx container.
@@ -62,14 +62,14 @@ docker-compose exec postfix-tx sh
 ```
 Inside you can send emails the same way by sending them to `localhost:25`
 ```bash
-swaks --server localhost -t root@postfix-tx --attach @PATH/TO/FILE
+swaks --server localhost -t root@postfix-rx --attach @PATH/TO/FILE
 ```
 (swaks in the `postfix-tx` container is current enough to support the new `@` syntax.)
 
 Combining both commands, content can also be supplied from the outside to swaks
 running inside the container:
 ```bash
-cat PATH/TO/OUTSIDE/FILE | docker-compose exec -T postfix-tx swaks --server localhost -t root@postfix-tx --attach -
+cat PATH/TO/OUTSIDE/FILE | docker-compose exec -T postfix-tx swaks --server localhost -t root@postfix-rx --attach -
 ```
 (Note the `-T` to `docker-compose exec`.)
 
