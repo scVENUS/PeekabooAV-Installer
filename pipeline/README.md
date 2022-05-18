@@ -4,6 +4,23 @@ To boot up the pipeline, you can simply use
 docker-compose up -d
 ```
 
+This by default uses pre-built images downloaded from a registry.
+If you want to build the images yourself, you can add `compose.dev.yaml` as an
+override to your `docker-compose` call like so:
+
+``` bash
+docker-compose -f compose.yaml -f compose.dev.yaml up -d
+```
+
+**NOTE**: The first mention of the actual `compose.yaml` *is* indeed necessary.
+
+This will build the images (under different names) if they're not yet present.
+To force a build, you can add the `--build` option as well:
+
+``` bash
+docker-compose -f compose.yaml -f compose.dev.yaml up -d --build
+```
+
 ### Logs
 First of all, it's a good idea to keep an eye on the logs. If you started the pipeline detached, you can execute
 ```bash
