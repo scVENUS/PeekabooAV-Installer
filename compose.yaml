@@ -2,8 +2,8 @@ version: "3"
 
 services:
   postfix_tx:
-    image: peekabooav_postfix
-    build: ./postfix
+    # our latest tags point to the latest release version
+    image: ghcr.io/michaelweiser/peekabooav-postfix:edge
     hostname: postfix_tx
     environment:
       - POSTFIX_MAIN_CF_MAILLOG_FILE=/dev/stdout
@@ -55,8 +55,7 @@ services:
       retries: 3
       start_period: 30s
   cortex_setup:
-    image: peekabooav_cortex_setup
-    build: ./cortex_setup
+    image: ghcr.io/michaelweiser/peekabooav-cortex-setup:edge
     env_file:
       - compose.env
     depends_on:
@@ -80,8 +79,7 @@ services:
       timeout: 2s
       retries: 5
   peekabooav:
-    image: peekabooav
-    build: ./
+    image: ghcr.io/scvenus/peekabooav:edge
     env_file:
       - compose.env
     volumes:
@@ -99,8 +97,7 @@ services:
   # although if it is present, the peekaboo module does use it to cache data
   # for anything more than a showcase, please run a redis alongside rspamd
   rspamd:
-    image: peekabooav_rspamd
-    build: ./rspamd
+    image: ghcr.io/michaelweiser/peekabooav-rspamd:edge
     environment:
       RSPAMD_ENABLED_MODULES: "external_services force_actions"
 
@@ -153,8 +150,7 @@ services:
       retries: 5
       start_period: 10s
   postfix_rx:
-    image: peekabooav_postfix
-    build: ./postfix
+    image: ghcr.io/michaelweiser/peekabooav-postfix:edge
     hostname: postfix_rx
     environment:
       - POSTFIX_MAIN_CF_MAILLOG_FILE=/dev/stdout
