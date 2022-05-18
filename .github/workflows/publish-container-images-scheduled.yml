@@ -76,16 +76,6 @@ jobs:
           include = [{
             'latest': False,
             'latest-major': False,
-          # enrich with builddir as well
-          }, {
-            'image': 'rspamd',
-            'dir': 'rspamd',
-          }, {
-            'image': 'postfix',
-            'dir': 'postfix',
-          }, {
-            'image': 'cortex-setup',
-            'dir': 'cortex_setup',
           }]
 
           for major, rels in majors.items():
@@ -141,5 +131,5 @@ jobs:
           latest: ${{ matrix.latest }}
           latest-major: ${{ matrix.latest-major }}
           image_name: michaelweiser/peekabooav-${{ matrix.image }}
-          builddir: ${{ matrix.dir }}
+          builddir: ${{ matrix.image }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
