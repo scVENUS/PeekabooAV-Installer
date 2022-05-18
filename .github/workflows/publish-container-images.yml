@@ -20,13 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         image: [rspamd, postfix, cortex-setup]
-        include:
-        - image: rspamd
-          dir: rspamd
-        - image: postfix
-          dir: postfix
-        - image: cortex-setup
-          dir: cortex_setup
 
     permissions:
       contents: read
@@ -45,5 +38,5 @@ jobs:
           ref: ${{ github.ref }}
           base-ref: ${{ github.base_ref }}
           image_name: michaelweiser/peekabooav-${{ matrix.image }}
-          builddir: ${{ matrix.dir }}
+          builddir: ${{ matrix.image }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}

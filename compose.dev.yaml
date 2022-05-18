@@ -1,18 +1,18 @@
 version: "3"
 
 services:
-  postfix_tx:
-    image: peekabooav_postfix
+  postfix-tx:
+    image: peekabooav-postfix
     build: ./postfix
-  cortex_setup:
-    image: peekabooav_cortex_setup
-    build: ./cortex_setup
+  cortex-setup:
+    image: peekabooav-cortex-setup
+    build: ./cortex-setup
   peekabooav:
     image: peekabooav
     build: ./
   rspamd:
-    image: peekabooav_rspamd
+    image: peekabooav-rspamd
     build: ./rspamd
-  postfix_rx:
-    image: peekabooav_postfix
+  postfix-rx:
+    image: peekabooav-postfix
     build: ./postfix
