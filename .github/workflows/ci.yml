@@ -19,11 +19,11 @@ jobs:
     steps:
       # Checks-out PeekabooAV-Installer under $GITHUB_WORKSPACE
       - name: Check out PeekabooAV-Installer
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # put PeekabooAV below that as expected by the installer
       - name: Check out PeekabooAV
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: scVENUS/PeekabooAV
           path: PeekabooAV
