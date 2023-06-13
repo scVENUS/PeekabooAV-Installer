@@ -37,6 +37,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
           base-ref: ${{ github.base_ref }}
-          image_name: michaelweiser/peekabooav-${{ matrix.image }}
+          image_name: scvenus/peekabooav-${{ matrix.image }}
           builddir: ${{ matrix.image }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}

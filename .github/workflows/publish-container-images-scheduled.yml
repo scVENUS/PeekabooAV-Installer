@@ -130,6 +130,6 @@ jobs:
           ref: ${{ matrix.ref }}
           latest: ${{ matrix.latest }}
           latest-major: ${{ matrix.latest-major }}
-          image_name: michaelweiser/peekabooav-${{ matrix.image }}
+          image_name: scvenus/peekabooav-${{ matrix.image }}
           builddir: ${{ matrix.image }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}

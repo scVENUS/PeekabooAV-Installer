@@ -17,7 +17,7 @@ opensearch:
 
 cortex:
   image:
-    repository: michaelweiser/cortex
+    repository: scvenus/cortex
     tag: 3.1.4-1-k8s
   extraCortexConfigurations:
     basicauth.conf: |
