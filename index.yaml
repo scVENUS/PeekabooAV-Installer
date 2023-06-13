@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  cortex-setup:
+  - apiVersion: v2
+    appVersion: "2.1"
+    created: "2023-06-13T10:43:33.965748537Z"
+    description: A Helm chart for setting up Cortex using a setup job in Kubernetes
+    digest: e483adc4afa9cc6bd50e613857fed9d31445576abd7e42aeca7b1f59ebbe1913
+    name: cortex-setup
+    type: application
+    urls:
+    - https://github.com/scVENUS/PeekabooAV-Installer/releases/download/cortex-setup-0.1.4/cortex-setup-0.1.4.tgz
+    version: 0.1.4
+  postfix:
+  - apiVersion: v2
+    appVersion: "2.1"
+    created: "2023-06-13T10:43:34.101534706Z"
+    description: A Helm chart for deploying postfix for PeekabooAV on Kubernetes
+    digest: 4554a938a5535dcba3379bcdc09e019bd44def51f0508699b1d3927847ec4f8b
+    name: postfix
+    type: application
+    urls:
+    - https://github.com/scVENUS/PeekabooAV-Installer/releases/download/postfix-0.1.4/postfix-0.1.4.tgz
+    version: 0.1.4
+generated: "2023-06-13T10:43:34.101538606Z"
