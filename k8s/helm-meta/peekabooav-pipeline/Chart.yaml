@@ -18,18 +18,18 @@ dependencies:
     repository: https://michaelweiser.github.io/helm-cortex/
   - name: cortex-setup
     version: 0.1.4
-    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    repository: https://scvenus.github.io/PeekabooAV-Installer/
   - name: peekabooav
     version: 0.1.8
     repository: https://scvenus.github.io/PeekabooAV-Installer/
   - name: rspamd
     version: 0.1.5
-    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    repository: https://scvenus.github.io/PeekabooAV-Installer/
   - name: postfix
     version: 0.1.4
-    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    repository: https://scvenus.github.io/PeekabooAV-Installer/
     alias: postfix-tx
   - name: postfix
     version: 0.1.4
-    repository: https://michaelweiser.github.io/PeekabooAV-Installer/
+    repository: https://scvenus.github.io/PeekabooAV-Installer/
     alias: postfix-rx

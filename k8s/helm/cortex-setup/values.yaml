@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: ghcr.io/michaelweiser/peekabooav-cortex-setup
+  repository: ghcr.io/scvenus/peekabooav-cortex-setup
   pullPolicy: IfNotPresent
   tag: ""
 
