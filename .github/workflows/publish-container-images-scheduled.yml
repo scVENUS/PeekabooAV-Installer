@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # get all history, branches and tags so we can build a list of refs
           # to build from
@@ -119,7 +119,7 @@ jobs:
     steps:
       # required for access to the local publish action
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # we cannot use a reuseable workflow here because it's not supported in
       # conjunction with matrix strategy. But a custom action can do exactly
