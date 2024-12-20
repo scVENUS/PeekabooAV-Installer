@@ -224,4 +224,4 @@ echo '.include(try=true; priority=1,duplicate=merge) ' \
 [ -z "$RSPAMD_DEBUG_CONFIG" ] || \
 	grep .* "$locald"/*.conf "$locald"/*.inc
 
-exec /usr/sbin/rspamd -i -f
+exec /usr/bin/rspamd -i -f
