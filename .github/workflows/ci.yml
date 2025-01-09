@@ -81,5 +81,8 @@ jobs:
       - name: Remove unneeded dependencies
         run: sudo apt-get autoremove --purge
 
+      - name: Set hostname to FQDN
+        run: sudo hostname peekabooav-demo.int
+
       - name: Run the installer
         run: sudo ./PeekabooAV-install.sh --quiet
