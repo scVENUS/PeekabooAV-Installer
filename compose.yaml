@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   postfix-tx:
     # our latest tags point to the latest release version
