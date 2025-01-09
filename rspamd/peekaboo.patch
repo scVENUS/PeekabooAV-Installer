@@ -1,8 +1,6 @@
-diff --git /usr/share/rspamd/lualib/lua_scanners/common.lua /usr/share/rspamd/lualib/lua_scanners/common.lua
-index c2e314d39..7599b4631 100644
---- /usr/share/rspamd/lualib/lua_scanners/common.lua
+--- /usr/share/rspamd/lualib/lua_scanners/common.lua.orig
 +++ /usr/share/rspamd/lualib/lua_scanners/common.lua
-@@ -62,7 +62,7 @@ local function match_patterns(default_sym, found, patterns, dyn_weight)
+@@ -64,7 +64,7 @@
    end
  end
  
@@ -11,7 +9,7 @@ index c2e314d39..7599b4631 100644
    local all_whitelisted = true
    local patterns
    local symbol
-@@ -78,26 +78,31 @@ local function yield_result(task, rule, vname, dyn_weight, is_fail, maybe_part)
+@@ -80,28 +80,33 @@
  
  
    -- This should be more generic
@@ -21,7 +19,9 @@ index c2e314d39..7599b4631 100644
      symbol = rule.symbol
 -    threat_info = rule.detection_category .. 'found'
 +    threat_info = rule.detection_category .. ' found'
-     if not dyn_weight then dyn_weight = 1.0 end
+     if not dyn_weight then
+       dyn_weight = 1.0
+     end
 -  elseif is_fail == 'fail' then
 +  elseif symbol_extra == 'fail' then
      patterns = rule.patterns_fail
@@ -47,8 +47,8 @@ index c2e314d39..7599b4631 100644
 +    dyn_weight = 1.0
    end
  
- 
-@@ -506,6 +577,7 @@ exports.match_patterns = match_patterns
+   for _, tm in ipairs(threat_table) do
+@@ -515,6 +520,7 @@
  exports.condition_check_and_continue = need_check
  exports.save_cache = save_cache
  exports.create_regex_table = create_regex_table
@@ -56,9 +56,7 @@ index c2e314d39..7599b4631 100644
  exports.check_parts_match = check_parts_match
  exports.check_metric_results = check_metric_results
  
-diff --git /usr/share/rspamd/lualib/lua_scanners/init.lua /usr/share/rspamd/lualib/lua_scanners/init.lua
-index 20bea7a47..d4d4a87fd 100644
---- /usr/share/rspamd/lualib/lua_scanners/init.lua
+--- /usr/share/rspamd/lualib/lua_scanners/init.lua.orig
 +++ /usr/share/rspamd/lualib/lua_scanners/init.lua
 @@ -50,6 +50,7 @@
  require_scanner('razor')
@@ -68,11 +66,9 @@ index 20bea7a47..d4d4a87fd 100644
  
  exports.add_scanner = function(name, t, conf_func, check_func)
    assert(type(conf_func) == 'function' and type(check_func) == 'function',
-diff --git /usr/share/rspamd/plugins/external_services.lua /usr/share/rspamd/plugins/external_services.lua
-index d6fedeece..852c991ff 100644
---- /usr/share/rspamd/plugins/external_services.lua
+--- /usr/share/rspamd/plugins/external_services.lua.orig
 +++ /usr/share/rspamd/plugins/external_services.lua
-@@ -16,6 +16,7 @@ limitations under the License.
+@@ -16,6 +16,7 @@
  ]] --
  
  local rspamd_logger = require "rspamd_logger"
@@ -80,16 +76,16 @@ index d6fedeece..852c991ff 100644
  local lua_util = require "lua_util"
  local lua_redis = require "lua_redis"
  local fun = require "fun"
-@@ -105,12 +106,19 @@ external_services {
+@@ -105,12 +106,20 @@
+       }
+       # `whitelist` points to a map of IP addresses. Mail from these addresses is not scanned.
+       whitelist = "/etc/rspamd/antivirus.wl";
++      # Replace content that exactly matches the following string to the EICAR pattern
++      # Useful for E2E testing when another party removes/blocks EICAR attachments
++      #eicar_fake_pattern = 'testpatterneicar';
      }
-     # `whitelist` points to a map of IP addresses. Mail from these addresses is not scanned.
-     whitelist = "/etc/rspamd/antivirus.wl";
-+    # Replace content that exactly matches the following string to the EICAR pattern
-+    # Useful for E2E testing when another party removes/blocks EICAR attachments
-+    #eicar_fake_pattern = 'testpatterneicar';
    }
- }
- ]])
+   ]])
    return
  end
  
@@ -97,10 +93,11 @@ index d6fedeece..852c991ff 100644
 +local eicar_pattern = rspamd_util.decode_base32(
 +    [[akp6woykfbonrepmwbzyfpbmibpone3mj3pgwbffzj9e1nfjdkorisckwkohrnfe1nt41y3jwk1cirjki4w4nkieuni4ndfjcktnn1yjmb1wn]]
 +)
- 
++
  local function add_scanner_rule(sym, opts)
    if not opts.type then
-@@ -159,7 +167,9 @@ local function add_scanner_rule(sym, opts)
+     rspamd_logger.errx(rspamd_config, 'unknown type for external scanner rule %s', sym)
+@@ -158,7 +167,9 @@
  
    -- if any mime_part filter defined, do not scan all attachments
    if opts.mime_parts_filter_regex ~= nil
@@ -111,7 +108,7 @@ index d6fedeece..852c991ff 100644
      rule.scan_all_mime_parts = false
    else
      rule.scan_all_mime_parts = true
-@@ -169,9 +179,10 @@ local function add_scanner_rule(sym, opts)
+@@ -168,9 +179,10 @@
    rule.patterns_fail = common.create_regex_table(opts.patterns_fail or {})
  
    rule.mime_parts_filter_regex = common.create_regex_table(opts.mime_parts_filter_regex or {})
@@ -123,12 +120,11 @@ index d6fedeece..852c991ff 100644
    if opts.whitelist then
      rule.whitelist = rspamd_config:add_hash_map(opts.whitelist)
    end
-@@ -181,8 +192,22 @@ local function add_scanner_rule(sym, opts)
+@@ -180,7 +192,21 @@
  
        fun.each(function(p)
          local content = p:get_content()
 -        if content and #content > 0 then
--          cfg.check(task, content, p:get_digest(), rule)
 +        local clen = #content
 +        if content and clen > 0 then
 +          if opts.eicar_fake_pattern then
@@ -144,11 +140,10 @@ index d6fedeece..852c991ff 100644
 +              content = eicar_pattern
 +            end
 +          end
-+          cfg.check(task, content, p:get_digest(), rule, p)
+           cfg.check(task, content, p:get_digest(), rule, p)
          end
        end, common.check_parts_match(task, rule))
- 
-@@ -191,10 +216,31 @@ local function add_scanner_rule(sym, opts)
+@@ -190,10 +216,31 @@
      end
    end
  
@@ -175,17 +170,17 @@ index d6fedeece..852c991ff 100644
    rspamd_logger.infox(rspamd_config, 'registered external services rule: symbol %s; type %s',
 -      rule.symbol, rule.type)
 +    rule.symbol, rule.type)
-+
-+  return scan_cb, report_cb, rule
  
 -  return scan_cb, rule
++  return scan_cb, report_cb, rule
++
  end
  
  -- Registration
-@@ -206,16 +252,17 @@ if opts and type(opts) == 'table' then
-     if type(m) == 'table' and m.servers then
-       if not m.type then m.type = k end
-       if not m.name then m.name = k end
+@@ -209,16 +256,16 @@
+       if not m.name then
+         m.name = k
+       end
 -      local cb, nrule = add_scanner_rule(k, m)
 +      local scan_cb, report_cb, nrule = add_scanner_rule(k, m)
  
@@ -193,7 +188,6 @@ index d6fedeece..852c991ff 100644
 +      if not scan_cb then
          rspamd_logger.errx(rspamd_config, 'cannot add rule: "' .. k .. '"')
        else
-+
          m = nrule
  
          local t = {
@@ -203,7 +197,7 @@ index d6fedeece..852c991ff 100644
            score = 0.0,
            group = N
          }
-@@ -223,6 +270,9 @@ if opts and type(opts) == 'table' then
+@@ -226,6 +273,9 @@
          if m.symbol_type == 'postfilter' then
            t.type = 'postfilter'
            t.priority = lua_util.symbols_priorities.medium
@@ -213,10 +207,11 @@ index d6fedeece..852c991ff 100644
          else
            t.type = 'normal'
          end
-@@ -237,6 +287,29 @@ if opts and type(opts) == 'table' then
+@@ -239,6 +289,29 @@
+         end
  
          local id = rspamd_config:register_symbol(t)
- 
++
 +        if report_cb and m.symbol_report then
 +          rspamd_logger.infox(rspamd_config, 'added external services report symbol %s -> %s', k, m.symbol_report)
 +          local r = {
@@ -239,7 +234,6 @@ index d6fedeece..852c991ff 100644
 +          rspamd_config:register_symbol(r)
 +
 +        end
-+
+ 
          if m.symbol_fail then
            rspamd_config:register_symbol({
-             type = 'virtual',
