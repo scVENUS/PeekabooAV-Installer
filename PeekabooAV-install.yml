@@ -107,7 +107,7 @@
           - less
           - iputils-ping
           - socket
-          - netcat
+          - netcat-openbsd
           - git
           - curl
           - socat
@@ -181,9 +181,14 @@
       apt:
         name: tcpdump
         state: latest
+
+    - name: Find tcpdump binary path
+      shell: "dpkg -L tcpdump | grep '^/usr/[s]\\?bin/tcpdump$'"
+      register: tcpdump_path
+
     - name: Restrict access to tcpdump
       file:
-        path: /usr/sbin/tcpdump
+        path: "{{ tcpdump_path.stdout }}"
         # cuckoo stats the sniffer during configuration initialisation so we
         # need r+x for group cuckoo here
         mode: 0750
@@ -191,7 +196,7 @@
         group: cuckoo
     - name: Set capability
       capabilities:
-        path: /usr/sbin/tcpdump
+        path: "{{ tcpdump_path.stdout }}"
         capability: cap_net_raw,cap_net_admin=eip
         state: present
 
@@ -225,9 +230,6 @@
     - name: Install Cuckoo system dependencies
       apt:
         name:
-          - python
-          - python-dev
-          - mongodb
           - libffi-dev
           - libssl-dev
           - libjpeg-dev
@@ -236,6 +238,67 @@
           - build-essential
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
+
+    - name: Install mongodb and python2 command for Ubuntu < 22
+      apt:
+        name:
+          - mongodb
+          - python
+          - python-dev
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int < 22
+
+    - name: Add mongodb apt key
+      get_url:
+        url: https://www.mongodb.org/static/pgp/server-6.0.asc
+        dest: /etc/apt/keyrings/mongodb.asc
+        checksum: sha256:cd6a9764d43fa971d32b27fb6b6ec5234aed6432effc1b6d15c96ab7f941667d
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 22
+
+    - name: Add mongodb repository into sources list
+      vars:
+        # no version 6 packages for noble
+        mongo_codename: "{{ ansible_lsb.codename | replace('noble', 'jammy') }}"
+      apt_repository:
+        repo: "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.asc] https://repo.mongodb.org/apt/ubuntu {{ mongo_codename }}/mongodb-org/6.0 multiverse"
+        state: present
+        update_cache: true
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 22
+
+    - name: Pin jammy packages to low priority
+      copy:
+        dest: /etc/apt/preferences.d/jammy-pin
+        content: |
+          Package: *
+          Pin: release n=jammy
+          Pin-Priority: 10
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 24
+
+    - name: Add jammy sources for python2
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] http://de.archive.ubuntu.com/ubuntu/ {{ item }} main restricted universe multiverse"
+        state: present
+        update_cache: true
+      with_items:
+        - jammy
+        - jammy-updates
+        - jammy-backports
+        - jammy-security
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 24
+
+    - name: Install mongodb and python2 command for Ubuntu >= 22
+      apt:
+        name:
+          - mongodb-org
+          - python2
+          - python2-dev
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 22
+
+    - name: Start mongodb service
+      systemd:
+        name: mongod
+        state: started
+        enabled: true
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 22
 
     - name: Install virtualenv command for Ubuntu < 20
       apt:
@@ -249,6 +312,14 @@
           - python3-virtualenv
       when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 20
 
+    - name: Install old virtualenv for cuckoo
+      pip:
+        name:
+          - virtualenv==20.21.1
+        virtualenv: /opt/virtualenv2
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int >= 24
+      register: virtualenv2
+
     # work around flask not pinning its dependency versions, pulling in a
     # werkzeug that is too new for itself. We rely on pip's laziness in
     # upgrading leave to this version alone as long as it suffices for flask.
@@ -260,7 +331,9 @@
         name:
           - werkzeug==0.16.1
         virtualenv: /opt/cuckoo
+        virtualenv_command: "{{ '%s/bin/virtualenv' % virtualenv2.virtualenv if virtualenv2.virtualenv is defined else 'virtualenv' }}"
         virtualenv_python: python2.7
+
     - name: Install Cuckoo packages
       pip:
         name:
@@ -269,7 +342,6 @@
           - cuckoo
           - mysqlclient
         virtualenv: /opt/cuckoo
-        virtualenv_python: python2.7
 
     - name: Stop Cuckoo services
       systemd:
@@ -435,6 +507,7 @@
           - build-essential
           # required to install mysql python module in venv using pip
           - libmysqlclient-dev
+          - pkg-config
     - name: Install Peekaboo python system dependencies
       apt:
         name:
