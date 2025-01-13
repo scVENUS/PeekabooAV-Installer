@@ -9,6 +9,8 @@ Vagrant.configure("2") do |config|
   config.vm.define "peekaboo" do |peekaboo|
     peekaboo.vm.box       = "generic/ubuntu1804"
     #peekaboo.vm.box       = "generic/ubuntu2004"
+    #peekaboo.vm.box       = "generic/ubuntu2204"
+    #peekaboo.vm.box       = "bento/ubuntu-24.04"
     peekaboo.vm.hostname  = "peekabooav.int"
     config.ssh.username   = 'vagrant'
     config.ssh.password   = 'vagrant'
