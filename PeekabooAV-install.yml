@@ -582,6 +582,15 @@
         virtualenv: /opt/peekaboo
       when: not manually_supplied_peekaboo.stat.exists
 
+    - name: Downgrade sanic for old python
+      pip:
+        name:
+          # sanic 24.12.0 does not properly declare python 3.8 incompatibility
+          - sanic==24.6.0
+        virtualenv: /opt/peekaboo
+        virtualenv_python: "python3"
+      when: ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | int < 22
+
     - name: Copy Peekaboo systemd unit to /etc
       copy:
         src: /opt/peekaboo/share/doc/peekaboo/systemd/peekaboo.service
